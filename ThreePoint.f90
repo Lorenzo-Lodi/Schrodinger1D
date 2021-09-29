@@ -1,49 +1,109 @@
 program ThreePoint
 implicit none
-double precision :: h
-double precision :: E
-double precision :: mass = 2.0d0
-double precision :: xmin, xmax
-integer :: n_of_nodes
+integer, parameter :: fp = selected_real_kind(6)
+real(kind=fp) :: h
+real(kind=fp) :: E_trial, E_k, E_exact, E_low, E_high
+real(kind=fp) :: mass = 2.0_fp
+real(kind=fp) :: xmin, xmax, x
+integer :: n_of_desired_nodes, i
 
-E = 0.7d0 ! trial energy
-xmin = -5.0d0
+xmin = -5.5_fp
 xmax = -xmin
-h=0.0000001d0 ! step
+h=0.01_fp    ! step; don't go lower than 0.01 for single precision
+!write(*,'(A, I10)') 'Number of steps = ', int( (xmax-xmin)/h )
 
-write(*,*) 'n_of_nodes = ', count_nodes(xmin, xmax, h, E)
+! here we set the minimum and maximum
+E_high = -huge(0._fp)
+E_low  =  huge(0._fp)
+x = xmin
+
+do
+  if( x >= xmax) exit
+  if( V(x) > E_high) E_high = V(x)
+  if( V(x) < E_low) E_low = V(x)
+  x = x + h
+enddo
+
+
+! just to be safe, enlarge the range by approx 10%
+E_low  = E_low  - 0.05_fp*(E_high-E_low)
+E_high = E_high + 0.05_fp*(E_high-E_low)
+write(*,*) 'E_low, E_high = ', E_low, E_high
+
+E_trial = (E_high+E_low)/2._fp   ! trial energy (same for all)
+
+do i = 1, 15
+   h = 10._fp**(-real(i, fp)**0.5_fp)
+do n_of_desired_nodes = 0, 0
+  E_exact = 0.5_fp + n_of_desired_nodes
+  E_k = find_eigenvalue(n_of_desired_nodes, E_low, E_high, E_trial)
+  write(*,'(A, ES12.4,I6, 2F22.14, ES14.2)') 'h, n_of_desired_nodes, approx, exact, rel. err. = ', &
+     h, n_of_desired_nodes, E_k, E_exact, (E_k - E_exact)/E_exact
+enddo
+enddo
 
 contains
 
-pure integer function count_nodes(xmin, xmax, h, E)
-double precision, intent(in) :: xmin, xmax, h, E
-double precision :: f0, f1, f2
-double precision :: x
+!-------------------------------------
+real(kind=fp) function find_eigenvalue(n_of_desired_nodes, E_low_input, E_high_input, E_trial)
+integer, intent(in) :: n_of_desired_nodes
+real(kind=fp), intent(in) :: E_trial, E_low_input, E_high_input
+real(kind=fp) :: E, E_high, E_low
+integer :: i, imax
+real(kind=fp), parameter :: target_relative_error = 2._fp*epsilon(0._fp)
+
+E = E_trial
+E_low = E_low_input
+E_high = E_high_input
+
+! now we can bisect the energy
+imax = 100 ! maximum of 100 bisection, reduces by 2**100 
+do i=1, imax
+    E = (E_low + E_high)*0.5_fp
+!    write(*,*) 'i, E_low, E_high, E, count_nodes(xmin, xmax, h, E)', i, E_low, E_high, E, count_nodes(xmin, xmax, h, E)
+    if( (E_high - E_low)/abs(E)  < target_relative_error) exit
+    if( count_nodes(xmin, xmax, h, E) > n_of_desired_nodes) then
+      E_high = E
+    else
+      E_low = E
+    endif
+ !  write(*,*) 'Energy has been bracketed by ', E_low, E_high
+enddo
+
+find_eigenvalue = E
+
+end function find_eigenvalue
+!--------------------------------------------------------
+integer function count_nodes(xmin, xmax, h, E)
+real(kind=fp), intent(in) :: xmin, xmax, h, E
+real(kind=fp) :: f0, f1, f2
+real(kind=fp) :: x
 
     ! first (leftmost) point
     x = xmin
-    f0 = 0.d0
+    f0 = 0._fp
 
     ! second point
     x = x + h
-    f1 = 0.00001d0
+    f1 = 0.0000001_fp ! arbitrary initial value
 
     count_nodes = 0
     do
       x = x + h
-      f2 = 2.0d0*f1*(1.0d0-h*h*mass*(E-V(x))) - f0
-      if( sign(1.0d0,f0) /= sign(1.0d0,f1) )  count_nodes = count_nodes +1
+      f2 = 2.0_fp*f1*(1.0_fp-h*h*mass*(E-V(x))) - f0
+      if( sign(1.0_fp,f2) /= sign(1.0_fp,f1) )  count_nodes = count_nodes +1
       f0 = f1
       f1 = f2
+    !  write(*,*) 'f0, f1, f2', f0, f1, f2
       if( x >= xmax) exit
     enddo
 
 end function count_nodes
-
+!--------------------------------------------------------
 ! This is the potential function
 pure function V(x)
-double precision, intent(in) :: x
-double precision :: V
+real(kind=fp), intent(in) :: x
+real(kind=fp) :: V
 
 V = x*x
 
