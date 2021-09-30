@@ -1,6 +1,13 @@
 program ThreePoint
 implicit none
-integer, parameter :: fp = selected_real_kind(6)
+! Results for gfortran 9.3.0 under Linux
+!        (decimal_digits) => kind (bytes)
+! selected_real_kind( 6)  =>  4   single precision         32-bit
+! selected_real_kind(15)  =>  5   double precision         64-bit
+! selected_real_kind(18)  => 10   extended precision       80-bit
+! selected_real_kind(33)  => 16   double-double precision 128-bit
+!
+integer, parameter :: fp = selected_real_kind(18)
 real(kind=fp) :: h
 real(kind=fp) :: E_trial, E_k, E_exact, E_low, E_high
 real(kind=fp) :: mass = 2.0_fp
@@ -9,7 +16,7 @@ integer :: n_of_desired_nodes, i
 
 xmin = -5.5_fp
 xmax = -xmin
-h=0.01_fp    ! step; don't go lower than 0.01 for single precision
+h=0.1_fp    ! step; don't go lower than 0.01 for single precision
 !write(*,'(A, I10)') 'Number of steps = ', int( (xmax-xmin)/h )
 
 ! here we set the minimum and maximum
@@ -32,13 +39,15 @@ write(*,*) 'E_low, E_high = ', E_low, E_high
 
 E_trial = (E_high+E_low)/2._fp   ! trial energy (same for all)
 
-do i = 1, 15
-   h = 10._fp**(-real(i, fp)**0.5_fp)
+do i = 0, 17
+   h = 10._fp**(-1._fp -real(i, fp)*0.25_fp)
 do n_of_desired_nodes = 0, 0
   E_exact = 0.5_fp + n_of_desired_nodes
   E_k = find_eigenvalue(n_of_desired_nodes, E_low, E_high, E_trial)
-  write(*,'(A, ES12.4,I6, 2F22.14, ES14.2)') 'h, n_of_desired_nodes, approx, exact, rel. err. = ', &
-     h, n_of_desired_nodes, E_k, E_exact, (E_k - E_exact)/E_exact
+!  write(*,'(A, ES12.4,I6, 2F22.14, ES14.2)') 'h, n_of_desired_nodes, approx, exact, rel. err. = ', &
+!     h, n_of_desired_nodes, E_k, E_exact, (E_k - E_exact)/E_exact
+    write(*,'(ES12.4, 2F40.30)') h, E_k
+
 enddo
 enddo
 
