@@ -5,9 +5,6 @@ import net.tinvention.schrodinger.potential.HarmonicPotential;
 import net.tinvention.schrodinger.potential.Potential;
 
 public class Main {
-//	private static double xmin = -5.5d;
-//	private static double xmax = -xmin;
-//	private static double h=0.1d;
 	private static double mass = 2.0d;
 
 	public static void main(String[] args) {
@@ -15,38 +12,43 @@ public class Main {
 		Potential v = new HarmonicPotential();
 		UniformGrid grid = new UniformGrid(-5.5d, 5.5d, 0.1d);
 
-		double eHigh = -Double.MAX_VALUE / 1000.d;
-		double eLow = Double.MAX_VALUE / 1000.d;
+		for (int i = 0; i < 16; i++) {
+			double newh = Math.pow(10.d, -1.d - ((double) i) * 0.25d);
+			grid = new UniformGrid(-5.5d, 5.5d, newh);
+
+			for (int nOfDesiredNodes = 0; nOfDesiredNodes < 1; nOfDesiredNodes++) {
+				EnergyLevel trial = computeApproximateEnergyLevel(nOfDesiredNodes, grid, v);
+				double ek = findEigenvalue(nOfDesiredNodes, trial.lowerBound, trial.upperBound, trial.energy, grid, v);
+				System.out.println(i + " " + grid.h + " " + ek);
+			}
+		}
+	}
+
+	private static EnergyLevel computeApproximateEnergyLevel(int nOfDesiredNodes, UniformGrid grid, Potential v) {
+		EnergyLevel result = new EnergyLevel();
+
+		result.upperBound = -Double.MAX_VALUE / 1000.d;
+		result.lowerBound = Double.MAX_VALUE / 1000.d;
 		double x = grid.xmin;
 
 		while (true) {
 			if (x >= grid.xmax) {
 				break;
 			}
-			if (v.value(x) > eHigh) {
-				eHigh = v.value(x);
+			if (v.value(x) > result.upperBound) {
+				result.upperBound = v.value(x);
 			}
-			if (v.value(x) < eLow) {
-				eLow = v.value(x);
+			if (v.value(x) < result.lowerBound) {
+				result.lowerBound = v.value(x);
 			}
 			x += grid.h;
-			System.out.println(x);
 		}
 
-		eLow = eLow - 0.05d * (eHigh - eLow);
-		eHigh = eHigh + 0.05d * (eHigh - eLow);
-		double eTrial = (eHigh + eLow) / 2.d;
+		result.lowerBound = result.lowerBound - 0.05d * (result.upperBound - result.lowerBound);
+		result.upperBound = result.upperBound + 0.05d * (result.upperBound - result.lowerBound);
+		result.energy = (result.upperBound + result.lowerBound) / 2.d;
 
-		for (int i = 0; i < 16; i++) {
-			double newh = Math.pow(10.d, -1.d - ((double) i) * 0.25d);
-			grid = new UniformGrid(-5.5d, 5.5d, newh);
-
-			for (int nOfDesiredNodes = 0; nOfDesiredNodes < 1; nOfDesiredNodes++) {
-				double eExact = 0.5d + nOfDesiredNodes;
-				double ek = findEigenvalue(nOfDesiredNodes, eLow, eHigh, eTrial, grid, v);
-				System.out.println(i + " " + grid.h + " " + ek);
-			}
-		}
+		return result;
 	}
 
 	private static double findEigenvalue(int nOfDesiredNodes, double eLowInput, double eHighInput, double eTrial,
