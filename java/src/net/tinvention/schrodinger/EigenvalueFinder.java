@@ -4,17 +4,18 @@ import net.tinvention.schrodinger.grid.UniformGrid;
 import net.tinvention.schrodinger.potential.Potential;
 
 public class EigenvalueFinder {
-	private static final double mass = 2.0d;
-	private static final double targetRelativeError = Math.ulp(1.d); // change for single-precision float
-	UniformGrid grid;
-	Potential v;
+	private static final double TARGET_RELATIVE_ERROR = 4.d * Math.ulp(1.d); // change for single-precision float
+	private UniformGrid grid;
+	private Potential v;
+	private double mass;
 
-	public EigenvalueFinder(UniformGrid grid, Potential v) {
+	public EigenvalueFinder(UniformGrid grid, Potential v, double mass) {
 		this.grid = grid;
 		this.v = v;
+		this.mass = mass;
 	}
 
-	public EnergyLevel computeApproximateEnergyLevel(int nOfDesiredNodes) {
+	private EnergyLevel computeApproximateEnergyLevel(int nOfDesiredNodes) {
 		EnergyLevel result = new EnergyLevel();
 
 		result.upperBound = -Double.MAX_VALUE / 1000.d;
@@ -41,28 +42,24 @@ public class EigenvalueFinder {
 		return result;
 	}
 
-	public double findEigenvalue(int nOfDesiredNodes, UniformGrid grid, Potential v) {
+	public EnergyLevel findEigenvalue(int nOfDesiredNodes, UniformGrid grid, Potential v) {
 
-		EnergyLevel trial = this.computeApproximateEnergyLevel(nOfDesiredNodes);
-
-		double e = trial.energy;
-		double eLow = trial.lowerBound;
-		double eHigh = trial.upperBound;
+		EnergyLevel level = this.computeApproximateEnergyLevel(nOfDesiredNodes);
 
 		// now we can bisect the energy
 		int imax = 100; // maximum of 100 bisection, reduces by 2**100
 		for (int i = 1; i <= imax; i++) {
-			e = (eHigh + eLow) * 0.5d;
-			if ((eHigh - eLow) / Math.abs(e) < targetRelativeError) {
+			level.energy = (level.upperBound + level.lowerBound) * 0.5d;
+			if ((level.upperBound - level.lowerBound) / Math.abs(level.energy) < TARGET_RELATIVE_ERROR) {
 				break;
 			}
-			if (countNodes(e) > nOfDesiredNodes) {
-				eHigh = e;
+			if (countNodes(level.energy) > nOfDesiredNodes) {
+				level.upperBound = level.energy;
 			} else {
-				eLow = e;
+				level.lowerBound = level.energy;
 			}
 		}
-		return e;
+		return level;
 	}
 
 	private int countNodes(double e) {
