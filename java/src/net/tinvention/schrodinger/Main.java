@@ -10,45 +10,18 @@ public class Main {
 	public static void main(String[] args) {
 
 		Potential v = new HarmonicPotential();
-		UniformGrid grid = new UniformGrid(-5.5d, 5.5d, 0.1d);
 
 		for (int i = 0; i < 16; i++) {
 			double newh = Math.pow(10.d, -1.d - ((double) i) * 0.25d);
-			grid = new UniformGrid(-5.5d, 5.5d, newh);
+			UniformGrid grid = new UniformGrid(-5.5d, 5.5d, newh);
+			EigenvalueFinder finder = new EigenvalueFinder(grid, v);
 
 			for (int nOfDesiredNodes = 0; nOfDesiredNodes < 1; nOfDesiredNodes++) {
-				EnergyLevel trial = computeApproximateEnergyLevel(nOfDesiredNodes, grid, v);
+				EnergyLevel trial = finder.computeApproximateEnergyLevel(nOfDesiredNodes);
 				double ek = findEigenvalue(nOfDesiredNodes, trial.lowerBound, trial.upperBound, trial.energy, grid, v);
 				System.out.println(i + " " + grid.h + " " + ek);
 			}
 		}
-	}
-
-	private static EnergyLevel computeApproximateEnergyLevel(int nOfDesiredNodes, UniformGrid grid, Potential v) {
-		EnergyLevel result = new EnergyLevel();
-
-		result.upperBound = -Double.MAX_VALUE / 1000.d;
-		result.lowerBound = Double.MAX_VALUE / 1000.d;
-		double x = grid.xmin;
-
-		while (true) {
-			if (x >= grid.xmax) {
-				break;
-			}
-			if (v.value(x) > result.upperBound) {
-				result.upperBound = v.value(x);
-			}
-			if (v.value(x) < result.lowerBound) {
-				result.lowerBound = v.value(x);
-			}
-			x += grid.h;
-		}
-
-		result.lowerBound = result.lowerBound - 0.05d * (result.upperBound - result.lowerBound);
-		result.upperBound = result.upperBound + 0.05d * (result.upperBound - result.lowerBound);
-		result.energy = (result.upperBound + result.lowerBound) / 2.d;
-
-		return result;
 	}
 
 	private static double findEigenvalue(int nOfDesiredNodes, double eLowInput, double eHighInput, double eTrial,
