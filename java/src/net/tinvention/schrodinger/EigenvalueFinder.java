@@ -8,6 +8,7 @@ public class EigenvalueFinder {
 	private static final double TARGET_RELATIVE_ERROR = 4.d * Math.ulp(1.d); // change for single-precision float
 	private UniformGrid grid;
 	private Potential v;
+	private DressedPotential dv;
 	private double mass;
 	private Integrator integrator;
 
@@ -18,7 +19,7 @@ public class EigenvalueFinder {
 		this.integrator = integrator;
 	}
 
-	public EnergyLevel findEigenvalue(int nOfDesiredNodes, UniformGrid grid, Potential v) {
+	public EnergyLevel findEigenvalue(int nOfDesiredNodes) {
 
 		EnergyLevel level = this.computeApproximateEnergyLevel(nOfDesiredNodes);
 

@@ -19,7 +19,7 @@ public class Main {
 			EigenvalueFinder finder = new EigenvalueFinder(grid, v, 2.0d, integrator);
 
 			int nOfDesiredNodes = 10;
-			EnergyLevel ek = finder.findEigenvalue(nOfDesiredNodes, grid, v);
+			EnergyLevel ek = finder.findEigenvalue(nOfDesiredNodes);
 			System.out.println(i + " " + grid.h + " " + grid.numberOfPoints + " " + ek.energy);
 		}
 
