@@ -18,7 +18,7 @@ public class Main {
 			UniformGrid grid = new UniformGrid(-5.5d, 5.5d, newh);
 			EigenvalueFinder finder = new EigenvalueFinder(grid, v, 2.0d, integrator);
 
-			int nOfDesiredNodes = 10;
+			int nOfDesiredNodes = 1;
 			EnergyLevel ek = finder.findEigenvalue(nOfDesiredNodes);
 			System.out.println(i + " " + grid.h + " " + grid.numberOfPoints + " " + ek.energy);
 		}

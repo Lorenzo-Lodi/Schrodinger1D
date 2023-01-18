@@ -2,13 +2,13 @@ package net.tinvention.schrodinger;
 
 import net.tinvention.schrodinger.grid.UniformGrid;
 import net.tinvention.schrodinger.integrator.Integrator;
+import net.tinvention.schrodinger.potential.DressedPotential;
 import net.tinvention.schrodinger.potential.Potential;
 
 public class EigenvalueFinder {
 	private static final double TARGET_RELATIVE_ERROR = 4.d * Math.ulp(1.d); // change for single-precision float
 	private UniformGrid grid;
 	private Potential v;
-	private DressedPotential dv;
 	private double mass;
 	private Integrator integrator;
 
@@ -53,9 +53,11 @@ public class EigenvalueFinder {
 		x += grid.h;
 		double y1 = 0.0000001d; // arbitrary initial value
 		int nOfNodes = 0;
+
+		DressedPotential dp = new DressedPotential(v, mass, energy);
 		while (true) {
 			x = x + grid.h;
-			double y2 = integrator.propagate(x, y0, y1, grid.h, mass, v, energy);
+			double y2 = integrator.propagate(x, y0, y1, grid.h, dp);
 			if (y1 * y2 <= 0.d) {
 				nOfNodes++;
 			}
