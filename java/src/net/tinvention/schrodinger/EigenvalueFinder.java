@@ -8,7 +8,6 @@ public class EigenvalueFinder {
 	private static final double TARGET_RELATIVE_ERROR = 4.d * Math.ulp(1.d); // change for single-precision float
 	private UniformGrid grid;
 	private Potential v;
-	private DressedPotential dv;
 	private double mass;
 	private Integrator integrator;
 
@@ -50,12 +49,12 @@ public class EigenvalueFinder {
 		double y0 = 0.d;
 
 		// second point
-		x += grid.h;
+		x += grid.step;
 		double y1 = 0.0000001d; // arbitrary initial value
 		int nOfNodes = 0;
 		while (true) {
-			x = x + grid.h;
-			double y2 = integrator.propagate(x, y0, y1, grid.h, mass, v, energy);
+			x = x + grid.step;
+			double y2 = integrator.propagate(x, y0, y1, grid.step, mass, v, energy);
 			if (y1 * y2 <= 0.d) {
 				nOfNodes++;
 			}
@@ -86,7 +85,7 @@ public class EigenvalueFinder {
 			if (v.value(x) < result.lowerBound) {
 				result.lowerBound = v.value(x);
 			}
-			x += grid.h;
+			x += grid.step;
 		}
 
 		result.lowerBound = result.lowerBound - 0.05d * (result.upperBound - result.lowerBound);
