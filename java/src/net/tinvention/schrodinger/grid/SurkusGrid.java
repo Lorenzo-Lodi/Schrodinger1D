@@ -1,59 +1,61 @@
 package net.tinvention.schrodinger.grid;
 
 public class SurkusGrid implements Grid {
+	private double rMin;
+	private double rMax;
+	private double stepSize;
+	private int numberOfPoints;
+	private double rRef;
+	private double alpha;
 
-	@Override
-	public double getGridValue(int i) {
-		// TODO Auto-generated method stub
-		return 0;
+	public SurkusGrid(double rMin, double rMax, int numberOfPoints, double rRef, double alpha) {
+		this.rMin = Math.min(rMin, rMax);
+		this.rMax = Math.max(rMin, rMax);
+		this.rRef = rRef;
+		this.alpha = alpha;
+		this.numberOfPoints = Math.max(numberOfPoints, 2);
+		this.stepSize = (this.mappingFunctionRofY(rMax) - this.mappingFunctionRofY(rMin)) / (numberOfPoints + 1);
 	}
 
 	@Override
 	public double getFirstGridPointValue() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.mappingFunctionYofR(rMin);
 	}
 
 	@Override
 	public double getLastGridPointValue() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.mappingFunctionYofR(rMax);
 	}
 
 	@Override
-	public double getStep() {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getStepSize() {
+		return this.stepSize;
 	}
 
 	@Override
 	public int getNumberOfPoints() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.numberOfPoints;
 	}
 
 	@Override
 	public double mappingFunctionYofR(double r) {
-		// TODO Auto-generated method stub
-		return 0;
+		return (Math.pow(r / this.rRef, alpha) - 1.0d) / (Math.pow(r / this.rRef, alpha) + 1.0d);
 	}
 
 	@Override
 	public double mappingFunctionRofY(double y) {
-		// TODO Auto-generated method stub
-		return 0;
+		return rRef * Math.pow((1 + y) / (1 - y), 1.0d / alpha);
 	}
 
 	@Override
 	public double mappingFunctionGofY(double y) {
-		// TODO Auto-generated method stub
-		return 0;
+		return (2.0d * this.rRef * Math.pow(1 + y, -1.0d + 1.0d / alpha))
+				/ (alpha * Math.pow(1.0d - y, 1.0d + 1.0d / alpha));
 	}
 
 	@Override
 	public double mappingFunctionFofY(double y) {
-		// TODO Auto-generated method stub
-		return 0;
+		return (1.0d - 1.0d / Math.pow(alpha, 2)) / Math.pow(1 - y * y, 2);
 	}
 
 }

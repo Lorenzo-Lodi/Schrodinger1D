@@ -1,7 +1,6 @@
 package net.tinvention.schrodinger;
 
 import net.tinvention.schrodinger.grid.Grid;
-import net.tinvention.schrodinger.grid.UniformGrid;
 import net.tinvention.schrodinger.integrator.Integrator;
 import net.tinvention.schrodinger.potential.DressedPotential;
 import net.tinvention.schrodinger.potential.ClampedNucleiPotential;
@@ -51,14 +50,14 @@ public class EigenvalueFinder {
 		double y0 = 0.d;
 
 		// second point
-		x += grid.getStep();
+		x += grid.getStepSize();
 		double y1 = 0.0000001d; // arbitrary initial value
 		int nOfNodes = 0;
 
 		DressedPotential dressedPotential = new DressedPotential(v, mass, energy, grid);
 		while (true) {
-			x = x + grid.getStep();
-			double y2 = integrator.propagate(x, y0, y1, grid.getStep(), dressedPotential);
+			x = x + grid.getStepSize();
+			double y2 = integrator.propagate(x, y0, y1, grid.getStepSize(), dressedPotential);
 			if (y1 * y2 <= 0.d) {
 				nOfNodes++;
 			}
@@ -89,7 +88,7 @@ public class EigenvalueFinder {
 			if (v.value(x) < result.lowerBound) {
 				result.lowerBound = v.value(x);
 			}
-			x += grid.getStep();
+			x += grid.getStepSize();
 		}
 
 		result.lowerBound = result.lowerBound - 0.05d * (result.upperBound - result.lowerBound);
