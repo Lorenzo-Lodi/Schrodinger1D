@@ -1,18 +1,19 @@
 package net.tinvention.schrodinger;
 
+import net.tinvention.schrodinger.grid.Grid;
 import net.tinvention.schrodinger.grid.UniformGrid;
 import net.tinvention.schrodinger.integrator.Integrator;
 import net.tinvention.schrodinger.potential.DressedPotential;
-import net.tinvention.schrodinger.potential.Potential;
+import net.tinvention.schrodinger.potential.ClampedNucleiPotential;
 
 public class EigenvalueFinder {
-	private static final double TARGET_RELATIVE_ERROR = 4.d * Math.ulp(1.d); // change for single-precision float
-	private UniformGrid grid;
-	private Potential v;
+	private static final double TARGET_RELATIVE_ERROR = 10000.d * Math.ulp(1.d); // change for single-precision float
+	private Grid grid;
+	private ClampedNucleiPotential v;
 	private double mass;
 	private Integrator integrator;
 
-	public EigenvalueFinder(UniformGrid grid, Potential v, double mass, Integrator integrator) {
+	public EigenvalueFinder(Grid grid, ClampedNucleiPotential v, double mass, Integrator integrator) {
 		this.grid = grid;
 		this.v = v;
 		this.mass = mass;
@@ -46,24 +47,24 @@ public class EigenvalueFinder {
 	private int countNodes(double energy) {
 
 		// first (leftmost) point
-		double x = grid.xmin;
+		double x = grid.getFirstGridPointValue();
 		double y0 = 0.d;
 
 		// second point
-		x += grid.step;
+		x += grid.getStep();
 		double y1 = 0.0000001d; // arbitrary initial value
 		int nOfNodes = 0;
 
-		DressedPotential dp = new DressedPotential(v, mass, energy);
+		DressedPotential dressedPotential = new DressedPotential(v, mass, energy, grid);
 		while (true) {
-			x = x + grid.step;
-			double y2 = integrator.propagate(x, y0, y1, grid.step, dp);
+			x = x + grid.getStep();
+			double y2 = integrator.propagate(x, y0, y1, grid.getStep(), dressedPotential);
 			if (y1 * y2 <= 0.d) {
 				nOfNodes++;
 			}
 			y0 = y1;
 			y1 = y2;
-			if (x >= grid.xmax) {
+			if (x >= grid.getLastGridPointValue()) {
 				break;
 			}
 		}
@@ -76,10 +77,10 @@ public class EigenvalueFinder {
 
 		result.upperBound = -Double.MAX_VALUE / 10.d;
 		result.lowerBound = Double.MAX_VALUE / 10.d;
-		double x = grid.xmin;
+		double x = grid.getFirstGridPointValue();
 
 		while (true) {
-			if (x >= grid.xmax) {
+			if (x >= grid.getLastGridPointValue()) {
 				break;
 			}
 			if (v.value(x) > result.upperBound) {
@@ -88,7 +89,7 @@ public class EigenvalueFinder {
 			if (v.value(x) < result.lowerBound) {
 				result.lowerBound = v.value(x);
 			}
-			x += grid.step;
+			x += grid.getStep();
 		}
 
 		result.lowerBound = result.lowerBound - 0.05d * (result.upperBound - result.lowerBound);
