@@ -2,11 +2,11 @@ package net.tinvention.schrodinger.grid;
 
 public interface Grid {
 
-	public double getFirstGridPointValue();
+	public double getFirstYValue();
 
-	public double getLastGridPointValue();
+	public double getLastYValue();
 
-	public double getStepSize();
+	public double getStepSizeYCoordinate();
 
 	public int getNumberOfPoints();
 
@@ -15,8 +15,8 @@ public interface Grid {
 	 * @param i Index going from 0 to numberOfPoints-1
 	 * @return Value of the i-th grid point
 	 */
-	public default double getGridValue(int i) {
-		return getFirstGridPointValue() + getStepSize() * i;
+	public default double getYValue(int i) {
+		return getFirstYValue() + getStepSizeYCoordinate() * i;
 	}
 
 	/**
@@ -59,8 +59,8 @@ public interface Grid {
 		for (int i = 0; i < getNumberOfPoints(); i++) {
 			sb.append(String.format("%8d", i));
 			sb.append("   ");
-			double r = getGridValue(i);
-			double y = mappingFunctionYofR(r);
+			double y = getYValue(i);
+			double r = mappingFunctionRofY(y);
 			if (y >= 0.d) {
 				sb.append(" ");
 			}

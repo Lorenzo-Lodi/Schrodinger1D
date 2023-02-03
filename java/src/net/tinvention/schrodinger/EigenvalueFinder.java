@@ -46,24 +46,24 @@ public class EigenvalueFinder {
 	private int countNodes(double energy) {
 
 		// first (leftmost) point
-		double x = grid.getFirstGridPointValue();
+		double x = grid.getFirstYValue();
 		double y0 = 0.d;
 
 		// second point
-		x += grid.getStepSize();
+		x += grid.getStepSizeYCoordinate();
 		double y1 = 0.0000001d; // arbitrary initial value
 		int nOfNodes = 0;
 
 		DressedPotential dressedPotential = new DressedPotential(v, mass, energy, grid);
 		while (true) {
-			x = x + grid.getStepSize();
-			double y2 = integrator.propagate(x, y0, y1, grid.getStepSize(), dressedPotential);
+			x = x + grid.getStepSizeYCoordinate();
+			double y2 = integrator.propagate(x, y0, y1, grid.getStepSizeYCoordinate(), dressedPotential);
 			if (y1 * y2 <= 0.d) {
 				nOfNodes++;
 			}
 			y0 = y1;
 			y1 = y2;
-			if (x >= grid.getLastGridPointValue()) {
+			if (x >= grid.getLastYValue()) {
 				break;
 			}
 		}
@@ -76,10 +76,10 @@ public class EigenvalueFinder {
 
 		result.upperBound = -Double.MAX_VALUE / 10.d;
 		result.lowerBound = Double.MAX_VALUE / 10.d;
-		double x = grid.getFirstGridPointValue();
+		double x = grid.getFirstYValue();
 
 		while (true) {
-			if (x >= grid.getLastGridPointValue()) {
+			if (x >= grid.getLastYValue()) {
 				break;
 			}
 			if (v.value(x) > result.upperBound) {
@@ -88,7 +88,7 @@ public class EigenvalueFinder {
 			if (v.value(x) < result.lowerBound) {
 				result.lowerBound = v.value(x);
 			}
-			x += grid.getStepSize();
+			x += grid.getStepSizeYCoordinate();
 		}
 
 		result.lowerBound = result.lowerBound - 0.05d * (result.upperBound - result.lowerBound);

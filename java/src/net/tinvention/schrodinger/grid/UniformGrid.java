@@ -10,7 +10,7 @@ public class UniformGrid implements Grid {
 		this.rMin = Math.min(rMin, rMax);
 		this.rMax = Math.max(rMin, rMax);
 		this.numberOfPoints = Math.max(numberOfPoints, 2);
-		this.stepSize = (rMax - rMin) / (numberOfPoints + 1);
+		this.stepSize = (rMax - rMin) / (numberOfPoints - 1);
 	}
 
 	public UniformGrid(double rMin, double rMax, double desiredStepSize) {
@@ -18,17 +18,17 @@ public class UniformGrid implements Grid {
 	}
 
 	@Override
-	public double getFirstGridPointValue() {
+	public double getFirstYValue() {
 		return rMin;
 	}
 
 	@Override
-	public double getLastGridPointValue() {
+	public double getLastYValue() {
 		return rMax;
 	}
 
 	@Override
-	public double getStepSize() {
+	public double getStepSizeYCoordinate() {
 		return stepSize;
 	}
 

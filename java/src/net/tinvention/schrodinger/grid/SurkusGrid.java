@@ -7,6 +7,8 @@ public class SurkusGrid implements Grid {
 	private int numberOfPoints;
 	private double rRef;
 	private double alpha;
+	private double yMin;
+	private double yMax;
 
 	public SurkusGrid(double rMin, double rMax, int numberOfPoints, double rRef, double alpha) {
 		this.rMin = Math.min(rMin, rMax);
@@ -14,21 +16,23 @@ public class SurkusGrid implements Grid {
 		this.rRef = rRef;
 		this.alpha = alpha;
 		this.numberOfPoints = Math.max(numberOfPoints, 2);
-		this.stepSize = (this.mappingFunctionRofY(rMax) - this.mappingFunctionRofY(rMin)) / (numberOfPoints + 1);
+		this.yMax = this.mappingFunctionYofR(this.rMax);
+		this.yMin = this.mappingFunctionYofR(this.rMin);
+		this.stepSize = (yMax - yMin) / (numberOfPoints - 1);
 	}
 
 	@Override
-	public double getFirstGridPointValue() {
+	public double getFirstYValue() {
 		return this.mappingFunctionYofR(rMin);
 	}
 
 	@Override
-	public double getLastGridPointValue() {
+	public double getLastYValue() {
 		return this.mappingFunctionYofR(rMax);
 	}
 
 	@Override
-	public double getStepSize() {
+	public double getStepSizeYCoordinate() {
 		return this.stepSize;
 	}
 
@@ -39,7 +43,7 @@ public class SurkusGrid implements Grid {
 
 	@Override
 	public double mappingFunctionYofR(double r) {
-		return (Math.pow(r / this.rRef, alpha) - 1.0d) / (Math.pow(r / this.rRef, alpha) + 1.0d);
+		return (Math.pow(r / rRef, alpha) - 1.0d) / (Math.pow(r / rRef, alpha) + 1.0d);
 	}
 
 	@Override
@@ -49,7 +53,7 @@ public class SurkusGrid implements Grid {
 
 	@Override
 	public double mappingFunctionGofY(double y) {
-		return (2.0d * this.rRef * Math.pow(1 + y, -1.0d + 1.0d / alpha))
+		return (2.0d * rRef * Math.pow(1 + y, -1.0d + 1.0d / alpha))
 				/ (alpha * Math.pow(1.0d - y, 1.0d + 1.0d / alpha));
 	}
 

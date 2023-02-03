@@ -12,7 +12,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		Grid grid = new SurkusGrid(0.1, 5.5d, 15, 1, 1);
+		Grid grid = new SurkusGrid(0.1, 155d, 15, 1, 1);
 		System.out.println(grid.printGrid());
 
 		ClampedNucleiPotential v = new HarmonicPotential();
