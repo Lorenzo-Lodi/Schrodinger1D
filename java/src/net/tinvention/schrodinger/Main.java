@@ -12,10 +12,10 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		Grid grid = new SurkusGrid(0.1, 155d, 15, 1, 1);
+		Grid grid = new SurkusGrid(0.01, 155d, 15, 1, 1);
 		System.out.println(grid.printGrid());
 
-		ClampedNucleiPotential v = new HarmonicPotential();
+		ClampedNucleiPotential v = new HarmonicPotential(0, 1);
 		Integrator integrator = new TaylorThreePoints();
 
 		for (int i = 0; i < 16; i++) {
@@ -26,8 +26,8 @@ public class Main {
 
 			int nOfDesiredNodes = 1;
 			EnergyLevel ek = finder.findEigenvalue(nOfDesiredNodes);
-			// System.out.println(i + " " + grid.getStepSize() + " " +
-			// grid.getNumberOfPoints() + " " + ek.energy);
+			System.out.println(
+					i + " " + grid.getStepSizeYCoordinate() + " " + grid.getNumberOfPoints() + " " + ek.energy);
 		}
 
 	}

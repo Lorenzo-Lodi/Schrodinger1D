@@ -1,9 +1,17 @@
 package net.tinvention.schrodinger.potential;
 
 public class HarmonicPotential implements ClampedNucleiPotential {
+	private double r0;
+	private double alpha;
 
-	public double value(double x) {
-		return x * x;
+	public HarmonicPotential(double r0, double alpha) {
+		this.r0 = r0;
+		this.alpha = alpha;
+
+	}
+
+	public double value(double r) {
+		return alpha * (r - r0) * (r - r0);
 	}
 
 }

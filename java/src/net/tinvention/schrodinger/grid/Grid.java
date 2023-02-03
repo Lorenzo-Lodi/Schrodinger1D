@@ -1,21 +1,46 @@
 package net.tinvention.schrodinger.grid;
 
-public interface Grid {
+public abstract class Grid {
+	double rMin;
+	double rMax;
+	double yMin;
+	double yMax;
+	double stepSizeYCoordinate;
+	int numberOfPoints;
 
-	public double getFirstYValue();
+	// Don't make this a constructor because we have to run it AFTER having done initializations necessary
+	// for functions mappingFunctionYofR and mappingFunctionYofR
+	void initializeClassVariables(double rMin, double rMax, int numberOfPoints) {
+		this.rMin = Math.min(rMin, rMax);
+		this.rMax = Math.max(rMin, rMax);
+		this.yMax = this.mappingFunctionYofR(this.rMax);
+		this.yMin = this.mappingFunctionYofR(this.rMin);
+		this.numberOfPoints = Math.max(numberOfPoints, 2);
+		this.stepSizeYCoordinate = (yMax - yMin) / (numberOfPoints - 1);
+	}
 
-	public double getLastYValue();
+	public double getFirstYValue() {
+		return yMin;
+	}
 
-	public double getStepSizeYCoordinate();
+	public double getLastYValue() {
+		return yMax;
+	}
 
-	public int getNumberOfPoints();
+	public double getStepSizeYCoordinate() {
+		return stepSizeYCoordinate;
+	}
+
+	public int getNumberOfPoints() {
+		return numberOfPoints;
+	}
 
 	/**
 	 * 
 	 * @param i Index going from 0 to numberOfPoints-1
 	 * @return Value of the i-th grid point
 	 */
-	public default double getYValue(int i) {
+	public double getYValue(int i) {
 		return getFirstYValue() + getStepSizeYCoordinate() * i;
 	}
 
@@ -26,7 +51,7 @@ public interface Grid {
 	 * @param r Value of the r coordinate
 	 * @return Corresponding value y(r)
 	 */
-	public double mappingFunctionYofR(double r);
+	public abstract double mappingFunctionYofR(double r);
 
 	/**
 	 * The inverse mapping function r(y), mapping the transformed y coordinate to r
@@ -34,7 +59,7 @@ public interface Grid {
 	 * @param y Value of the mapped coordinate
 	 * @return Corresponding value r(y)
 	 */
-	public double mappingFunctionRofY(double y);
+	public abstract double mappingFunctionRofY(double y);
 
 	/**
 	 * It's the derivative of the r(y) function, referred to as g(y) in Meshkov2008
@@ -42,7 +67,7 @@ public interface Grid {
 	 * @param y Value of the mapped coordinate
 	 * @return Value of g(y)=r'(y)
 	 */
-	public double mappingFunctionGofY(double y);
+	public abstract double mappingFunctionGofY(double y);
 
 	/**
 	 * It's the function F(y) of eq. (9) in Meshkov2008, the additional term to the
@@ -51,9 +76,9 @@ public interface Grid {
 	 * @param y
 	 * @return
 	 */
-	public double mappingFunctionFofY(double y);
+	public abstract double mappingFunctionFofY(double y);
 
-	public default String printGrid() {
+	public String printGrid() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("i           Y                R\n");
 		for (int i = 0; i < getNumberOfPoints(); i++) {

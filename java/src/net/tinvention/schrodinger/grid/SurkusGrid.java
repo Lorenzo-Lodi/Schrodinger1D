@@ -1,44 +1,13 @@
 package net.tinvention.schrodinger.grid;
 
-public class SurkusGrid implements Grid {
-	private double rMin;
-	private double rMax;
-	private double stepSize;
-	private int numberOfPoints;
+public class SurkusGrid extends Grid {
 	private double rRef;
 	private double alpha;
-	private double yMin;
-	private double yMax;
 
 	public SurkusGrid(double rMin, double rMax, int numberOfPoints, double rRef, double alpha) {
-		this.rMin = Math.min(rMin, rMax);
-		this.rMax = Math.max(rMin, rMax);
 		this.rRef = rRef;
 		this.alpha = alpha;
-		this.numberOfPoints = Math.max(numberOfPoints, 2);
-		this.yMax = this.mappingFunctionYofR(this.rMax);
-		this.yMin = this.mappingFunctionYofR(this.rMin);
-		this.stepSize = (yMax - yMin) / (numberOfPoints - 1);
-	}
-
-	@Override
-	public double getFirstYValue() {
-		return this.mappingFunctionYofR(rMin);
-	}
-
-	@Override
-	public double getLastYValue() {
-		return this.mappingFunctionYofR(rMax);
-	}
-
-	@Override
-	public double getStepSizeYCoordinate() {
-		return this.stepSize;
-	}
-
-	@Override
-	public int getNumberOfPoints() {
-		return this.numberOfPoints;
+		initializeClassVariables(rMin, rMax, numberOfPoints);
 	}
 
 	@Override
