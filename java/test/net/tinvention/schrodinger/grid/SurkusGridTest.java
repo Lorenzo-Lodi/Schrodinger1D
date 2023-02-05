@@ -81,6 +81,22 @@ class SurkusGridTest {
 	}
 
 	@Test
+	void mappingFunctionGofY_check_is_first_derivative_of_R_of_Y() {
+		double rRef = 1.5;
+		double alpha = 2;
+		SurkusGrid grid = new SurkusGrid(0.3, 5.5, 10, rRef, alpha);
+
+		int numberOfPointToCheck = 20;
+		double stepInYCoordinate = (grid.getLastYValue() - grid.getFirstYValue()) / (numberOfPointToCheck - 1);
+		double eps = 1e-6;
+		for (int i = 0; i < numberOfPointToCheck; i++) {
+			double y = grid.getFirstYValue() + stepInYCoordinate * i;
+			double der1 = (grid.mappingFunctionRofY(y + eps) - grid.mappingFunctionRofY(y - eps)) / (2.d * eps);
+			assertEquals(der1, grid.mappingFunctionGofY(y), 1e-8);
+		}
+	}
+
+	@Test
 	void mappingFunctionFofY_check_selected_values() {
 		double rRef = 1.5;
 		double alpha = 2;
@@ -89,5 +105,4 @@ class SurkusGridTest {
 		assertEquals(1.3333333333333333d, grid.mappingFunctionFofY(0.5), 1e-15);
 	}
 
-	
 }
