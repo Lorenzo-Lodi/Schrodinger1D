@@ -1,6 +1,7 @@
 package net.tinvention.schrodinger;
 
 import net.tinvention.schrodinger.grid.Grid;
+import net.tinvention.schrodinger.grid.LogarithmicGrid;
 import net.tinvention.schrodinger.grid.QuadraticGrid;
 import net.tinvention.schrodinger.grid.SurkusGrid;
 import net.tinvention.schrodinger.grid.UniformGrid;
@@ -24,7 +25,7 @@ public class Main {
 			double alpha = 1;
 //			Grid grid = new SurkusGrid(0.5d, 5.5d, nOfPoints, rRef, alpha);
 //			Grid grid = new UniformGrid(0.5d, 5.5d, nOfPoints);
-			Grid grid = new QuadraticGrid(0.5d, 10.5d, nOfPoints, 3);
+			Grid grid = new LogarithmicGrid(0.5d, 10.5d, nOfPoints, 5);
 			System.out.println(grid.toString());
 			double mass = 2.0d;
 			EigenvalueFinder finder = new EigenvalueFinder(grid, potential, mass, integrator);
