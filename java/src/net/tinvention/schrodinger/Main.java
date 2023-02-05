@@ -22,15 +22,15 @@ public class Main {
 //						+ grid.mappingFunctionRofY(grid.mappingFunctionYofR(r)));
 //			}
 //		}
-		{
-			Grid grid = new SurkusGrid(0.5d, 5.5d, 30, 3, 1);
-			double mass = 2.0d;
-		}
+//		{
+//			Grid grid = new SurkusGrid(0.5d, 5.5d, 30, 3, 1);
+//			double mass = 2.0d;
+//		}
 		System.out.println();
 		for (int i = 0; i < 15; i++) {
 			int nOfPoints = 20 + (int) Math.pow(i, 3);
 //			Grid grid = new UniformGrid(0.5d, 5.5d, nOfPoints);
-			Grid grid = new SurkusGrid(0.5d, 5.5d, nOfPoints, 3, 1);
+			Grid grid = new SurkusGrid(0.5d, 5.5d, nOfPoints, 3, 4);
 			double mass = 2.0d;
 			EigenvalueFinder finder = new EigenvalueFinder(grid, potential, mass, integrator);
 
