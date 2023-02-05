@@ -8,7 +8,8 @@ public abstract class Grid {
 	double stepSizeYCoordinate;
 	int numberOfPoints;
 
-	// Don't make this a constructor because we have to run it AFTER having done initializations necessary
+	// Don't make this a constructor because we have to run it AFTER having done
+	// initializations necessary
 	// for functions mappingFunctionYofR and mappingFunctionYofR
 	void initializeClassVariables(double rMin, double rMax, int numberOfPoints) {
 		this.rMin = Math.min(rMin, rMax);
@@ -78,22 +79,27 @@ public abstract class Grid {
 	 */
 	public abstract double mappingFunctionFofY(double y);
 
-	public String printGrid() {
+	@Override
+	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("i           Y                R\n");
+		sb.append("i           R                Y                g(y)             F(y)\n");
 		for (int i = 0; i < getNumberOfPoints(); i++) {
 			sb.append(String.format("%8d", i));
 			sb.append("   ");
 			double y = getYValue(i);
 			double r = mappingFunctionRofY(y);
-			if (y >= 0.d) {
-				sb.append(" ");
-			}
-			sb.append(String.format("%,.012f", y) + "  ");
 			if (r >= 0.d) {
 				sb.append(" ");
 			}
-			sb.append(String.format("%,.012f", r) + "\n");
+			sb.append(String.format("%.012f", r) + "  ");
+			if (y >= 0.d) {
+				sb.append(" ");
+			}
+			sb.append(String.format("%.012f", y));
+			sb.append("  ");
+			sb.append(String.format("%.012f", mappingFunctionGofY(y)));
+			sb.append("  ");
+			sb.append(String.format("%.012f", mappingFunctionFofY(y)) + "\n");
 		}
 		return sb.toString();
 	}
