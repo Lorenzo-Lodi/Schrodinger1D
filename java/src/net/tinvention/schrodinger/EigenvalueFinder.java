@@ -76,19 +76,21 @@ public class EigenvalueFinder {
 
 		result.upperBound = -Double.MAX_VALUE / 10.d;
 		result.lowerBound = Double.MAX_VALUE / 10.d;
-		double x = grid.getFirstYValue();
+		double y = grid.getFirstYValue();
 
 		while (true) {
-			if (x >= grid.getLastYValue()) {
+			if (y >= grid.getLastYValue()) {
 				break;
 			}
-			if (v.value(x) > result.upperBound) {
-				result.upperBound = v.value(x);
+			double r = grid.mappingFunctionRofY(y);
+			double potentialValues = v.value(r);
+			if (potentialValues > result.upperBound) {
+				result.upperBound = potentialValues;
 			}
-			if (v.value(x) < result.lowerBound) {
-				result.lowerBound = v.value(x);
+			if (potentialValues < result.lowerBound) {
+				result.lowerBound = potentialValues;
 			}
-			x += grid.getStepSizeYCoordinate();
+			y += grid.getStepSizeYCoordinate();
 		}
 
 		result.lowerBound = result.lowerBound - 0.05d * (result.upperBound - result.lowerBound);
