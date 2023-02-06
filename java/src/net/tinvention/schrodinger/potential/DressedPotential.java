@@ -3,12 +3,12 @@ package net.tinvention.schrodinger.potential;
 import net.tinvention.schrodinger.grid.Grid;
 
 public class DressedPotential {
-	private ClampedNucleiPotential potential;
+	private BarePotential potential;
 	private double mass;
 	private double energy;
 	private Grid grid;
 
-	public DressedPotential(ClampedNucleiPotential v, double mass, double energy, Grid grid) {
+	public DressedPotential(BarePotential v, double mass, double energy, Grid grid) {
 		this.potential = v;
 		this.mass = mass;
 		this.energy = energy;

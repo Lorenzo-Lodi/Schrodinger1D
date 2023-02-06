@@ -4,22 +4,23 @@ import net.tinvention.schrodinger.grid.Grid;
 import net.tinvention.schrodinger.integrator.Integrator;
 import net.tinvention.schrodinger.integrator.TaylorThreePoints;
 import net.tinvention.schrodinger.potential.HarmonicPotential;
-import net.tinvention.schrodinger.potential.ClampedNucleiPotential;
+import net.tinvention.schrodinger.potential.BarePotential;
 
 public class Main {
 
 	public static void main(String[] args) {
 
-		ClampedNucleiPotential potential = new HarmonicPotential(3, 1);
+		BarePotential potential = new HarmonicPotential(3, 1);
 		Integrator integrator = new TaylorThreePoints();
 		System.out.println();
 		for (int i = 0; i < 20; i++) {
 //			for (int i = 0; i < 20; i++) {
 			int nOfPoints = 20 + (int) Math.pow(i, 3);
-			double rRef = 4;
+//			double rRef = 4;
 //			double alpha = 0.5;
 //			Grid grid = Grid.generateSurkusGrid(0.5d, 5.5d, nOfPoints, rRef, alpha);
-			Grid grid = Grid.generateSqrtGrid(0.5d, 5.5d, nOfPoints, rRef);
+//			Grid grid = Grid.generateSqrtGrid(0.5d, 5.5d, nOfPoints, rRef);
+			Grid grid = Grid.generateUniformGrid(0.5d, 5.5d, nOfPoints);
 //			System.out.println(grid.toString());
 			double mass = 2.0d;
 			EigenvalueFinder finder = new EigenvalueFinder(grid, potential, mass, integrator);

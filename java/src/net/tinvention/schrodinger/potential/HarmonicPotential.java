@@ -1,6 +1,6 @@
 package net.tinvention.schrodinger.potential;
 
-public class HarmonicPotential implements ClampedNucleiPotential {
+public class HarmonicPotential implements BarePotential {
 	private double r0;
 	private double alpha;
 

@@ -1,6 +1,6 @@
 package net.tinvention.schrodinger.potential;
 
-public interface ClampedNucleiPotential {
+public interface BarePotential {
 	/**
 	 * 
 	 * @param x position in bohrs
