@@ -13,19 +13,20 @@ public class Main {
 		ClampedNucleiPotential potential = new HarmonicPotential(3, 1);
 		Integrator integrator = new TaylorThreePoints();
 		System.out.println();
-		for (int i = 0; i < 11; i++) {
+		for (int i = 0; i < 20; i++) {
 //			for (int i = 0; i < 20; i++) {
 			int nOfPoints = 20 + (int) Math.pow(i, 3);
-			double rRef = 30;
-			double alpha = 0.5;
-			Grid grid = Grid.generateSurkusGrid(0.5d, 5.5d, nOfPoints, rRef, alpha);
+			double rRef = 4;
+//			double alpha = 0.5;
+//			Grid grid = Grid.generateSurkusGrid(0.5d, 5.5d, nOfPoints, rRef, alpha);
+			Grid grid = Grid.generateSqrtGrid(0.5d, 5.5d, nOfPoints, rRef);
 //			System.out.println(grid.toString());
 			double mass = 2.0d;
 			EigenvalueFinder finder = new EigenvalueFinder(grid, potential, mass, integrator);
 
 			int nOfDesiredNodes = 0;
 			EnergyLevel ek = finder.findEigenvalue(nOfDesiredNodes);
-			System.out.println(i + " " + grid.getNumberOfPoints() + " " + ek.energy);
+			System.out.println(i + " " + grid.getNumberOfPoints() + " " + (ek.energy - 0.5));
 		}
 
 	}
