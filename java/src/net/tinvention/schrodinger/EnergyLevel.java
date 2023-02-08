@@ -5,5 +5,7 @@ public class EnergyLevel {
 	public double energy;
 	public double upperBound;
 	public double lowerBound;
+	public int numberOfBisections;
+	public double[] psi;
 
 }
