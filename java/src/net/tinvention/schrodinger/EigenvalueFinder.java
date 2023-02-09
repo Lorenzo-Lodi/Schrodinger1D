@@ -37,7 +37,27 @@ public class EigenvalueFinder {
 				level.lowerBound = level.energy;
 			}
 		}
+
+		DressedPotential dressedPotential = new DressedPotential(barePotential, mass, level.energy, grid);
+		level.psi = normalizePsi();
+		level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level, dressedPotential);
+
 		return level;
+	}
+
+	private double[] normalizePsi() {
+
+		double sum = 0.5 * level.psi[0] * grid.mappingFunctionGofY(grid.getFirstYValue());
+		for (int i = 1; i < grid.getNumberOfPoints() - 1; i++) {
+			sum += level.psi[i] * grid.mappingFunctionGofY(grid.getYValue(i));
+		}
+		sum += 0.5 * level.psi[grid.getNumberOfPoints() - 1] * grid.mappingFunctionGofY(grid.getLastYValue());
+		sum = sum * grid.getStepSizeYCoordinate();
+
+		for (int i = 0; i < grid.getNumberOfPoints(); i++) {
+			level.psi[i] = level.psi[i] / Math.sqrt(sum);
+		}
+		return level.psi;
 	}
 
 	private int countNodes(double energy) {
@@ -48,7 +68,7 @@ public class EigenvalueFinder {
 		// second point
 		level.psi[1] = 0.0000001d; // arbitrary initial value
 		int nOfNodes = 0;
-
+	//	System.out.println(" energy = " + energy);
 		DressedPotential dressedPotential = new DressedPotential(barePotential, mass, energy, grid);
 		for (int n = 2; n < grid.getNumberOfPoints(); n++) {
 			level.psi[n] = integrator.propagate(grid.getYValue(n), level.psi[n - 2], level.psi[n - 1],
@@ -57,6 +77,7 @@ public class EigenvalueFinder {
 				nOfNodes++;
 			}
 		}
+		System.out.println(energy + " " + nOfNodes + " " + level.psi[grid.getNumberOfPoints()-1]);
 
 		return nOfNodes;
 

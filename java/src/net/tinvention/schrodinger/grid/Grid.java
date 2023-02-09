@@ -21,7 +21,7 @@ public abstract class Grid {
 	}
 
 	public double getFirstYValue() {
-		return yMin;
+		return getYValue(0);
 	}
 
 	public double getLastYValue() {
@@ -42,7 +42,11 @@ public abstract class Grid {
 	 * @return Value of the i-th grid point
 	 */
 	public double getYValue(int i) {
-		return getFirstYValue() + getStepSizeYCoordinate() * i;
+		return yMin + getStepSizeYCoordinate() * i;
+	}
+
+	public double getRValue(int i) {
+		return mappingFunctionRofY(getYValue(i));
 	}
 
 	/**
@@ -115,10 +119,9 @@ public abstract class Grid {
 	public static Grid generateSurkusGrid(double rMin, double rMax, int numberOfPoints, double rRef, double alpha) {
 		return new SurkusGrid(rMin, rMax, numberOfPoints, rRef, alpha);
 	}
-	
+
 	public static Grid generateSqrtGrid(double rMin, double rMax, int numberOfPoints, double rRef) {
 		return new SqrtGrid(rMin, rMax, numberOfPoints, rRef);
 	}
-
 
 }

@@ -7,5 +7,5 @@ public class EnergyLevel {
 	public double lowerBound;
 	public int numberOfBisections;
 	public double[] psi;
-
+	public double perturbativeCorrectionToEnergy;
 }
