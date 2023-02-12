@@ -17,7 +17,7 @@ public class EnergyLevel {
 		this.psi = new double[grid.getNumberOfPoints()];
 	}
 
-	public void normalizePsi() {
+	public double normalizePsiTrapezoidalRule() {
 
 		double sum = 0.5 * psi[0] * grid.mappingFunctionGofY(grid.getFirstYValue());
 		for (int i = 1; i < grid.getNumberOfPoints() - 1; i++) {
@@ -26,8 +26,10 @@ public class EnergyLevel {
 		sum += 0.5 * psi[grid.getNumberOfPoints() - 1] * grid.mappingFunctionGofY(grid.getLastYValue());
 		sum = sum * grid.getStepSizeYCoordinate();
 
+		double normalizationFactor = 1. / Math.sqrt(sum);
 		for (int i = 0; i < grid.getNumberOfPoints(); i++) {
-			psi[i] = psi[i] / Math.sqrt(sum);
+			psi[i] = psi[i] * normalizationFactor;
 		}
+		return normalizationFactor;
 	}
 }
