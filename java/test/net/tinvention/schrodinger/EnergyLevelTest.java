@@ -18,7 +18,7 @@ class EnergyLevelTest {
 		for (int i = 0; i < grid.getNumberOfPoints(); i++) {
 			level.psi[i] = 1;
 		}
-		double normalizationFactor = level.normalizePsiTrapezoidalRule();
+		double normalizationFactor = level.normalizePsi();
 		assertEquals(1.0d, normalizationFactor, SMALL_EPS);
 	}
 
@@ -29,7 +29,7 @@ class EnergyLevelTest {
 		for (int i = 0; i < grid.getNumberOfPoints(); i++) {
 			level.psi[i] = grid.getRValue(i);
 		}
-		double normalizationFactor = level.normalizePsiTrapezoidalRule();
+		double normalizationFactor = level.normalizePsi();
 		assertEquals(1.4142135623730950488, normalizationFactor, SMALL_EPS);
 	}
 
@@ -40,7 +40,7 @@ class EnergyLevelTest {
 		for (int i = 0; i < grid.getNumberOfPoints(); i++) {
 			level.psi[i] = Math.pow(grid.getRValue(i), 2);
 		}
-		double normalizationFactor = level.normalizePsiTrapezoidalRule();
+		double normalizationFactor = level.normalizePsi();
 		assertEquals(1.7320508075688772935, normalizationFactor, LARGE_EPS);
 	}
 
@@ -51,7 +51,7 @@ class EnergyLevelTest {
 		for (int i = 0; i < grid.getNumberOfPoints(); i++) {
 			level.psi[i] = Math.pow(grid.getRValue(i), 3);
 		}
-		double normalizationFactor = level.normalizePsiTrapezoidalRule();
+		double normalizationFactor = level.normalizePsi();
 		assertEquals(2.0d, normalizationFactor, LARGE_EPS);
 	}
 
@@ -62,20 +62,8 @@ class EnergyLevelTest {
 		for (int i = 0; i < grid.getNumberOfPoints(); i++) {
 			level.psi[i] = Math.pow(grid.getRValue(i), 4);
 		}
-		double normalizationFactor = level.normalizePsiTrapezoidalRule();
+		double normalizationFactor = level.normalizePsi();
 		assertEquals(2.2360679774997896964, normalizationFactor, LARGE_EPS);
 	}
-	
-	@Test
-	void normalizePsiSimpsonsOneThirdRuleConstantIntegrand() {
-		Grid grid = new UniformGrid(2, 3, 6);
-		EnergyLevel level = new EnergyLevel(grid);
-		for (int i = 0; i < grid.getNumberOfPoints(); i++) {
-			level.psi[i] = 1;
-		}
-		double normalizationFactor = level.normalizePsiSimpsonsOneThirdRule();
-		assertEquals(1.0d, normalizationFactor, SMALL_EPS);
-	}
 
-	
 }

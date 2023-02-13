@@ -39,7 +39,7 @@ public class EigenvalueFinder {
 		}
 
 		DressedPotential dressedPotential = new DressedPotential(barePotential, mass, level.energy, grid);
-		level.normalizePsiTrapezoidalRule();
+		level.normalizePsi();
 		level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level, dressedPotential);
 
 		return level;

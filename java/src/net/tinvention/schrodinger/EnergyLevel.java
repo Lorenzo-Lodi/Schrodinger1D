@@ -17,13 +17,18 @@ public class EnergyLevel {
 		this.psi = new double[grid.getNumberOfPoints()];
 	}
 
-	public double normalizePsiTrapezoidalRule() {
-
-		double sum = 0.5 * psiTimesG(0);
+	// Note: because the wavefunctions are exponentially decreasing (or faster), the
+	// trapezoidal rule is very quickly convergent (exponentially or so) until the
+	// truncation error
+	// at the borders takes over the global error.
+	// The rectangle rule is practically the same.
+	public double normalizePsi() {
+		double sum = 0.0d;
 		for (int i = 1; i < grid.getNumberOfPoints() - 1; i++) {
 			sum += psiTimesG(i);
 		}
-		sum += 0.5 * psiTimesG(grid.getNumberOfPoints() - 1);
+		sum += 0.5 * (psiTimesG(0) + psiTimesG(grid.getNumberOfPoints() - 1));
+
 		sum = sum * grid.getStepSizeYCoordinate();
 
 		double normalizationFactor = 1. / Math.sqrt(sum);
@@ -33,29 +38,7 @@ public class EnergyLevel {
 		return normalizationFactor;
 	}
 
-	public double normalizePsiSimpsonsOneThirdRule() {
-		if (grid.getNumberOfPoints() % 2 == 0) {
-			System.out.println("WARNING! At the moment simpson's rule works only for odd number of points");
-		}
-
-		double sum = psiTimesG(0);
-		for (int i = 1; i < grid.getNumberOfPoints() - 1; i += 2) {
-			sum += 4.0d * psiTimesG(i);
-		}
-		for (int i = 2; i < grid.getNumberOfPoints() - 1; i += 2) {
-			sum += 2.0d * psiTimesG(i);
-		}
-		sum += psiTimesG(grid.getNumberOfPoints() - 1);
-		sum = sum * grid.getStepSizeYCoordinate() / 3.0d;
-
-		double normalizationFactor = 1. / Math.sqrt(sum);
-		for (int i = 0; i < grid.getNumberOfPoints(); i++) {
-			psi[i] = psi[i] * normalizationFactor;
-		}
-		return normalizationFactor;
-	}
-
 	private double psiTimesG(int i) {
-		return (i < 0 || i > grid.getNumberOfPoints() - 1) ? 0.0d : psi[i] * grid.mappingFunctionGofY(i);
+		return psi[i] * grid.mappingFunctionGofY(i);
 	}
 }
