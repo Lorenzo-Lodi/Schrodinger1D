@@ -74,6 +74,10 @@ public abstract class Grid {
 	 */
 	public abstract double mappingFunctionGofY(double y);
 
+	public double mappingFunctionGofY(int i) {
+		return mappingFunctionGofY(getYValue(i));
+	}
+
 	/**
 	 * It's the function F(y) of eq. (9) in Meshkov2008, the additional term to the
 	 * dressed potential \tilde{Q}
