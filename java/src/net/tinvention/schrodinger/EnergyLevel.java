@@ -33,7 +33,29 @@ public class EnergyLevel {
 		return normalizationFactor;
 	}
 
+	public double normalizePsiSimpsonsOneThirdRule() {
+		if (grid.getNumberOfPoints() % 2 == 0) {
+			System.out.println("WARNING! At the moment simpson's rule works only for odd number of points");
+		}
+
+		double sum = psiTimesG(0);
+		for (int i = 1; i < grid.getNumberOfPoints() - 1; i += 2) {
+			sum += 4.0d * psiTimesG(i);
+		}
+		for (int i = 2; i < grid.getNumberOfPoints() - 1; i += 2) {
+			sum += 2.0d * psiTimesG(i);
+		}
+		sum += psiTimesG(grid.getNumberOfPoints() - 1);
+		sum = sum * grid.getStepSizeYCoordinate() / 3.0d;
+
+		double normalizationFactor = 1. / Math.sqrt(sum);
+		for (int i = 0; i < grid.getNumberOfPoints(); i++) {
+			psi[i] = psi[i] * normalizationFactor;
+		}
+		return normalizationFactor;
+	}
+
 	private double psiTimesG(int i) {
-		return psi[i] * grid.mappingFunctionGofY(grid.getYValue(i));
+		return (i < 0 || i > grid.getNumberOfPoints() - 1) ? 0.0d : psi[i] * grid.mappingFunctionGofY(i);
 	}
 }

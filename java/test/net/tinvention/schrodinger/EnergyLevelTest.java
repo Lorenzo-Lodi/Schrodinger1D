@@ -65,6 +65,17 @@ class EnergyLevelTest {
 		double normalizationFactor = level.normalizePsiTrapezoidalRule();
 		assertEquals(2.2360679774997896964, normalizationFactor, LARGE_EPS);
 	}
+	
+	@Test
+	void normalizePsiSimpsonsOneThirdRuleConstantIntegrand() {
+		Grid grid = new UniformGrid(2, 3, 6);
+		EnergyLevel level = new EnergyLevel(grid);
+		for (int i = 0; i < grid.getNumberOfPoints(); i++) {
+			level.psi[i] = 1;
+		}
+		double normalizationFactor = level.normalizePsiSimpsonsOneThirdRule();
+		assertEquals(1.0d, normalizationFactor, SMALL_EPS);
+	}
 
 	
 }
