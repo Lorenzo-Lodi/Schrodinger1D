@@ -6,11 +6,10 @@ import net.tinvention.schrodinger.potential.DressedPotential;
 public class TaylorThreePoints implements Integrator {
 
 	@Override
-	public double propagate(double psiOfNMinusOne, double psiOfN, int n, 
-			DressedPotential qTilde) {
+	public double propagateForward(double[] psi, int n, DressedPotential qTilde) {
 		double yOfN = qTilde.getGrid().getYValue(n);
 		double stepSizeSquared = Math.pow(qTilde.getGrid().getStepSizeYCoordinate(), 2);
-		return psiOfN * (2.0d - stepSizeSquared * qTilde.value(yOfN)) - psiOfNMinusOne;
+		return psi[n - 1] * (2.0d - stepSizeSquared * qTilde.value(yOfN)) - psi[n - 2];
 	}
 
 	@Override

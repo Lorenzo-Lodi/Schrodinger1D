@@ -56,8 +56,7 @@ public class EigenvalueFinder {
 		// System.out.println(" energy = " + energy);
 		DressedPotential dressedPotential = new DressedPotential(barePotential, mass, energy, grid);
 		for (int n = 2; n < grid.getNumberOfPoints(); n++) {
-			level.psi[n] = integrator.propagate(level.psi[n - 2], level.psi[n - 1], n,
-					dressedPotential);
+			level.psi[n] = integrator.propagateForward(level.psi, n, dressedPotential);
 			if (level.psi[n - 1] * level.psi[n] <= 0.d) {
 				nOfNodes++;
 			}
