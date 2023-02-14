@@ -28,10 +28,11 @@ public class EigenvalueFinder {
 		// now we can bisect the energy
 		for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
 			level.energy = (level.upperBound + level.lowerBound) * 0.5d;
+			propagatePsiLeftToRight(level.energy);
 			if ((level.upperBound - level.lowerBound) / Math.abs(level.energy) < TARGET_RELATIVE_ERROR) {
 				break;
 			}
-			if (countNodes(level.energy) > nOfDesiredNodes) {
+			if (countNodes() > nOfDesiredNodes) {
 				level.upperBound = level.energy;
 			} else {
 				level.lowerBound = level.energy;
@@ -45,18 +46,22 @@ public class EigenvalueFinder {
 		return level;
 	}
 
-	private int countNodes(double energy) {
-
+	private void propagatePsiLeftToRight(double energy) {
 		// first (leftmost) point
 		level.psi[0] = 0;
 
 		// second point
 		level.psi[1] = 0.0000001d; // arbitrary initial value
-		int nOfNodes = 0;
 
 		DressedPotential dressedPotential = new DressedPotential(barePotential, mass, energy, grid);
 		for (int n = 1; n < grid.getNumberOfPoints() - 1; n++) {
 			level.psi[n + 1] = integrator.propagateForward(level.psi, n, dressedPotential);
+		}
+	}
+
+	private int countNodes() {
+		int nOfNodes = 0;
+		for (int n = 1; n < grid.getNumberOfPoints() - 1; n++) {
 			if (level.psi[n] * level.psi[n + 1] <= 0.d) {
 				nOfNodes++;
 			}

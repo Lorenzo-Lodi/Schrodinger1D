@@ -13,7 +13,7 @@ public class Main {
 		BarePotential potential = new HarmonicPotential(15, 1);
 		Integrator integrator = new TaylorThreePoints();
 		System.out.println();
-		for (int i = 6; i < 7; i++) {
+		for (int i = 2; i < 7; i++) {
 			int nOfPoints = 20 + (int) Math.pow(i, 3);
 //			double rRef = 4;
 //			double alpha = 0.5;
@@ -29,7 +29,7 @@ public class Main {
 			System.out.println(i + " " + grid.getNumberOfPoints() + " " + (ek.energy - 0.5) + " " + " "
 					+ ek.perturbativeCorrectionToEnergy + " " + ek.numberOfBisections);
 			for (int j = 0; j < grid.getNumberOfPoints(); j++) {
-				System.out.println(grid.getYValue(j) + " " + grid.getRValue(j) + " " + ek.psi[j]);
+				//System.out.println(grid.getYValue(j) + " " + grid.getRValue(j) + " " + ek.psi[j]);
 			}
 		}
 
