@@ -7,9 +7,9 @@ public class TaylorThreePoints implements Integrator {
 
 	@Override
 	public double propagateForward(double[] psi, int n, DressedPotential qTilde) {
-		double yOfN = qTilde.getGrid().getYValue(n-1);
+		double yOfN = qTilde.getGrid().getYValue(n);
 		double stepSizeSquared = Math.pow(qTilde.getGrid().getStepSizeYCoordinate(), 2);
-		return psi[n - 1] * (2.0d - stepSizeSquared * qTilde.value(yOfN)) - psi[n - 2];
+		return psi[n] * (2.0d - stepSizeSquared * qTilde.value(yOfN)) - psi[n - 1];
 	}
 
 	@Override
