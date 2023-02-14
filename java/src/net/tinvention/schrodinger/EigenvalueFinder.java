@@ -45,8 +45,6 @@ public class EigenvalueFinder {
 		return level;
 	}
 
-
-
 	private int countNodes(double energy) {
 
 		// first (leftmost) point
@@ -59,7 +57,7 @@ public class EigenvalueFinder {
 		DressedPotential dressedPotential = new DressedPotential(barePotential, mass, energy, grid);
 		for (int n = 2; n < grid.getNumberOfPoints(); n++) {
 			level.psi[n] = integrator.propagate(grid.getYValue(n), level.psi[n - 2], level.psi[n - 1], n,
-					grid.getStepSizeYCoordinate(), dressedPotential);
+					dressedPotential);
 			if (level.psi[n - 1] * level.psi[n] <= 0.d) {
 				nOfNodes++;
 			}
