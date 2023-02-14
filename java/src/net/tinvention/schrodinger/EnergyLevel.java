@@ -11,6 +11,7 @@ public class EnergyLevel {
 	public double[] psi;
 	public double perturbativeCorrectionToEnergy;
 	private Grid grid;
+	private boolean isPsiNormalized = false;
 
 	public EnergyLevel(Grid grid) {
 		this.grid = grid;
@@ -25,9 +26,9 @@ public class EnergyLevel {
 	public double normalizePsi() {
 		double sum = 0.0d;
 		for (int i = 1; i < grid.getNumberOfPoints() - 1; i++) {
-			sum += psiTimesG(i);
+			sum += psiTimesGSquared(i);
 		}
-		sum += 0.5 * (psiTimesG(0) + psiTimesG(grid.getNumberOfPoints() - 1));
+		sum += 0.5 * (psiTimesGSquared(0) + psiTimesGSquared(grid.getNumberOfPoints() - 1));
 
 		sum = sum * grid.getStepSizeYCoordinate();
 
@@ -35,10 +36,16 @@ public class EnergyLevel {
 		for (int i = 0; i < grid.getNumberOfPoints(); i++) {
 			psi[i] = psi[i] * normalizationFactor;
 		}
+		isPsiNormalized = true;
 		return normalizationFactor;
 	}
 
-	private double psiTimesG(int i) {
-		return psi[i] * grid.mappingFunctionGofY(i);
+	private double psiTimesGSquared(int i) {
+		return Math.pow(psi[i] * grid.mappingFunctionGofY(i), 2);
 	}
+
+	public boolean isPsiNormalized() {
+		return isPsiNormalized;
+	}
+
 }

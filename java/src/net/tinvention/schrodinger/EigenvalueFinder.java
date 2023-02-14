@@ -6,7 +6,7 @@ import net.tinvention.schrodinger.potential.DressedPotential;
 import net.tinvention.schrodinger.potential.BarePotential;
 
 public class EigenvalueFinder {
-	private static final double TARGET_RELATIVE_ERROR = 10.d * Math.ulp(1.d); // change for single-precision float
+	private static final double TARGET_RELATIVE_ERROR = 2.d * Math.ulp(1.d); // change for single-precision float
 	private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
 	private Grid grid;
 	private BarePotential barePotential;
@@ -21,7 +21,7 @@ public class EigenvalueFinder {
 		this.integrator = integrator;
 	}
 
-	public EnergyLevel findEigenvalue(int nOfDesiredNodes) {
+	public EnergyLevel findEigenvalueByBisection(int nOfDesiredNodes) {
 
 		level = this.computeApproximateEnergyLevel(nOfDesiredNodes);
 
@@ -53,7 +53,7 @@ public class EigenvalueFinder {
 		// second point
 		level.psi[1] = 0.0000001d; // arbitrary initial value
 		int nOfNodes = 0;
-		// System.out.println(" energy = " + energy);
+
 		DressedPotential dressedPotential = new DressedPotential(barePotential, mass, energy, grid);
 		for (int n = 2; n < grid.getNumberOfPoints(); n++) {
 			level.psi[n] = integrator.propagateForward(level.psi, n, dressedPotential);
@@ -61,10 +61,7 @@ public class EigenvalueFinder {
 				nOfNodes++;
 			}
 		}
-		System.out.println(energy + " " + nOfNodes + " " + level.psi[grid.getNumberOfPoints() - 1]);
-
 		return nOfNodes;
-
 	}
 
 	private EnergyLevel computeApproximateEnergyLevel(int nOfDesiredNodes) {

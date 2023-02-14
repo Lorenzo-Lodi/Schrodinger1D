@@ -25,12 +25,12 @@ public class Main {
 			EigenvalueFinder finder = new EigenvalueFinder(grid, potential, mass, integrator);
 
 			int nOfDesiredNodes = 0;
-			EnergyLevel ek = finder.findEigenvalue(nOfDesiredNodes);
+			EnergyLevel ek = finder.findEigenvalueByBisection(nOfDesiredNodes);
 			System.out.println(i + " " + grid.getNumberOfPoints() + " " + (ek.energy - 0.5) + " " + " "
 					+ ek.perturbativeCorrectionToEnergy + " " + ek.numberOfBisections);
-//			for (int j = 0; j < grid.getNumberOfPoints(); j++) {
-//				System.out.println(grid.getRValue(j) + " " + grid.getRValue(j) + " " + ek.psi[j]);
-//			}
+			for (int j = 0; j < grid.getNumberOfPoints(); j++) {
+				System.out.println(grid.getYValue(j) + " " + grid.getRValue(j) + " " + ek.psi[j]);
+			}
 		}
 
 	}
