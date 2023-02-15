@@ -15,10 +15,10 @@ public class Main {
 		System.out.println();
 		for (int i = 2; i < 7; i++) {
 			int nOfPoints = 20 + (int) Math.pow(i, 3);
-//			double rRef = 4;
+//			double rRef = 5;
 //			double alpha = 0.5;
 //			Grid grid = Grid.generateSurkusGrid(0.5d, 5.5d, nOfPoints, rRef, alpha);
-//			Grid grid = Grid.generateSqrtGrid(0.5d, 5.5d, nOfPoints, rRef);
+//			Grid grid = Grid.generateSqrtGrid(10d, 20.0d, nOfPoints, rRef);
 			Grid grid = Grid.generateUniformGrid(10.0d, 20.0d, nOfPoints);
 //			System.out.println(grid.toString());
 			double mass = 2.0d;
@@ -26,8 +26,8 @@ public class Main {
 
 			int nOfDesiredNodes = 0;
 			EnergyLevel ek = finder.findEigenvalueByBisection(nOfDesiredNodes);
-			System.out.println(i + " " + grid.getNumberOfPoints() + " " + (ek.energy - 0.5) + " " + " "
-					+ ek.perturbativeCorrectionToEnergy + " " + ek.numberOfBisections);
+			System.out.println(i + " " + grid.getNumberOfPoints() + " " + (ek.energy - 0*0.5) + " " + " "
+					+ (ek.energy+ek.perturbativeCorrectionToEnergy) + " " + ek.numberOfBisections);
 			for (int j = 0; j < grid.getNumberOfPoints(); j++) {
 				//System.out.println(grid.getYValue(j) + " " + grid.getRValue(j) + " " + ek.psi[j]);
 			}
