@@ -31,7 +31,7 @@ public class EigenvalueFinder {
 			if ((level.upperBound - level.lowerBound) / Math.abs(level.energy) < TARGET_RELATIVE_ERROR) {
 				break;
 			}
-			if (countNodes(level) > nOfDesiredNodes) {
+			if (level.countNumberOfNodes() > nOfDesiredNodes) {
 				level.upperBound = level.energy;
 			} else {
 				level.lowerBound = level.energy;
@@ -56,16 +56,6 @@ public class EigenvalueFinder {
 		for (int n = 1; n < grid.getNumberOfPoints() - 1; n++) {
 			level.psi[n + 1] = integrator.propagateForward(level.psi, n, dressedPotential);
 		}
-	}
-
-	private int countNodes(EnergyLevel level) {
-		int nOfNodes = 0;
-		for (int n = 1; n < grid.getNumberOfPoints() - 1; n++) {
-			if (level.psi[n] * level.psi[n + 1] <= 0.d) {
-				nOfNodes++;
-			}
-		}
-		return nOfNodes;
 	}
 
 	private EnergyLevel computeApproximateEnergyLevel(int nOfDesiredNodes) {

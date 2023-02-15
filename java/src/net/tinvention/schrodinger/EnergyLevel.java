@@ -47,5 +47,15 @@ public class EnergyLevel {
 	public boolean isPsiNormalized() {
 		return isPsiNormalized;
 	}
+	
+	public int countNumberOfNodes() {
+		int nOfNodes = 0;
+		for (int n = 0; n < grid.getNumberOfPoints() - 1; n++) {
+			if (psi[n] * psi[n + 1] < 0.d) {
+				nOfNodes++;
+			}
+		}
+		return nOfNodes;
+	}
 
 }
