@@ -27,14 +27,14 @@ public class Main {
 			EigenvalueFinder finder = new EigenvalueFinder(grid, potential, mass, integrator);
 
 			int nOfDesiredNodes = 0;
-			EnergyLevel ek = finder.findEigenvalueByBisection(nOfDesiredNodes);
+			EnergyLevel ek = finder.findEigenvalueBySecant(nOfDesiredNodes);
 
 			int floatDecimals = 16;
 			System.out.println(padInt(i, 4) + padInt(grid.getNumberOfPoints(), 6)
 					+ padFloat(ek.lowerBound, floatDecimals, floatDecimals + 4)
 					+ padFloat(ek.upperBound, floatDecimals, floatDecimals + 4)
 					+ padFloat(ek.energy, floatDecimals, floatDecimals + 4)
-					+ padFloat(ek.energy + ek.perturbativeCorrectionToEnergy, floatDecimals, floatDecimals + 4)
+					+ padFloat(ek.energy + ek.perturbativeCorrectionToEnergy, floatDecimals, floatDecimals + 5)
 					+ padInt(ek.numberOfBisections, 6));
 			for (int j = 0; j < grid.getNumberOfPoints(); j++) {
 				// System.out.println(grid.getYValue(j) + " " + grid.getRValue(j) + " " +

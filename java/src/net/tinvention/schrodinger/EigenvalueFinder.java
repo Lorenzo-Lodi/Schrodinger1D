@@ -45,6 +45,45 @@ public class EigenvalueFinder {
 		return level;
 	}
 
+	// WIP
+	public EnergyLevel findEigenvalueBySecant(int nOfDesiredNodes) {
+
+		EnergyLevel level = this.computeApproximateEnergyLevel(nOfDesiredNodes);
+
+		// now we can bisect the energy
+		int nOfBisectionIterationsAfterBracketing = 0;
+		for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
+			level.energy = (level.upperBound + level.lowerBound) * 0.5d;
+			propagatePsiLeftToRight(level);
+			if ((level.upperBound - level.lowerBound) / Math.abs(level.energy) < TARGET_RELATIVE_ERROR) {
+				break;
+			}
+			int nOfNodes = level.countNumberOfNodes();
+			if (nOfNodes > nOfDesiredNodes) {
+				level.upperBound = level.energy;
+				level.numberOfNodesUpperBound = nOfNodes;
+			} else {
+				level.lowerBound = level.energy;
+				level.numberOfNodesLowerBound = nOfNodes;
+			}
+			if (level.numberOfNodesLowerBound != null && level.numberOfNodesUpperBound != null
+					&& level.numberOfNodesLowerBound == nOfDesiredNodes
+					&& level.numberOfNodesUpperBound == nOfDesiredNodes + 1) {
+				nOfBisectionIterationsAfterBracketing++;
+			}
+			// Do a couple of bisections after bracketing to get close
+			if (nOfBisectionIterationsAfterBracketing >= 5) {
+				break;
+			}
+		}
+
+		DressedPotential dressedPotential = new DressedPotential(barePotential, mass, level.energy, grid);
+		level.normalizePsi();
+		level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level, dressedPotential);
+
+		return level;
+	}
+
 	private void propagatePsiLeftToRight(EnergyLevel level) {
 		// first (leftmost) point
 		level.psi[0] = 0;

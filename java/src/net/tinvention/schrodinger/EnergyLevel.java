@@ -12,6 +12,8 @@ public class EnergyLevel {
 	public double perturbativeCorrectionToEnergy;
 	private Grid grid;
 	private boolean isPsiNormalized = false;
+	public Integer numberOfNodesUpperBound;
+	public Integer numberOfNodesLowerBound;
 
 	public EnergyLevel(Grid grid) {
 		this.grid = grid;
