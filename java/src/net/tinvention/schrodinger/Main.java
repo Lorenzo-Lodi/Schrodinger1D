@@ -19,7 +19,7 @@ public class Main {
 //			double alpha = 0.5;
 //			Grid grid = Grid.generateSurkusGrid(0.5d, 5.5d, nOfPoints, rRef, alpha);
 //			Grid grid = Grid.generateSqrtGrid(10d, 20.0d, nOfPoints, rRef);
-			Grid grid = Grid.generateUniformGrid(5.0d, 25.0d, nOfPoints);
+			Grid grid = Grid.generateUniformGrid(10.0d, 20.0d, nOfPoints);
 //			System.out.println(grid.toString());
 			double mass = 2.0d;
 			EigenvalueFinder finder = new EigenvalueFinder(grid, potential, mass, integrator);
@@ -32,7 +32,7 @@ public class Main {
 					+ padFloat(ek.lowerBound, floatDecimals, floatDecimals + 4)
 					+ padFloat(ek.upperBound, floatDecimals, floatDecimals + 4)
 					+ padFloat(ek.energy, floatDecimals, floatDecimals + 4)
-					+ padFloat(ek.energy +ek.perturbativeCorrectionToEnergy, floatDecimals, floatDecimals + 7)
+					+ padFloat(ek.energy + ek.perturbativeCorrectionToEnergy, floatDecimals, floatDecimals + 7)
 					+ padInt(ek.numberOfBisections, 6));
 			for (int j = 0; j < grid.getNumberOfPoints(); j++) {
 				// System.out.println(grid.getYValue(j) + " " + grid.getRValue(j) + " " +
