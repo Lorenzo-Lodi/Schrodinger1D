@@ -13,9 +13,9 @@ public class Main {
 		BarePotential potential = new HarmonicPotential(15, 1);
 		Integrator integrator = new TaylorThreePoints();
 
-		System.out.println("   i nPoints               Lower               Upper" + "              Energy" 
-		+ "    Energy + Pert. " + "   n bis");
-		for (int i = 1; i < 10; i++) {
+		System.out.println("   i nPoints       1/Ystep          Lower               Upper" + "               Energy"
+				+ "                Energy + Pert. " + "     n bisec");
+		for (int i = 0; i < 17; i++) {
 			int nOfPoints = 20 + (int) Math.pow(i, 3);
 //			double rRef = 5;
 //			double alpha = 0.5;
@@ -27,19 +27,20 @@ public class Main {
 			EigenvalueFinder finder = new EigenvalueFinder(grid, potential, mass, integrator);
 
 			int nOfDesiredNodes = 0;
-			EnergyLevel ek = finder.findEigenvalueBySecant(nOfDesiredNodes);
+			EnergyLevel ek = finder.findEigenvalueByBisection(nOfDesiredNodes);
 
 			int floatDecimals = 16;
 			System.out.println(padInt(i, 4) + padInt(grid.getNumberOfPoints(), 6)
+					+ padFloat(1.0 / grid.getStepSizeYCoordinate(), 3, 14)
 					+ padFloat(ek.lowerBound, floatDecimals, floatDecimals + 4)
 					+ padFloat(ek.upperBound, floatDecimals, floatDecimals + 4)
 					+ padFloat(ek.energy, floatDecimals, floatDecimals + 4)
-					+ padFloat(ek.energy + ek.perturbativeCorrectionToEnergy, floatDecimals, floatDecimals + 5)
+					+ padFloat(ek.energy + ek.perturbativeCorrectionToEnergy, floatDecimals, floatDecimals + 6)
 					+ padInt(ek.numberOfBisections, 6));
-			for (int j = 0; j < grid.getNumberOfPoints(); j++) {
-				// System.out.println(grid.getYValue(j) + " " + grid.getRValue(j) + " " +
-				// ek.psi[j]);
-			}
+//			for (int j = 0; j < grid.getNumberOfPoints(); j++) {
+//				 System.out.println(grid.getYValue(j) + " " + grid.getRValue(j) + " " +
+//				 ek.psi[j]);
+//			}
 		}
 
 	}
@@ -53,7 +54,7 @@ public class Main {
 	}
 
 	private static String padding(double number, int width) {
-		int magnitude = number == 0 ? 0 : (int) Math.log10(Math.abs(number));
+		int magnitude = number <= 1 ? 0 : (int) Math.log10(Math.abs(number));
 		String padding = "";
 		int signPadding = (number >= 0) ? 0 : 1;
 		for (int i = 0; i < width - magnitude - signPadding; i++) {
