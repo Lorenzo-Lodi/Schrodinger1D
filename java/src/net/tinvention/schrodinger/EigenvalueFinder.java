@@ -6,7 +6,7 @@ import net.tinvention.schrodinger.potential.DressedPotential;
 import net.tinvention.schrodinger.potential.BarePotential;
 
 public class EigenvalueFinder {
-	private static final double TARGET_RELATIVE_ERROR = 2.d * Math.ulp(1.d); // change for single-precision float
+	private static final double TARGET_RELATIVE_ERROR = 0.d * Math.ulp(1.d); // change for single-precision float
 	private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
 	private Grid grid;
 	private BarePotential barePotential;

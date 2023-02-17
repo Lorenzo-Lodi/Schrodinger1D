@@ -15,13 +15,17 @@ public class Main {
 
 		System.out.println("   i nPoints       1/Ystep          Lower               Upper" + "               Energy"
 				+ "                Energy + Pert. " + "     n bisec");
-		for (int i = 0; i < 17; i++) {
-			int nOfPoints = 20 + (int) Math.pow(i, 3);
+		for (int i = 0; i < 20; i++) {
+//			int nOfPoints = 20 + (int) Math.pow(i, 3);
+			double rmax = 16 + i;
+			double rmin = 10-i;
 //			double rRef = 5;
 //			double alpha = 0.5;
 //			Grid grid = Grid.generateSurkusGrid(0.5d, 5.5d, nOfPoints, rRef, alpha);
 //			Grid grid = Grid.generateSqrtGrid(10d, 20.0d, nOfPoints, rRef);
-			Grid grid = Grid.generateUniformGrid(10.0d, 20.0d, nOfPoints);
+//			Grid grid = Grid.generateUniformGrid(10.0d, 20.0d, nOfPoints);
+			int nOfPoints = (int) (rmax - rmin) * 600;
+			Grid grid = Grid.generateUniformGrid(10.0d, rmax, nOfPoints);
 //			System.out.println(grid.toString());
 			double mass = 2.0d;
 			EigenvalueFinder finder = new EigenvalueFinder(grid, potential, mass, integrator);
