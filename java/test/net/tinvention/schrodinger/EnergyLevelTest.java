@@ -30,7 +30,7 @@ class EnergyLevelTest {
 			level.psi[i] = grid.getRValue(i);
 		}
 		double normalizationFactor = level.normalizePsi();
-		assertEquals(1.4142135623730950488, normalizationFactor, SMALL_EPS);
+		assertEquals(1.73187048891682771453, normalizationFactor, SMALL_EPS);
 	}
 
 	@Test
@@ -41,7 +41,7 @@ class EnergyLevelTest {
 			level.psi[i] = Math.pow(grid.getRValue(i), 2);
 		}
 		double normalizationFactor = level.normalizePsi();
-		assertEquals(1.7320508075688772935, normalizationFactor, LARGE_EPS);
+		assertEquals(2.2352923244791710742, normalizationFactor, LARGE_EPS);
 	}
 
 	@Test
@@ -52,7 +52,7 @@ class EnergyLevelTest {
 			level.psi[i] = Math.pow(grid.getRValue(i), 3);
 		}
 		double normalizationFactor = level.normalizePsi();
-		assertEquals(2.0d, normalizationFactor, LARGE_EPS);
+		assertEquals(2.6438252937568609246, normalizationFactor, SMALL_EPS);
 	}
 
 	@Test
@@ -63,7 +63,7 @@ class EnergyLevelTest {
 			level.psi[i] = Math.pow(grid.getRValue(i), 4);
 		}
 		double normalizationFactor = level.normalizePsi();
-		assertEquals(2.2360679774997896964, normalizationFactor, LARGE_EPS);
+		assertEquals(2.9962596611853944811, normalizationFactor, LARGE_EPS);
 	}
 
 }

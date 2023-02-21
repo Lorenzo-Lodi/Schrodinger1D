@@ -18,7 +18,7 @@ public class Main {
 		for (int i = 0; i < 20; i++) {
 //			int nOfPoints = 20 + (int) Math.pow(i, 3);
 			double rmax = 16 + i;
-			double rmin = 10-i;
+			double rmin = 10 - i;
 //			double rRef = 5;
 //			double alpha = 0.5;
 //			Grid grid = Grid.generateSurkusGrid(0.5d, 5.5d, nOfPoints, rRef, alpha);
