@@ -1,0 +1,15 @@
+31/10/2021
+
+Level uses Numerov’s method, which has a long and distiguished history in solving the one-dimensional Schrodinger equation. As Duo is based on another method, names the sinc DVR, it is perhaps worthwhile to spend a few words comparing the different approaches.
+The Numerov takes its name from the Russian astronomer Boris Numerov, who introduced it in the 1920s for astronomical calculations. Specifically, Numerov’s method is a convenient way to discretise second-order differential equations when the first-derivative term is not present, i.e. it is applicable to equations of the type y’’(x) = f(x, y). The Schrodinger equation can be written in this form, psi’’(x) = (2 m/hbar^2)[V(x)-E]psi(x)=f(x) psi(x).
+By discreting the equation on a uniformely spaced grid with step h, the right-hand side becomes f(xi) psi(xi); for the left hand side we need a grid-approximation of the second derivative operator. The most staightforward choice is to use the simple three-point formula for the second derivative
+psi’’(x)=(psi(x-h)+psi(x+h)-2psi(x))/h^2
+This leads to the three-point propagatin expression , which is accurate to O(h^2).
+
+Numerov’s method was considered by Hartree for atoms.
+Later, other authors such as Lowdin, Cooley have contributed to refinement of the shooting procedure. We’ll call this combination N/S.
+One advantage of N/S is that it requires very little memory, which was probably a very important consideration in the early years. With N/S one only needs to store a handful of constants independently of the grid step. 
+Another advantage is that each eigenvalue can be computed completely independently, and you can compute directly the nth eigenvalue.
+Finally, the convergence is O(h^4), which is usually fast enough.
+Numerov’s method is satisfactory in many cases, but it when high accuracy is required.
+A practical limitation in accuracy is due to numerical round-off 
