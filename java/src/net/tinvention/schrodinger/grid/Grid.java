@@ -80,7 +80,7 @@ public abstract class Grid {
 
 	/**
 	 * It's the function F(y) of eq. (9) in Meshkov2008, the additional term to the
-	 * dressed potential \tilde{Q}
+	 * transformed function \tilde{Q}
 	 * 
 	 * @param y
 	 * @return

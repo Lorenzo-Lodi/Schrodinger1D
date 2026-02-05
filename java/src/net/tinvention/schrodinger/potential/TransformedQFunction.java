@@ -25,7 +25,7 @@ public class TransformedQFunction {
 		return potentialQ * Math.pow(this.grid.mappingFunctionGofY(y), 2) + this.grid.mappingFunctionFofY(y);
 	}
 
-	public PhysicalPotential getBarePotential() {
+	public PhysicalPotential getPhysicalPotential() {
 		return physicalPotential;
 	}
 
