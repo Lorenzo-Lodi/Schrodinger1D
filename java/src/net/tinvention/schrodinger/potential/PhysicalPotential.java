@@ -1,6 +1,6 @@
 package net.tinvention.schrodinger.potential;
 
-public interface BarePotential {
+public interface PhysicalPotential {
 	/**
 	 * 
 	 * @param x position in bohrs

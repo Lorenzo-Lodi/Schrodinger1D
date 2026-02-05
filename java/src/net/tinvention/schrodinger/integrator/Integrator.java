@@ -1,12 +1,12 @@
 package net.tinvention.schrodinger.integrator;
 
 import net.tinvention.schrodinger.EnergyLevel;
-import net.tinvention.schrodinger.potential.DressedPotential;
+import net.tinvention.schrodinger.potential.TransformedQFunction;
 
 public interface Integrator {
-	double propagateForward(double[] psi, int n, DressedPotential potential);
+	double propagateForward(double[] psi, int n, TransformedQFunction potential);
 
-	default double computePerturbativeCorrection(EnergyLevel level, DressedPotential qTilde) {
+	default double computePerturbativeCorrection(EnergyLevel level, TransformedQFunction qTilde) {
 		return 0;
 	}
 

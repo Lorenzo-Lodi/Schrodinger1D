@@ -2,20 +2,20 @@ package net.tinvention.schrodinger;
 
 import net.tinvention.schrodinger.grid.Grid;
 import net.tinvention.schrodinger.integrator.Integrator;
-import net.tinvention.schrodinger.potential.DressedPotential;
-import net.tinvention.schrodinger.potential.BarePotential;
+import net.tinvention.schrodinger.potential.TransformedQFunction;
+import net.tinvention.schrodinger.potential.PhysicalPotential;
 
 public class EigenvalueFinder {
 	private static final double TARGET_RELATIVE_ERROR = 0.d * Math.ulp(1.d); // change for single-precision float
 	private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
 	private final Grid grid;
-	private final BarePotential barePotential;
+	private final PhysicalPotential physicalPotential;
 	private final double mass;
 	private final Integrator integrator;
 
-	public EigenvalueFinder(Grid grid, BarePotential barePotential, double mass, Integrator integrator) {
+	public EigenvalueFinder(Grid grid, PhysicalPotential physicalPotential, double mass, Integrator integrator) {
 		this.grid = grid;
-		this.barePotential = barePotential;
+		this.physicalPotential = physicalPotential;
 		this.mass = mass;
 		this.integrator = integrator;
 	}
@@ -38,9 +38,9 @@ public class EigenvalueFinder {
 			}
 		}
 
-		DressedPotential dressedPotential = new DressedPotential(barePotential, mass, level.energy, grid);
+		TransformedQFunction transformedQFunction = new TransformedQFunction(physicalPotential, mass, level.energy, grid);
 		level.normalizePsi();
-		level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level, dressedPotential);
+		level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level, transformedQFunction);
 
 		return level;
 	}
@@ -77,9 +77,9 @@ public class EigenvalueFinder {
 			}
 		}
 
-		DressedPotential dressedPotential = new DressedPotential(barePotential, mass, level.energy, grid);
+		TransformedQFunction transformedQFunction = new TransformedQFunction(physicalPotential, mass, level.energy, grid);
 		level.normalizePsi();
-		level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level, dressedPotential);
+		level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level, transformedQFunction);
 
 		return level;
 	}
@@ -91,9 +91,9 @@ public class EigenvalueFinder {
 		// second point
 		level.psi[1] = 0.0000001d; // arbitrary initial value
 
-		DressedPotential dressedPotential = new DressedPotential(barePotential, mass, level.energy, grid);
+		TransformedQFunction transformedQFunction = new TransformedQFunction(physicalPotential, mass, level.energy, grid);
 		for (int n = 1; n < grid.getNumberOfPoints() - 1; n++) {
-			level.psi[n + 1] = integrator.propagateForward(level.psi, n, dressedPotential);
+			level.psi[n + 1] = integrator.propagateForward(level.psi, n, transformedQFunction);
 		}
 	}
 
@@ -109,7 +109,7 @@ public class EigenvalueFinder {
 				break;
 			}
 			double r = grid.mappingFunctionRofY(y);
-			double potentialValues = barePotential.value(r);
+			double potentialValues = physicalPotential.value(r);
 			if (potentialValues > result.upperBound) {
 				result.upperBound = potentialValues;
 			}

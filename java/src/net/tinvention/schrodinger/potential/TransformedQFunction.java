@@ -2,14 +2,18 @@ package net.tinvention.schrodinger.potential;
 
 import net.tinvention.schrodinger.grid.Grid;
 
-public class DressedPotential {
-	private final BarePotential barePotential;
+/**
+ * Transformed Q-function Q̃(y) for the mapped equation: ϕ''(y) = -Q̃(y)ϕ(y)
+ * MSL Eq. (8): Q̃(y) = g²(y)·Q(r(y)) + F(y)
+ */
+public class TransformedQFunction {
+	private final PhysicalPotential physicalPotential;
 	private final double mass;
 	private final double energy;
 	private final Grid grid;
 
-	public DressedPotential(BarePotential barePotential, double mass, double energy, Grid grid) {
-		this.barePotential = barePotential;
+	public TransformedQFunction(PhysicalPotential physicalPotential, double mass, double energy, Grid grid) {
+		this.physicalPotential = physicalPotential;
 		this.mass = mass;
 		this.energy = energy;
 		this.grid = grid;
@@ -17,12 +21,12 @@ public class DressedPotential {
 
 	public double value(double y) {
 		double r = this.grid.mappingFunctionRofY(y);
-		double potentialQ = 2.d * this.mass * (this.energy - this.barePotential.value(r));
+		double potentialQ = 2.d * this.mass * (this.energy - this.physicalPotential.value(r));
 		return potentialQ * Math.pow(this.grid.mappingFunctionGofY(y), 2) + this.grid.mappingFunctionFofY(y);
 	}
 
-	public BarePotential getBarePotential() {
-		return barePotential;
+	public PhysicalPotential getBarePotential() {
+		return physicalPotential;
 	}
 
 	public double getMass() {

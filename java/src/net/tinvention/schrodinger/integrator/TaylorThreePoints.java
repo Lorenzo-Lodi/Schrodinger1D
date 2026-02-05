@@ -1,19 +1,19 @@
 package net.tinvention.schrodinger.integrator;
 
 import net.tinvention.schrodinger.EnergyLevel;
-import net.tinvention.schrodinger.potential.DressedPotential;
+import net.tinvention.schrodinger.potential.TransformedQFunction;
 
 public class TaylorThreePoints implements Integrator {
 
 	@Override
-	public double propagateForward(double[] psi, int n, DressedPotential qTilde) {
+	public double propagateForward(double[] psi, int n, TransformedQFunction qTilde) {
 		double yOfN = qTilde.getGrid().getYValue(n);
 		double stepSizeSquared = Math.pow(qTilde.getGrid().getStepSizeYCoordinate(), 2);
 		return psi[n] * (2.0d - stepSizeSquared * qTilde.value(yOfN)) - psi[n - 1];
 	}
 
 	@Override
-	public double computePerturbativeCorrection(EnergyLevel level, DressedPotential qTilde) {
+	public double computePerturbativeCorrection(EnergyLevel level, TransformedQFunction qTilde) {
 		double result = 0;
 		for (int i = 0; i < qTilde.getGrid().getNumberOfPoints(); i++) {
 			result += Math.pow(qTilde.value(qTilde.getGrid().getYValue(i)) * level.psi[i], 2);

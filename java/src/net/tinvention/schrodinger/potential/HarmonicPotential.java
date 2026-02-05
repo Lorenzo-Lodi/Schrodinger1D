@@ -1,6 +1,6 @@
 package net.tinvention.schrodinger.potential;
 
-public class HarmonicPotential implements BarePotential {
+public class HarmonicPotential implements PhysicalPotential {
 	private final double r0;
 	private final double alpha;
 
