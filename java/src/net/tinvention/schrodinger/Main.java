@@ -14,7 +14,7 @@ public class Main {
 		Integrator integrator = new TaylorThreePoints();
 
 		System.out.println("   i nPoints       1/Ystep          Lower               Upper" + "               Energy"
-				+ "                Energy + Pert. " + "     n bisec");
+				+ "          Energy + Pert. " + "     n bisec");
 		for (int i = 0; i < 20; i++) {
 //			int nOfPoints = 20 + (int) Math.pow(i, 3);
 			double rmax = 16 + i;
@@ -24,13 +24,13 @@ public class Main {
 //			Grid grid = Grid.generateSurkusGrid(0.5d, 5.5d, nOfPoints, rRef, alpha);
 //			Grid grid = Grid.generateSqrtGrid(10d, 20.0d, nOfPoints, rRef);
 //			Grid grid = Grid.generateUniformGrid(10.0d, 20.0d, nOfPoints);
-			int nOfPoints = (int) (rmax - rmin) * 600;
+			int nOfPoints = (int) (rmax - rmin) * 100;
 			Grid grid = Grid.generateUniformGrid(10.0d, rmax, nOfPoints);
 //			System.out.println(grid.toString());
 			double mass = 2.0d;
 			EigenvalueFinder finder = new EigenvalueFinder(grid, potential, mass, integrator);
 
-			int nOfDesiredNodes = 0;
+			int nOfDesiredNodes = 10;
 			EnergyLevel ek = finder.findEigenvalueByBisection(nOfDesiredNodes);
 
 			int floatDecimals = 16;

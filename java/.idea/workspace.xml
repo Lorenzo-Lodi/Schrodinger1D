@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="4baefd13-b721-4fcd-be43-f3a5c2b60cd9" name="Changes" comment="" />
+    <list default="true" id="4baefd13-b721-4fcd-be43-f3a5c2b60cd9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/net/tinvention/schrodinger/integrator/Integrator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/tinvention/schrodinger/integrator/Integrator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/net/tinvention/schrodinger/potential/BarePotential.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/tinvention/schrodinger/potential/BarePotential.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/net/tinvention/schrodinger/potential/DressedPotential.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/tinvention/schrodinger/potential/DressedPotential.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/net/tinvention/schrodinger/potential/HarmonicPotential.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/tinvention/schrodinger/potential/HarmonicPotential.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -10,8 +18,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
   <component name="ProjectId" id="2LB0ifI0nxDhjNA0pIJfrHP0Jgy" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -20,10 +30,45 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/Lorenzo/eclipse-workspace/Schrodinger1D/java"
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/LorenzoLodi/projects/Schrodinger1D/java",
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default",
+    "to.speed.mode.migration.done": "true"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="net.tinvention.schrodinger.Main" />
+      <module name="java" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="net.tinvention.schrodinger.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.28539.33" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -38,5 +83,9 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

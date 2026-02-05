@@ -4,9 +4,9 @@ import net.tinvention.schrodinger.EnergyLevel;
 import net.tinvention.schrodinger.potential.DressedPotential;
 
 public interface Integrator {
-	public double propagateForward(double[] psi, int n, DressedPotential potential);
+	double propagateForward(double[] psi, int n, DressedPotential potential);
 
-	public default double computePerturbativeCorrection(EnergyLevel level, DressedPotential qTilde) {
+	default double computePerturbativeCorrection(EnergyLevel level, DressedPotential qTilde) {
 		return 0;
 	}
 

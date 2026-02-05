@@ -10,7 +10,7 @@ public class EnergyLevel {
 	public int numberOfBisections;
 	public double[] psi;
 	public double perturbativeCorrectionToEnergy;
-	private Grid grid;
+	private final Grid grid;
 	private boolean isPsiNormalized = false;
 	public Integer numberOfNodesUpperBound;
 	public Integer numberOfNodesLowerBound;

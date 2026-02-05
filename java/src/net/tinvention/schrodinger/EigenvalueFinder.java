@@ -8,10 +8,10 @@ import net.tinvention.schrodinger.potential.BarePotential;
 public class EigenvalueFinder {
 	private static final double TARGET_RELATIVE_ERROR = 0.d * Math.ulp(1.d); // change for single-precision float
 	private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
-	private Grid grid;
-	private BarePotential barePotential;
-	private double mass;
-	private Integrator integrator;
+	private final Grid grid;
+	private final BarePotential barePotential;
+	private final double mass;
+	private final Integrator integrator;
 
 	public EigenvalueFinder(Grid grid, BarePotential barePotential, double mass, Integrator integrator) {
 		this.grid = grid;

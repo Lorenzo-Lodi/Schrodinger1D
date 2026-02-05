@@ -3,10 +3,10 @@ package net.tinvention.schrodinger.potential;
 import net.tinvention.schrodinger.grid.Grid;
 
 public class DressedPotential {
-	private BarePotential barePotential;
-	private double mass;
-	private double energy;
-	private Grid grid;
+	private final BarePotential barePotential;
+	private final double mass;
+	private final double energy;
+	private final Grid grid;
 
 	public DressedPotential(BarePotential barePotential, double mass, double energy, Grid grid) {
 		this.barePotential = barePotential;
@@ -21,7 +21,7 @@ public class DressedPotential {
 		return potentialQ * Math.pow(this.grid.mappingFunctionGofY(y), 2) + this.grid.mappingFunctionFofY(y);
 	}
 
-	public BarePotential getPotential() {
+	public BarePotential getBarePotential() {
 		return barePotential;
 	}
 

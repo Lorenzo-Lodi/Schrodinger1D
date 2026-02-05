@@ -1,8 +1,8 @@
 package net.tinvention.schrodinger.potential;
 
 public class HarmonicPotential implements BarePotential {
-	private double r0;
-	private double alpha;
+	private final double r0;
+	private final double alpha;
 
 	public HarmonicPotential(double r0, double alpha) {
 		this.r0 = r0;
