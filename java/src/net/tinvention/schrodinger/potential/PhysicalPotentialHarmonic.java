@@ -1,10 +1,10 @@
 package net.tinvention.schrodinger.potential;
 
-public class HarmonicPotential implements PhysicalPotential {
+public class PhysicalPotentialHarmonic implements PhysicalPotential {
 	private final double r0;
 	private final double alpha;
 
-	public HarmonicPotential(double r0, double alpha) {
+	public PhysicalPotentialHarmonic(double r0, double alpha) {
 		this.r0 = r0;
 		this.alpha = alpha;
 

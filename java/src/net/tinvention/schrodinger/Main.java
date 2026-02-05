@@ -3,14 +3,14 @@ package net.tinvention.schrodinger;
 import net.tinvention.schrodinger.grid.Grid;
 import net.tinvention.schrodinger.integrator.Integrator;
 import net.tinvention.schrodinger.integrator.TaylorThreePoints;
-import net.tinvention.schrodinger.potential.HarmonicPotential;
+import net.tinvention.schrodinger.potential.PhysicalPotentialHarmonic;
 import net.tinvention.schrodinger.potential.PhysicalPotential;
 
 public class Main {
 
 	public static void main(String[] args) {
 
-		PhysicalPotential potential = new HarmonicPotential(15, 1);
+		PhysicalPotential potential = new PhysicalPotentialHarmonic(15, 1);
 		Integrator integrator = new TaylorThreePoints();
 
 		System.out.println("   i nPoints       1/Ystep          Lower               Upper" + "               Energy"
