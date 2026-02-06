@@ -1,6 +1,7 @@
 package net.tinvention.schrodinger;
 
 import net.tinvention.schrodinger.grid.Grid;
+import net.tinvention.schrodinger.grid.GridFactory;
 import net.tinvention.schrodinger.integrator.Integrator;
 import net.tinvention.schrodinger.integrator.TaylorThreePoints;
 import net.tinvention.schrodinger.potential.PhysicalPotentialHarmonic;
@@ -21,11 +22,11 @@ public class Main {
 			double rmin = 10 - i;
 //			double rRef = 5;
 //			double alpha = 0.5;
-//			Grid grid = Grid.generateSurkusGrid(0.5d, 5.5d, nOfPoints, rRef, alpha);
-//			Grid grid = Grid.generateSqrtGrid(10d, 20.0d, nOfPoints, rRef);
-//			Grid grid = Grid.generateUniformGrid(10.0d, 20.0d, nOfPoints);
+//			Grid grid = GridFactory.generateSurkusGrid(0.5d, 5.5d, nOfPoints, rRef, alpha);
+//			Grid grid = GridFactory.generateSqrtGrid(10d, 20.0d, nOfPoints, rRef);
+//			Grid grid = GridFactory.generateUniformGrid(10.0d, 20.0d, nOfPoints);
 			int nOfPoints = (int) (rmax - rmin) * 100;
-			Grid grid = Grid.generateUniformGrid(10.0d, rmax, nOfPoints);
+			Grid grid = GridFactory.generateUniformGrid(10.0d, rmax, nOfPoints);
 //			System.out.println(grid.toString());
 			double mass = 2.0d;
 			EigenvalueFinder finder = new EigenvalueFinder(grid, potential, mass, integrator);
