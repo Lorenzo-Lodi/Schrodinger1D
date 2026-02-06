@@ -43,7 +43,7 @@ public class EnergyLevel {
 	}
 
 	private double psiTimesGSquared(int i) {
-		return Math.pow(psi[i] * grid.mappingFunctionGofY(i), 2);
+		return Math.pow(psi[i] * grid.g(i), 2);
 	}
 
 	public boolean isPsiNormalized() {

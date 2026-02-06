@@ -20,9 +20,9 @@ public class TransformedQFunction {
 	}
 
 	public double value(double y) {
-		double r = this.grid.mappingFunctionRofY(y);
+		double r = this.grid.r(y);
 		double potentialQ = 2.d * this.mass * (this.energy - this.physicalPotential.value(r));
-		return potentialQ * Math.pow(this.grid.mappingFunctionGofY(y), 2) + this.grid.mappingFunctionFofY(y);
+		return potentialQ * Math.pow(this.grid.g(y), 2) + this.grid.F(y);
 	}
 
 	public PhysicalPotential getPhysicalPotential() {

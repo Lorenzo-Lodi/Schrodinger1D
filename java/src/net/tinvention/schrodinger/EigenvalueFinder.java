@@ -108,7 +108,7 @@ public class EigenvalueFinder {
 			if (y >= grid.getLastYValue()) {
 				break;
 			}
-			double r = grid.mappingFunctionRofY(y);
+			double r = grid.r(y);
 			double potentialValues = physicalPotential.value(r);
 			if (potentialValues > result.upperBound) {
 				result.upperBound = potentialValues;
