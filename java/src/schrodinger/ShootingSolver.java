@@ -15,17 +15,17 @@ public class ShootingSolver {
         this.integrator = integrator;
     }
 
-    private void propagatePsiLeftToRight(EnergyLevel level) {
-        // first (leftmost) point
-        level.psi[0] = 0;
-
-        // second point
-        level.psi[1] = 0.0000001d; // arbitrary initial value
-        system.setEnergy(level.energy);
-        for (int n = 1; n < system.getGrid().getNumberOfPoints() - 1; n++) {
-            level.psi[n + 1] = integrator.propagateForward(level.psi, n, system);
-        }
-    }
+//    private void propagatePsiLeftToRight(EnergyLevel level) {
+//        // first (leftmost) point
+//        level.psi[0] = 0;
+//
+//        // second point
+//        level.psi[1] = 0.0000001d; // arbitrary initial value
+//        system.setEnergy(level.energy);
+//        for (int n = 1; n < system.getGrid().getNumberOfPoints() - 1; n++) {
+//            level.psi[n + 1] = integrator.propagateForward(level.psi, n, system);
+//        }
+//    }
 
     /**
      * Locates the energy interval [lowerBound, upperBound] containing the
@@ -103,10 +103,7 @@ public class ShootingSolver {
             // Update the energy in the system
             system.setEnergy(currentEnergy);
             bounds.energy = currentEnergy;
-
-            // Propagate using the system (which now has the correct energy)
-            propagatePsiLeftToRight(bounds);
-            int nodes = bounds.countNumberOfNodes();
+            int nodes = countNodesRobust(bounds);
 
             if (nodes > nOfDesiredNodes) {
                 bounds.upperBound = currentEnergy;
@@ -122,18 +119,85 @@ public class ShootingSolver {
     }
 
 
+    /**
+     * Counts the number of nodes for a given energy using a stable
+     * bidirectional shooting method.
+     *
+     * Strategy:
+     * 1. Find the classical turning point (matching point).
+     * 2. Shoot Forward from Left -> Match.
+     * 3. Shoot Backward from Right -> Match.
+     * 4. Match signs at the junction.
+     * 5. Sum nodes.
+     */
+    /**
+     * Counts nodes using bidirectional shooting (stable for large grids).
+     */
+    private int countNodesRobust(EnergyLevel level) {
+        int nPoints = system.getGrid().getNumberOfPoints();
+        int matchIndex = findMatchingIndex(level.energy);
+
+        // Safety clamps
+        if (matchIndex < 2) matchIndex = 2;
+        if (matchIndex > nPoints - 3) matchIndex = nPoints - 3;
+
+        // --- Shoot Forward: Left boundary -> Match ---
+        level.psi[0] = 0.0;
+        level.psi[1] = 1e-10;
+
+        int nodesLeft = 0;
+        for (int n = 1; n < matchIndex; n++) {
+            level.psi[n + 1] = integrator.propagateForward(level.psi, n, system);
+            if (level.psi[n] * level.psi[n + 1] < 0.0) {
+                nodesLeft++;
+            }
+        }
+
+        // --- Shoot Backward: Right boundary -> Match ---
+        level.psi[nPoints - 1] = 0.0;
+        level.psi[nPoints - 2] = 1e-10;
+
+        int nodesRight = 0;
+        for (int n = nPoints - 2; n > matchIndex; n--) {
+            level.psi[n - 1] = integrator.propagateBackward(level.psi, n, system);
+            if (level.psi[n] * level.psi[n - 1] < 0.0) {
+                nodesRight++;
+            }
+        }
+
+        // Total nodes: simply sum from both segments
+        return nodesLeft + nodesRight;
+    }
+
+    private int findMatchingIndex(double energy) {
+        Grid grid = system.getGrid();
+        // Scan from right to left, within safe range
+        for (int i = grid.getNumberOfPoints() - 3; i >= 2; i--) {
+            if (system.UTilde(grid.getYValue(i)) <= energy) {
+                return i;
+            }
+        }
+
+        // Fallback to midpoint if always classically forbidden
+        return grid.getNumberOfPoints() / 2;
+    }
+
+
     public EnergyLevel findEigenvalueByBisection(int nOfDesiredNodes) {
 
         EnergyLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
 
         // now we can bisect the energy
         for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
-            level.energy = (level.upperBound + level.lowerBound) * 0.5d;
-            propagatePsiLeftToRight(level);
+            double mid = (level.lowerBound + level.upperBound) * 0.5;
+            system.setEnergy(mid);
+            level.energy = mid;
+            int nodes = countNodesRobust(level);
+
             if ((level.upperBound - level.lowerBound) / Math.abs(level.energy) < TARGET_RELATIVE_ERROR) {
                 break;
             }
-            if (level.countNumberOfNodes() > nOfDesiredNodes) {
+            if (nodes > nOfDesiredNodes) {
                 level.upperBound = level.energy;
             } else {
                 level.lowerBound = level.energy;
