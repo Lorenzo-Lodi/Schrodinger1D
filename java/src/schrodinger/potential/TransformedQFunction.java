@@ -1,6 +1,6 @@
-package net.tinvention.schrodinger.potential;
+package schrodinger.potential;
 
-import net.tinvention.schrodinger.grid.Grid;
+import schrodinger.grid.Grid;
 
 /**
  * Transformed Q-function Q̃(y) for the mapped equation: ϕ''(y) = -Q̃(y)ϕ(y)

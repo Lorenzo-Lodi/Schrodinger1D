@@ -1,11 +1,11 @@
-package net.tinvention.schrodinger;
+package schrodinger;
 
-import net.tinvention.schrodinger.grid.Grid;
-import net.tinvention.schrodinger.grid.GridFactory;
-import net.tinvention.schrodinger.integrator.Integrator;
-import net.tinvention.schrodinger.integrator.TaylorThreePoints;
-import net.tinvention.schrodinger.potential.PhysicalPotentialHarmonic;
-import net.tinvention.schrodinger.potential.PhysicalPotential;
+import schrodinger.grid.Grid;
+import schrodinger.grid.GridFactory;
+import schrodinger.integrator.Integrator;
+import schrodinger.integrator.TaylorThreePoints;
+import schrodinger.potential.PhysicalPotentialHarmonic;
+import schrodinger.potential.PhysicalPotential;
 
 public class Main {
 

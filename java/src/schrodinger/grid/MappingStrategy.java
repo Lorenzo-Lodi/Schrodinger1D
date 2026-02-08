@@ -1,4 +1,4 @@
-package net.tinvention.schrodinger.grid;
+package schrodinger.grid;
 
 public interface MappingStrategy {
 

@@ -1,7 +1,7 @@
-package net.tinvention.schrodinger.integrator;
+package schrodinger.integrator;
 
-import net.tinvention.schrodinger.EnergyLevel;
-import net.tinvention.schrodinger.potential.TransformedQFunction;
+import schrodinger.EnergyLevel;
+import schrodinger.potential.TransformedQFunction;
 
 public class TaylorThreePoints implements Integrator {
 

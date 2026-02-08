@@ -1,4 +1,4 @@
-package net.tinvention.schrodinger.potential;
+package schrodinger.potential;
 
 public class PhysicalPotentialHarmonic implements PhysicalPotential {
 	private final double r0;
