@@ -1,4 +1,4 @@
-package net.tinvention.schrodinger.potential;
+package schrodinger.potential;
 
 public interface PhysicalPotential {
 	/**

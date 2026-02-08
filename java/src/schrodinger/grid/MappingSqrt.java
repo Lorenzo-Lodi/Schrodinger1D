@@ -1,4 +1,4 @@
-package net.tinvention.schrodinger.grid;
+package schrodinger.grid;
 
 public class MappingSqrt implements MappingStrategy {
     private final double rRef;

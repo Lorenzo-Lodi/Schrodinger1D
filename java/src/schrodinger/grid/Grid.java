@@ -1,4 +1,4 @@
-package net.tinvention.schrodinger.grid;
+package schrodinger.grid;
 
 public class Grid {
     private final double rMin;

@@ -1,5 +1,3 @@
-package net.tinvention;
-
 public class ThreePointProcedural {
 	private static double xmin = -5.5d;
 	private static double xmax = -xmin;

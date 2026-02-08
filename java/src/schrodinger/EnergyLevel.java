@@ -1,6 +1,6 @@
-package net.tinvention.schrodinger;
+package schrodinger;
 
-import net.tinvention.schrodinger.grid.Grid;
+import schrodinger.grid.Grid;
 
 public class EnergyLevel {
     public int numberOfNodes;
