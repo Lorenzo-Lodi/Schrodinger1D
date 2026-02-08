@@ -16,32 +16,6 @@ public class EigenvalueFinder {
         this.integrator = integrator;
     }
 
-    public EnergyLevel findEigenvalueByBisection(int nOfDesiredNodes) {
-
-        EnergyLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
-
-        // now we can bisect the energy
-        for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
-            level.energy = (level.upperBound + level.lowerBound) * 0.5d;
-            propagatePsiLeftToRight(level);
-            if ((level.upperBound - level.lowerBound) / Math.abs(level.energy) < TARGET_RELATIVE_ERROR) {
-                break;
-            }
-            if (level.countNumberOfNodes() > nOfDesiredNodes) {
-                level.upperBound = level.energy;
-            } else {
-                level.lowerBound = level.energy;
-            }
-        }
-        system.setEnergy(level.energy);
-        level.normalizePsi();
-        level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level, system);
-
-        return level;
-    }
-
-    // TODO implement findEigenvalueBySecant
-
     private void propagatePsiLeftToRight(EnergyLevel level) {
         // first (leftmost) point
         level.psi[0] = 0;
@@ -98,7 +72,7 @@ public class EigenvalueFinder {
             double k_y = (uR - 2.0 * u0 + uL) / (hy * hy);
 
             // Effective Mass in y-space
-            // The kinetic term is - (1 / (2 * m * g^2)) * d^2/dy^2 ... wait.
+            // The kinetic term is - (1 / (2 * m * g^2)) * d^2/dy^2
             // The equation is phi'' = -2m * g^2 * (E - U_tilde) phi
             // So effective mass M_eff = m * g^2(y)
             double g = grid.g(yMin);
@@ -127,7 +101,7 @@ public class EigenvalueFinder {
         int maxIterations = 100;
 
         for (int i = 0; i < maxIterations; i++) {
-            // Update the MUTABLE energy in the system
+            // Update the energy in the system
             system.setEnergy(currentEnergy);
             bounds.energy = currentEnergy;
 
@@ -149,6 +123,31 @@ public class EigenvalueFinder {
     }
 
 
+    public EnergyLevel findEigenvalueByBisection(int nOfDesiredNodes) {
+
+        EnergyLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
+
+        // now we can bisect the energy
+        for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
+            level.energy = (level.upperBound + level.lowerBound) * 0.5d;
+            propagatePsiLeftToRight(level);
+            if ((level.upperBound - level.lowerBound) / Math.abs(level.energy) < TARGET_RELATIVE_ERROR) {
+                break;
+            }
+            if (level.countNumberOfNodes() > nOfDesiredNodes) {
+                level.upperBound = level.energy;
+            } else {
+                level.lowerBound = level.energy;
+            }
+        }
+        system.setEnergy(level.energy);
+        level.normalizePsi();
+        level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level, system);
+
+        return level;
+    }
+
+    // TODO implement findEigenvalueBySecant
 
 
 }
