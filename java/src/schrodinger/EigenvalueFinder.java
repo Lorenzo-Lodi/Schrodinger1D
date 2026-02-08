@@ -2,21 +2,17 @@ package schrodinger;
 
 import schrodinger.grid.Grid;
 import schrodinger.integrator.Integrator;
-import schrodinger.potential.TransformedQFunction;
+import schrodinger.potential.SchrodingerSystem;
 import schrodinger.potential.PhysicalPotential;
 
 public class EigenvalueFinder {
     private static final double TARGET_RELATIVE_ERROR = 0.d * Math.ulp(1.d); // change for single-precision float
     private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
-    private final Grid grid;
-    private final PhysicalPotential physicalPotential;
-    private final double mass;
     private final Integrator integrator;
+    private final SchrodingerSystem system;
 
-    public EigenvalueFinder(Grid grid, PhysicalPotential physicalPotential, double mass, Integrator integrator) {
-        this.grid = grid;
-        this.physicalPotential = physicalPotential;
-        this.mass = mass;
+    public EigenvalueFinder(SchrodingerSystem system, Integrator integrator) {
+        this.system = system;
         this.integrator = integrator;
     }
 
@@ -37,10 +33,9 @@ public class EigenvalueFinder {
                 level.lowerBound = level.energy;
             }
         }
-
-        TransformedQFunction transformedQFunction = new TransformedQFunction(physicalPotential, mass, level.energy, grid);
+        system.setEnergy(level.energy);
         level.normalizePsi();
-        level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level, transformedQFunction);
+        level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level, system);
 
         return level;
     }
@@ -53,116 +48,107 @@ public class EigenvalueFinder {
 
         // second point
         level.psi[1] = 0.0000001d; // arbitrary initial value
-
-        TransformedQFunction transformedQFunction = new TransformedQFunction(physicalPotential, mass, level.energy, grid);
-        for (int n = 1; n < grid.getNumberOfPoints() - 1; n++) {
-            level.psi[n + 1] = integrator.propagateForward(level.psi, n, transformedQFunction);
+        system.setEnergy(level.energy);
+        for (int n = 1; n < system.getGrid().getNumberOfPoints() - 1; n++) {
+            level.psi[n + 1] = integrator.propagateForward(level.psi, n, system);
         }
     }
 
     /**
-     * Locates the energy interval [lowerBound, upperBound] that contains the
-     * eigenvalue with the specified number of nodes.
-     * <p>
-     * This method replaces hard-coded "magic numbers" with a physics-based
-     * heuristic. It estimates the energy scale using the harmonic curvature
-     * of the potential at its minimum or the confinement scale of the grid.
-     *
-     * @param nOfDesiredNodes The target number of nodes for the eigenstate.
-     * @return An EnergyLevel object with lowerBound and upperBound populated.
+     * Locates the energy interval [lowerBound, upperBound] containing the
+     * state with 'nOfDesiredNodes' nodes.
      */
     private EnergyLevel findInitialEnergyBracket(int nOfDesiredNodes) {
+        Grid grid = system.getGrid();
         EnergyLevel bounds = new EnergyLevel(grid);
         bounds.numberOfNodes = nOfDesiredNodes;
 
-        // 1. Scan the grid to find the global minimum of the potential
+        // 1. Scan the *Effective Potential* U_tilde(y) for the minimum
         int minIndex = 0;
-        double vMin = Double.MAX_VALUE;
+        double uMin = Double.MAX_VALUE;
 
-        // We scan the physical potential V(r) to find the absolute energy floor
-        for (int i = 0; i < grid.getNumberOfPoints(); i++) {
-            double r = grid.r(grid.getYValue(i));
-            double v = physicalPotential.value(r);
-            if (v < vMin) {
-                vMin = v;
+        // We scan the uniform y-grid
+        int nPoints = grid.getNumberOfPoints();
+        for (int i = 1; i < nPoints - 1; i++) {
+            double y = grid.getYValue(i);
+            // Use the effective potential that includes mapping corrections
+            double val = system.UTilde(y);
+            if (val < uMin) {
+                uMin = val;
                 minIndex = i;
             }
         }
-        bounds.lowerBound = vMin;
+        bounds.lowerBound = uMin;
 
-        // 2. Estimate the initial search step (Energy Scale)
+        // 2. Estimate Step Size (Energy Scale)
         double step;
         boolean harmonicSuccess = false;
 
-        // Attempt A: Harmonic Approximation (Local)
-        // We estimate curvature (k) using the uniform computational y-grid
-        if (minIndex > 0 && minIndex < grid.getNumberOfPoints() - 1) {
+        // Attempt A: Harmonic Curvature of U_tilde on uniform y-grid
+        if (minIndex > 0 && minIndex < nPoints - 1) {
             double hy = grid.getStepSizeYCoordinate();
+            double yMin = grid.getYValue(minIndex);
 
-            // Potential values at the minimum and neighbors
-            double v0 = physicalPotential.value(grid.r(grid.getYValue(minIndex)));
-            double vL = physicalPotential.value(grid.r(grid.getYValue(minIndex - 1)));
-            double vR = physicalPotential.value(grid.r(grid.getYValue(minIndex + 1)));
+            // U_tilde values at minimum and neighbors
+            double u0 = system.UTilde(yMin);
+            double uL = system.UTilde(yMin - hy);
+            double uR = system.UTilde(yMin + hy);
 
-            // Second derivative d2V/dy2 on uniform grid
-            double vyy = (vR - 2.0 * v0 + vL) / (hy * hy);
+            // Curvature K_y = d^2(U_tilde)/dy^2
+            double k_y = (uR - 2.0 * u0 + uL) / (hy * hy);
 
-            // Map the curvature from y-space back to r-space: k_r = Vyy / (dr/dy)^2
-            // dr/dy (central difference)
-            double rL = grid.r(grid.getYValue(minIndex - 1));
-            double rR = grid.r(grid.getYValue(minIndex + 1));
-            double drdy = (rR - rL) / (2.0 * hy);
+            // Effective Mass in y-space
+            // The kinetic term is - (1 / (2 * m * g^2)) * d^2/dy^2 ... wait.
+            // The equation is phi'' = -2m * g^2 * (E - U_tilde) phi
+            // So effective mass M_eff = m * g^2(y)
+            double g = grid.g(yMin);
+            double m_eff = system.getMass() * g * g;
 
-            double k = vyy / (drdy * drdy);
-
-            // If k > 0, we have a stable well; estimate step as h_bar * omega
-            if (k > 1e-12) {
-                step = Math.sqrt(k / mass); // Assuming units where h_bar = 1
+            if (k_y > 1e-15) {
+                // Harmonic oscillator: omega = sqrt(K / M)
+                step = Math.sqrt(k_y / m_eff);
                 harmonicSuccess = true;
             } else {
-                step = 0; // Fallback
+                step = 0;
             }
         } else {
-            step = 0; // Fallback
+            step = 0;
         }
 
-        // Attempt B: Particle-in-a-Box (Global Fallback)
-        // Used if the potential is flat (k=0) or inverted (k<0) at the minimum
+        // Attempt B: Particle-in-a-Box (Fallback)
         if (!harmonicSuccess) {
             double L = grid.r(grid.getLastYValue()) - grid.r(grid.getFirstYValue());
-            // E_ground_state = pi^2 / (2 * mass * L^2)
-            step = (Math.PI * Math.PI) / (2.0 * mass * L * L);
-
-            // Absolute safety floor to avoid zero step
-            if (step < 1e-12) step = 1e-4;
+            step = (Math.PI * Math.PI) / (2.0 * system.getMass() * L * L);
+            if (step < 1e-12) step = 1e-4; // Safety floor
         }
 
-        // 3. Exponential Scan: Double the step until we bracket the state
-        // currentEnergy starts one step above the minimum
-        double currentEnergy = vMin + step;
-        int maxIterations = 100; // Sufficient to cover ~30 orders of magnitude
+        // 3. Exponential Scan
+        double currentEnergy = uMin + step;
+        int maxIterations = 100;
 
         for (int i = 0; i < maxIterations; i++) {
+            // Update the MUTABLE energy in the system
+            system.setEnergy(currentEnergy);
             bounds.energy = currentEnergy;
 
-            // propagatePsiLeftToRight updates bounds.psi and node count
+            // Propagate using the system (which now has the correct energy)
             propagatePsiLeftToRight(bounds);
             int nodes = bounds.countNumberOfNodes();
 
             if (nodes > nOfDesiredNodes) {
-                // Success: This energy has too many nodes, so the bracket is closed
                 bounds.upperBound = currentEnergy;
                 return bounds;
             } else {
-                // Still too low: update lowerBound and accelerate upwards
                 bounds.lowerBound = currentEnergy;
                 step *= 2.0;
                 currentEnergy += step;
             }
         }
 
-        throw new RuntimeException("Failed to bracket energy level. Potential may be unbound or mass is too small.");
+        throw new RuntimeException("Failed to bracket energy level.");
     }
+
+
 
 
 }
