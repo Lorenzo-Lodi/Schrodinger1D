@@ -8,11 +8,11 @@ public class SchrodingerSystem {
     private double energy;
     private final Grid grid;
 
-    public SchrodingerSystem(PhysicalPotential physicalPotential, double mass, double energy, Grid grid) {
+    public SchrodingerSystem(PhysicalPotential physicalPotential, double mass, Grid grid) {
         this.physicalPotential = physicalPotential;
         this.mass = mass;
-        this.energy = energy;
         this.grid = grid;
+        this.energy = Double.NaN; // Explicitly uninitialized
     }
 
     public double U(double r) {

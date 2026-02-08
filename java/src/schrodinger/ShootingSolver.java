@@ -3,15 +3,14 @@ package schrodinger;
 import schrodinger.grid.Grid;
 import schrodinger.integrator.Integrator;
 import schrodinger.potential.SchrodingerSystem;
-import schrodinger.potential.PhysicalPotential;
 
-public class EigenvalueFinder {
+public class ShootingSolver {
     private static final double TARGET_RELATIVE_ERROR = 0.d * Math.ulp(1.d); // change for single-precision float
     private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
     private final Integrator integrator;
     private final SchrodingerSystem system;
 
-    public EigenvalueFinder(SchrodingerSystem system, Integrator integrator) {
+    public ShootingSolver(SchrodingerSystem system, Integrator integrator) {
         this.system = system;
         this.integrator = integrator;
     }

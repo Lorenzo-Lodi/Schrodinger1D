@@ -30,8 +30,8 @@ public class Main {
             Grid grid = GridFactory.generateUniformGrid(10.0d, rmax, nOfPoints);
 //			System.out.println(grid.toString());
             double mass = 2.0d;
-            SchrodingerSystem system = new SchrodingerSystem(potential, mass, 0, grid);
-            EigenvalueFinder finder = new EigenvalueFinder(system, integrator);
+            SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
+            ShootingSolver finder = new ShootingSolver(system, integrator);
 
             int nOfDesiredNodes = 10;
             EnergyLevel ek = finder.findEigenvalueByBisection(nOfDesiredNodes);
