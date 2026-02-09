@@ -14,26 +14,16 @@ public class Main {
 
         PhysicalPotential potential = new PhysicalPotentialHarmonic(15, 1);
         Integrator integrator = new TaylorThreePoints();
+        double mass = 2.0d;
+        int nOfDesiredNodes = 10;
 
         System.out.println("   i nPoints       1/Ystep          Lower               Upper" + "               Energy"
                 + "          Energy + Pert. " + "     n bisec");
-        for (int i = 0; i < 20; i++) {
-//			int nOfPoints = 20 + (int) Math.pow(i, 3);
-            double rmax = 16 + i;
-            double rmin = 10 - i;
-//			double rRef = 5;
-//			double alpha = 0.5;
-//			Grid grid = GridFactory.generateSurkusGrid(0.5d, 5.5d, nOfPoints, rRef, alpha);
-//			Grid grid = GridFactory.generateSqrtGrid(10d, 20.0d, nOfPoints, rRef);
-//			Grid grid = GridFactory.generateUniformGrid(10.0d, 20.0d, nOfPoints);
-            int nOfPoints = (int) (rmax - rmin) * 100;
-            Grid grid = GridFactory.generateUniformGrid(10.0d, rmax, nOfPoints);
-//			System.out.println(grid.toString());
-            double mass = 2.0d;
+        for (int i = 0; i < 12; i++) {
+            int nOfPoints = 20 + (int) Math.pow(i, 3);
+            Grid grid = GridFactory.generateUniformGrid(5.0d, 25.0d, nOfPoints);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
-
-            int nOfDesiredNodes = 10;
             EnergyLevel ek = finder.findEigenvalueByBisection(nOfDesiredNodes);
 
             int floatDecimals = 16;
@@ -44,10 +34,6 @@ public class Main {
                     + padFloat(ek.energy, floatDecimals, floatDecimals + 4)
                     + padFloat(ek.energy + ek.perturbativeCorrectionToEnergy, floatDecimals, floatDecimals + 6)
                     + padInt(ek.numberOfBisections, 6));
-//			for (int j = 0; j < grid.getNumberOfPoints(); j++) {
-//				 System.out.println(grid.getYValue(j) + " " + grid.getRValue(j) + " " +
-//				 ek.psi[j]);
-//			}
         }
 
     }

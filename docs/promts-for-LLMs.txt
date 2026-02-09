@@ -3,3 +3,6 @@ One criterium to stop refining the method is a "relative error" target on the en
 However, I wonder if physically setting a relative error on the energy is a sensible thing to do, or one should stick to a target on the absolute errors.
 The problem is that absolute energies can always be shifted upward or downwards without changing the physics. So if I rigidly shift the potential up or down all energies will be shifted; so if one energy has a certain absolute error, its relative error depends on the choice of the arbitrary potential shift. 
 What do you think?
+
+
+Thank you. 

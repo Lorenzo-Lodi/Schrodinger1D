@@ -71,7 +71,7 @@ public class ShootingSolver {
 
         // Attempt B: Particle-in-a-Box (Fallback)
         if (!harmonicSuccess) {
-            double L = grid.r(grid.getLastYValue()) - grid.r(grid.getFirstYValue());
+            double L = grid.getLastYValue() - grid.getFirstYValue();
             energyScale = (Math.PI * Math.PI) / (2.0 * system.getMass() * L * L);
             if (energyScale < 1e-12) energyScale = 1e-4; // Safety floor
         }
