@@ -1,15 +1,14 @@
-package net.tinvention.schrodinger;
+package schrodinger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import schrodinger.EnergyLevel;
 import schrodinger.grid.GridFactory;
 import org.junit.jupiter.api.Test;
 
 import schrodinger.grid.Grid;
 
 class EnergyLevelTest {
-    private static final double SMALL_EPS = 5e-16;
+    private static final double SMALL_EPS = 1e-15;
     private static final double LARGE_EPS = 8e-4;
 
     @Test

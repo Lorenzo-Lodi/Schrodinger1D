@@ -5,20 +5,10 @@ import schrodinger.potential.SchrodingerSystem;
 
 public class TaylorThreePoints implements Integrator {
 
-    @Override
-    public double propagateForward(double[] psi, int n, SchrodingerSystem system) {
-        return propagate(psi, n, system, 1);
-    }
-
-    @Override
-    public double propagateBackward(double[] psi, int n, SchrodingerSystem system) {
-        return propagate(psi, n, system, -1);
-    }
-
-    private double propagate(double[] psi, int n, SchrodingerSystem system, int direction) {
+    public double propagate(double[] psi, int n, SchrodingerSystem system, Direction direction) {
         double y = system.getGrid().getYValue(n);
         double stepSizeSquared = Math.pow(system.getGrid().getStepSizeYCoordinate(), 2);
-        return psi[n] * (2.0d - stepSizeSquared * system.QTilde(y)) - psi[n - direction];
+        return psi[n] * (2.0d - stepSizeSquared * system.QTilde(y)) - psi[n - direction.getValue()];
     }
 
     @Override

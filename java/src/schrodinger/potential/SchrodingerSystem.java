@@ -15,6 +15,9 @@ public class SchrodingerSystem {
         this.energy = Double.NaN; // Explicitly uninitialized
     }
 
+    /**
+     * Potential U(r) for the equation: -(hbar^2 / 2m) ψ''(r) + U(r) ψ(r) = E ψ(r)
+     */
     public double U(double r) {
         return physicalPotential.value(r);
     }
@@ -25,6 +28,9 @@ public class SchrodingerSystem {
         return u - factor / (2.d * mass);
     }
 
+    /**
+     * Q-function Q(r) for the equation: ψ''(r) = -Q(r)ψ(r)
+     */
     public double Q(double r) {
         return 2.d * mass * (energy - physicalPotential.value(r));
     }

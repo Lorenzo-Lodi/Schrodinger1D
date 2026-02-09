@@ -1,9 +1,8 @@
-package net.tinvention.schrodinger.grid;
+package schrodinger.grid;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import schrodinger.grid.MappingSurkus;
 
 class MappingSurkusTest {
 

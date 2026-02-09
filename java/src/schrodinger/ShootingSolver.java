@@ -143,7 +143,7 @@ public class ShootingSolver {
 
         int nodesLeft = 0;
         for (int n = 1; n < matchIndex; n++) {
-            level.psi[n + 1] = integrator.propagateForward(level.psi, n, system);
+            level.psi[n + 1] = integrator.propagate(level.psi, n, system, Integrator.Direction.FORWARD);
             if (level.psi[n] * level.psi[n + 1] < 0.0) {
                 nodesLeft++;
             }
@@ -155,7 +155,7 @@ public class ShootingSolver {
 
         int nodesRight = 0;
         for (int n = nPoints - 2; n > matchIndex; n--) {
-            level.psi[n - 1] = integrator.propagateBackward(level.psi, n, system);
+            level.psi[n - 1] = integrator.propagate(level.psi, n, system, Integrator.Direction.BACKWARD);
             if (level.psi[n] * level.psi[n - 1] < 0.0) {
                 nodesRight++;
             }
