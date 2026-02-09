@@ -8,6 +8,7 @@ import schrodinger.potential.SchrodingerSystem;
 public class ShootingSolver {
     private static final double TARGET_ABSOLUTE_ERROR = 1e-9;
     private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 50; // reduces error by 2**n
+    private static final double PSI_MAX = 1e30; // stop integrating forward if wave function exeeds this value
     private final Integrator integrator;
     private final SchrodingerSystem system;
 
@@ -85,7 +86,7 @@ public class ShootingSolver {
             // Update the energy in the system
             system.setEnergy(currentEnergy);
             bounds.energy = currentEnergy;
-            int nodes = countNodes(bounds);
+            int nodes = countNodesForward(bounds);
 
             if (nodes > nOfDesiredNodes) {
                 bounds.upperBound = currentEnergy;
@@ -113,62 +114,13 @@ public class ShootingSolver {
             if (level.psi[n] * level.psi[n + 1] < 0.0) {
                 nodes++;
             }
+
+            // If we are in the classically-forbidded region and the wavefunction is blowing up, we can stop early
+            if (system.QTildeValueAt(n) > level.energy && Math.abs(level.psi[n + 1]) > PSI_MAX) {
+                break;
+            }
         }
         return nodes;
-    }
-
-    int countNodes(EnergyLevel level) {
-        return countNodesBidirectional(level);
-//        return countNodesForward(level);
-    }
-
-
-    /**
-     * Counts the number of nodes for a given energy using a stable
-     * bidirectional shooting method.
-     *
-     * Strategy:
-     * 1. Find the classical turning point (matching point).
-     * 2. Shoot Forward from Left -> Match.
-     * 3. Shoot Backward from Right -> Match.
-     * 4. Match signs at the junction.
-     * 5. Sum nodes.
-     */
-    /**
-     * Counts nodes using bidirectional shooting (stable for large grids).
-     */
-    private int countNodesBidirectional(EnergyLevel level) {
-        int nPoints = system.getGrid().getNumberOfPoints();
-        int matchIndex = findMatchingIndex(level.energy);
-
-        // --- Shoot Forward: Left boundary -> Match ---
-        level.psi[0] = 0.0;
-        level.psi[1] = 1e-16;
-
-        int nodesLeft = 0;
-        for (int n = 1; n < matchIndex; n++) {
-            level.psi[n + 1] = integrator.propagate(level.psi, n, system, Integrator.Direction.FORWARD);
-            if (level.psi[n] * level.psi[n + 1] < 0.0) {
-                nodesLeft++;
-            }
-        }
-
-        // --- Shoot Backward: Right boundary -> Match ---
-        level.psi[nPoints - 1] = 0.0;
-        level.psi[nPoints - 2] = 1e-16;
-
-        int nodesRight = 0;
-        for (int n = nPoints - 2; n > matchIndex; n--) {
-            level.psi[n - 1] = integrator.propagate(level.psi, n, system, Integrator.Direction.BACKWARD);
-            if (level.psi[n] * level.psi[n - 1] < 0.0) {
-                nodesRight++;
-            }
-        }
-
-        if()
-
-        // Total nodes: simply sum from both segments
-        return nodesLeft + nodesRight;
     }
 
     private int findMatchingIndex(double energy) {
@@ -189,21 +141,22 @@ public class ShootingSolver {
 
         EnergyLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
 
-        // now we can bisect the energy
         for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
             double mid = (level.lowerBound + level.upperBound) * 0.5;
             system.setEnergy(mid);
             level.energy = mid;
-            int nodes = countNodes(level);
+            int nodes = countNodesForward(level);
 
-            if (Math.abs((level.upperBound - level.lowerBound)) < TARGET_ABSOLUTE_ERROR) {
-                break;
-            }
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = level.energy;
             } else {
                 level.lowerBound = level.energy;
             }
+
+            if (Math.abs((level.upperBound - level.lowerBound)) < TARGET_ABSOLUTE_ERROR) {
+                break;
+            }
+
         }
         system.setEnergy(level.energy);
         level.normalizePsi();

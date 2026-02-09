@@ -43,6 +43,11 @@ public class SchrodingerSystem {
         return Math.pow(grid.g(y), 2) * Q(grid.r(y)) + grid.F(y);
     }
 
+    public double QTildeValueAt(int i) {
+        double y = grid.getYValue(i);
+        return QTilde(y);
+    }
+
     public double getMass() {
         return mass;
     }
