@@ -137,13 +137,9 @@ public class ShootingSolver {
         int nPoints = system.getGrid().getNumberOfPoints();
         int matchIndex = findMatchingIndex(level.energy);
 
-        // Safety clamps
-        if (matchIndex < 2) matchIndex = 2;
-        if (matchIndex > nPoints - 3) matchIndex = nPoints - 3;
-
         // --- Shoot Forward: Left boundary -> Match ---
         level.psi[0] = 0.0;
-        level.psi[1] = 1e-10;
+        level.psi[1] = 1e-16;
 
         int nodesLeft = 0;
         for (int n = 1; n < matchIndex; n++) {
@@ -155,7 +151,7 @@ public class ShootingSolver {
 
         // --- Shoot Backward: Right boundary -> Match ---
         level.psi[nPoints - 1] = 0.0;
-        level.psi[nPoints - 2] = 1e-10;
+        level.psi[nPoints - 2] = 1e-16;
 
         int nodesRight = 0;
         for (int n = nPoints - 2; n > matchIndex; n--) {
