@@ -5,7 +5,7 @@ import schrodinger.integrator.Integrator;
 import schrodinger.potential.SchrodingerSystem;
 
 public class ShootingSolver {
-    private static final double TARGET_ABSOLUTE_ERROR = 1e-8;
+    private static final double TARGET_ABSOLUTE_ERROR = 1e-9;
     private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 50; // reduces error by 2**n
     private final Integrator integrator;
     private final SchrodingerSystem system;
@@ -84,7 +84,7 @@ public class ShootingSolver {
             // Update the energy in the system
             system.setEnergy(currentEnergy);
             bounds.energy = currentEnergy;
-            int nodes = countNodesRobust(bounds);
+            int nodes = countNodesForward(bounds);
 
             if (nodes > nOfDesiredNodes) {
                 bounds.upperBound = currentEnergy;
@@ -97,6 +97,23 @@ public class ShootingSolver {
         }
 
         throw new RuntimeException("Failed to bracket energy level.");
+    }
+
+    private int countNodesForward(EnergyLevel level) {
+        int nPoints = system.getGrid().getNumberOfPoints();
+
+        // --- Shoot Forward
+        level.psi[0] = 0.0;
+        level.psi[1] = 1e-16;
+
+        int nodes = 0;
+        for (int n = 1; n < nPoints - 1; n++) {
+            level.psi[n + 1] = integrator.propagate(level.psi, n, system, Integrator.Direction.FORWARD);
+            if (level.psi[n] * level.psi[n + 1] < 0.0) {
+                nodes++;
+            }
+        }
+        return nodes;
     }
 
 
@@ -114,7 +131,7 @@ public class ShootingSolver {
     /**
      * Counts nodes using bidirectional shooting (stable for large grids).
      */
-    private int countNodesRobust(EnergyLevel level) {
+    private int countNodesBidirectional(EnergyLevel level) {
         int nPoints = system.getGrid().getNumberOfPoints();
         int matchIndex = findMatchingIndex(level.energy);
 
@@ -169,7 +186,7 @@ public class ShootingSolver {
             double mid = (level.lowerBound + level.upperBound) * 0.5;
             system.setEnergy(mid);
             level.energy = mid;
-            int nodes = countNodesRobust(level);
+            int nodes = countNodesForward(level);
 
             if (Math.abs((level.upperBound - level.lowerBound)) < TARGET_ABSOLUTE_ERROR) {
                 break;
