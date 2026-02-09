@@ -1,5 +1,6 @@
-package schrodinger;
+package schrodinger.solver;
 
+import schrodinger.EnergyLevel;
 import schrodinger.grid.Grid;
 import schrodinger.integrator.Integrator;
 import schrodinger.potential.SchrodingerSystem;
@@ -84,7 +85,7 @@ public class ShootingSolver {
             // Update the energy in the system
             system.setEnergy(currentEnergy);
             bounds.energy = currentEnergy;
-            int nodes = countNodesForward(bounds);
+            int nodes = countNodes(bounds);
 
             if (nodes > nOfDesiredNodes) {
                 bounds.upperBound = currentEnergy;
@@ -114,6 +115,11 @@ public class ShootingSolver {
             }
         }
         return nodes;
+    }
+
+    int countNodes(EnergyLevel level) {
+        return countNodesBidirectional(level);
+//        return countNodesForward(level);
     }
 
 
@@ -159,6 +165,8 @@ public class ShootingSolver {
             }
         }
 
+        if()
+
         // Total nodes: simply sum from both segments
         return nodesLeft + nodesRight;
     }
@@ -186,7 +194,7 @@ public class ShootingSolver {
             double mid = (level.lowerBound + level.upperBound) * 0.5;
             system.setEnergy(mid);
             level.energy = mid;
-            int nodes = countNodesForward(level);
+            int nodes = countNodes(level);
 
             if (Math.abs((level.upperBound - level.lowerBound)) < TARGET_ABSOLUTE_ERROR) {
                 break;
