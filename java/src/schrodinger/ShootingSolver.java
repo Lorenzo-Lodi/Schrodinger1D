@@ -5,8 +5,8 @@ import schrodinger.integrator.Integrator;
 import schrodinger.potential.SchrodingerSystem;
 
 public class ShootingSolver {
-    private static final double TARGET_RELATIVE_ERROR = 0.d * Math.ulp(1.d); // change for single-precision float
-    private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
+    private static final double TARGET_ABSOLUTE_ERROR = 1e-8;
+    private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 50; // reduces error by 2**n
     private final Integrator integrator;
     private final SchrodingerSystem system;
 
@@ -14,18 +14,6 @@ public class ShootingSolver {
         this.system = system;
         this.integrator = integrator;
     }
-
-//    private void propagatePsiLeftToRight(EnergyLevel level) {
-//        // first (leftmost) point
-//        level.psi[0] = 0;
-//
-//        // second point
-//        level.psi[1] = 0.0000001d; // arbitrary initial value
-//        system.setEnergy(level.energy);
-//        for (int n = 1; n < system.getGrid().getNumberOfPoints() - 1; n++) {
-//            level.psi[n + 1] = integrator.propagateForward(level.psi, n, system);
-//        }
-//    }
 
     /**
      * Locates the energy interval [lowerBound, upperBound] containing the
@@ -54,7 +42,7 @@ public class ShootingSolver {
         bounds.lowerBound = uMin;
 
         // 2. Estimate Step Size (Energy Scale)
-        double step;
+        double energyScale;
         boolean harmonicSuccess = false;
 
         // Attempt A: Harmonic Curvature of U_tilde on uniform y-grid
@@ -70,33 +58,26 @@ public class ShootingSolver {
             // Curvature K_y = d^2(U_tilde)/dy^2
             double k_y = (uR - 2.0 * u0 + uL) / (hy * hy);
 
-            // Effective Mass in y-space
-            // The kinetic term is - (1 / (2 * m * g^2)) * d^2/dy^2
-            // The equation is phi'' = -2m * g^2 * (E - U_tilde) phi
-            // So effective mass M_eff = m * g^2(y)
-            double g = grid.g(yMin);
-            double m_eff = system.getMass() * g * g;
-
             if (k_y > 1e-15) {
                 // Harmonic oscillator: omega = sqrt(K / M)
-                step = Math.sqrt(k_y / m_eff);
+                energyScale = Math.sqrt(k_y / system.getMass());
                 harmonicSuccess = true;
             } else {
-                step = 0;
+                energyScale = 0;
             }
         } else {
-            step = 0;
+            energyScale = 0;
         }
 
         // Attempt B: Particle-in-a-Box (Fallback)
         if (!harmonicSuccess) {
             double L = grid.r(grid.getLastYValue()) - grid.r(grid.getFirstYValue());
-            step = (Math.PI * Math.PI) / (2.0 * system.getMass() * L * L);
-            if (step < 1e-12) step = 1e-4; // Safety floor
+            energyScale = (Math.PI * Math.PI) / (2.0 * system.getMass() * L * L);
+            if (energyScale < 1e-12) energyScale = 1e-4; // Safety floor
         }
 
-        // 3. Exponential Scan
-        double currentEnergy = uMin + step;
+        // 3. Exponential Scan to find upper bound to the energy
+        double currentEnergy = uMin + energyScale;
         int maxIterations = 100;
 
         for (int i = 0; i < maxIterations; i++) {
@@ -110,8 +91,8 @@ public class ShootingSolver {
                 return bounds;
             } else {
                 bounds.lowerBound = currentEnergy;
-                step *= 2.0;
-                currentEnergy += step;
+                energyScale *= 2.0;
+                currentEnergy += energyScale;
             }
         }
 
@@ -190,7 +171,7 @@ public class ShootingSolver {
             level.energy = mid;
             int nodes = countNodesRobust(level);
 
-            if ((level.upperBound - level.lowerBound) / Math.abs(level.energy) < TARGET_RELATIVE_ERROR) {
+            if (Math.abs((level.upperBound - level.lowerBound)) < TARGET_ABSOLUTE_ERROR) {
                 break;
             }
             if (nodes > nOfDesiredNodes) {
