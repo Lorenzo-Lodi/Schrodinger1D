@@ -20,7 +20,8 @@ public class TaylorThreePoints implements Integrator {
         for (int i = 0; i < system.getGrid().getNumberOfPoints(); i++) {
             result += Math.pow(system.QTildeValueAt(i) * level.psi[i], 2);
         }
-        result = result * Math.pow(system.getGrid().getStepSizeYCoordinate(), 3) / (24.0 * system.getMass());
+        double h = system.getGrid().getStepSizeYCoordinate();
+        result = result * h * h * h / (24.0 * system.getMass());
         return result;
     }
 

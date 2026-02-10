@@ -6,7 +6,7 @@ import schrodinger.integrator.Integrator;
 import schrodinger.potential.SchrodingerSystem;
 
 public class ShootingSolver {
-    private static final double TARGET_ABSOLUTE_ERROR = 1e-9;
+    private static final double TARGET_ABSOLUTE_ERROR = 1e-13;
     private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 50; // reduces error by 2**n
     private static final double PSI_MAX = 1e30; // stop integrating forward if wave function exeeds this value
     private final Integrator integrator;
