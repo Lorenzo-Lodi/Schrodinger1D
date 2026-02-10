@@ -15,17 +15,22 @@ public class Main {
 
         PhysicalPotential potential = new PhysicalPotentialHarmonic(0, 1);
         Integrator integrator = new TaylorThreePoints();
-        double mass = 2.0d;
-        int nOfDesiredNodes = 10;
+        double mass = 1.0d;
+        int nOfDesiredNodes = 1;
 
         System.out.println("   i nPoints       1/Ystep          Lower               Upper" + "               Energy"
                 + "          Energy + Pert. " + "     n bisec");
-        for (int i = 0; i < 20; i++) {
-            int nOfPoints = 20 + 50 * i;
-            Grid grid = GridFactory.generateUniformGrid(-10.0d, 10.0d, nOfPoints);
+        for (int i = 0; i < 1; i++) {
+//            int nOfPoints = 20 + 50 * i;
+            int nOfPoints = 81;
+            Grid grid = GridFactory.generateUniformGrid(-4.0d, 4.0d, nOfPoints);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
             EnergyLevel ek = finder.findEigenvalueByBisection(nOfDesiredNodes);
+
+            for (int j = 0; j < nOfPoints; j++) {
+                System.out.println(ek.psi[j]);
+            }
 
             int floatDecimals = 16;
             System.out.println(padInt(i, 4) + padInt(grid.getNumberOfPoints(), 6)

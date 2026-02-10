@@ -14,10 +14,13 @@ public class TaylorThreePoints implements Integrator {
     @Override
     public double computePerturbativeCorrection(EnergyLevel level, SchrodingerSystem system) {
         double result = 0;
-        for (int i = 0; i < system.getGrid().getNumberOfPoints(); i++) {
-            result += Math.pow(system.QTilde(system.getGrid().getYValue(i)) * level.psi[i], 2);
+        if (!level.isPsiNormalized()) {
+            level.normalizePsi();
         }
-        result = result * Math.pow(system.getGrid().getStepSizeYCoordinate(), 3) / (24 * system.getMass());
+        for (int i = 0; i < system.getGrid().getNumberOfPoints(); i++) {
+            result += Math.pow(system.QTildeValueAt(i) * level.psi[i], 2);
+        }
+        result = result * Math.pow(system.getGrid().getStepSizeYCoordinate(), 3) / (24.0 * system.getMass());
         return result;
     }
 
