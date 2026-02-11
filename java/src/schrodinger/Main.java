@@ -23,9 +23,9 @@ public class Main {
         for (int i = 0; i < 20; i++) {
             int nOfPoints = 20 + 50 * i;
 //            int nOfPoints = 81;
-//            Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
+            Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
 //            Grid grid = GridFactory.generateLogarithmicGrid(14.0d, 26.0d, nOfPoints, 22);
-            Grid grid = GridFactory.generateSqrtGrid(14.0d, 26.0d, nOfPoints, 22);
+//            Grid grid = GridFactory.generateSqrtGrid(14.0d, 26.0d, nOfPoints, 22);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
             EnergyLevel ek = finder.findEigenvalueByBisection(nOfDesiredNodes);

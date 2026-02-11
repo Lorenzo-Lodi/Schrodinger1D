@@ -28,6 +28,11 @@ public class SchrodingerSystem {
         return u - factor / (2.d * mass);
     }
 
+    public double UTildeValueAt(int i) {
+        double y = grid.getYValue(i);
+        return UTilde(y);
+    }
+
     /**
      * Q-function Q(r) for the equation: ψ''(r) = -Q(r)ψ(r)
      */

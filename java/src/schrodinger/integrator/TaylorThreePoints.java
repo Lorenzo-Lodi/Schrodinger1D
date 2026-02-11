@@ -6,9 +6,8 @@ import schrodinger.potential.SchrodingerSystem;
 public class TaylorThreePoints implements Integrator {
 
     public double propagate(double[] psi, int n, SchrodingerSystem system, Direction direction) {
-        double y = system.getGrid().getYValue(n);
         double stepSizeSquared = Math.pow(system.getGrid().getStepSizeYCoordinate(), 2);
-        return psi[n] * (2.0d - stepSizeSquared * system.QTilde(y)) - psi[n - direction.getValue()];
+        return psi[n] * (2.0d - stepSizeSquared * system.QTildeValueAt(n)) - psi[n - direction.getValue()];
     }
 
     @Override

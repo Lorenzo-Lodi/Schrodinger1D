@@ -33,9 +33,8 @@ public class ShootingSolver {
         // We scan the uniform y-grid
         int nPoints = grid.getNumberOfPoints();
         for (int i = 1; i < nPoints - 1; i++) {
-            double y = grid.getYValue(i);
             // Use the effective potential that includes mapping corrections
-            double val = system.UTilde(y);
+            double val = system.UTildeValueAt(i);
             if (val < uMin) {
                 uMin = val;
                 minIndex = i;
@@ -53,9 +52,9 @@ public class ShootingSolver {
             double yMin = grid.getYValue(minIndex);
 
             // U_tilde values at minimum and neighbors
-            double u0 = system.UTilde(yMin);
-            double uL = system.UTilde(yMin - hy);
-            double uR = system.UTilde(yMin + hy);
+            double u0 = system.UTildeValueAt(minIndex);
+            double uL = system.UTildeValueAt(minIndex - 1);
+            double uR = system.UTildeValueAt(minIndex + 1);
 
             // Curvature K_y = d^2(U_tilde)/dy^2
             double k_y = (uR - 2.0 * u0 + uL) / (hy * hy);
@@ -155,9 +154,9 @@ public class ShootingSolver {
 
     private int findMatchingIndex(double energy) {
         Grid grid = system.getGrid();
-        // Scan from right to left, within safe range
+        // Scan from right to left until we reach the classically-allowed region
         for (int i = grid.getNumberOfPoints() - 3; i >= 2; i--) {
-            if (system.UTilde(grid.getYValue(i)) <= energy) {
+            if (system.UTildeValueAt(i) <= energy) {
                 return i;
             }
         }
