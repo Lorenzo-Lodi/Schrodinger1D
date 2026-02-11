@@ -23,8 +23,8 @@ public class ShootingSolver {
      */
     private EnergyLevel findInitialEnergyBracket(int nOfDesiredNodes) {
         Grid grid = system.getGrid();
-        EnergyLevel bounds = new EnergyLevel(grid);
-        bounds.numberOfNodes = nOfDesiredNodes;
+        EnergyLevel level = new EnergyLevel(grid);
+        level.numberOfNodes = nOfDesiredNodes;
 
         // 1. Scan the *Effective Potential* U_tilde(y) for the minimum
         int minIndex = 0;
@@ -41,7 +41,7 @@ public class ShootingSolver {
                 minIndex = i;
             }
         }
-        bounds.lowerBound = uMin;
+        level.lowerBound = uMin;
 
         // 2. Estimate Step Size (Energy Scale)
         double energyScale;
@@ -85,14 +85,14 @@ public class ShootingSolver {
         for (int i = 0; i < maxIterations; i++) {
             // Update the energy in the system
             system.setEnergy(currentEnergy);
-            bounds.energy = currentEnergy;
-            int nodes = countNodesForward(bounds);
+            level.energy = currentEnergy;
+            int nodes = countNodes(level);
 
             if (nodes > nOfDesiredNodes) {
-                bounds.upperBound = currentEnergy;
-                return bounds;
+                level.upperBound = currentEnergy;
+                return level;
             } else {
-                bounds.lowerBound = currentEnergy;
+                level.lowerBound = currentEnergy;
                 energyScale *= 2.0;
                 currentEnergy += energyScale;
             }
@@ -100,42 +100,6 @@ public class ShootingSolver {
 
         throw new RuntimeException("Failed to bracket energy level.");
     }
-
-    private int countNodesForward(EnergyLevel level) {
-        int nPoints = system.getGrid().getNumberOfPoints();
-
-        // --- Shoot Forward
-        level.psi[0] = 0.0;
-        level.psi[1] = 1e-16;
-
-        int nodes = 0;
-        for (int n = 1; n < nPoints - 1; n++) {
-            level.psi[n + 1] = integrator.propagate(level.psi, n, system, Integrator.Direction.FORWARD);
-            if (level.psi[n] * level.psi[n + 1] < 0.0) {
-                nodes++;
-            }
-
-            // If we are in the classically-forbidded region and the wavefunction is blowing up, we can stop early
-            if (system.QTildeValueAt(n) > level.energy && Math.abs(level.psi[n + 1]) > PSI_MAX) {
-                break;
-            }
-        }
-        return nodes;
-    }
-
-    private int findMatchingIndex(double energy) {
-        Grid grid = system.getGrid();
-        // Scan from right to left, within safe range
-        for (int i = grid.getNumberOfPoints() - 3; i >= 2; i--) {
-            if (system.UTilde(grid.getYValue(i)) <= energy) {
-                return i;
-            }
-        }
-
-        // Fallback to midpoint if always classically forbidden
-        return grid.getNumberOfPoints() / 2;
-    }
-
 
     public EnergyLevel findEigenvalueByBisection(int nOfDesiredNodes) {
 
@@ -145,7 +109,7 @@ public class ShootingSolver {
             double mid = (level.lowerBound + level.upperBound) * 0.5;
             system.setEnergy(mid);
             level.energy = mid;
-            int nodes = countNodesForward(level);
+            int nodes = countNodes(level);
 
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = level.energy;
@@ -167,5 +131,39 @@ public class ShootingSolver {
 
     // TODO implement findEigenvalueBySecant
 
+    private int countNodes(EnergyLevel level) {
+        int nPoints = system.getGrid().getNumberOfPoints();
+
+        // --- Shoot Forward
+        level.psi[0] = 0.0;
+        level.psi[1] = 1e-16;
+
+        int nodes = 0;
+        for (int n = 1; n < nPoints - 1; n++) {
+            level.psi[n + 1] = integrator.propagate(level.psi, n, system, Integrator.Direction.FORWARD);
+            if (level.psi[n] * level.psi[n + 1] < 0.0) {
+                nodes++;
+            }
+
+            // If we are deep in the classically-forbidded region and the wavefunction is blowing up, we can stop early
+            if (system.QTildeValueAt(n) > 2.0 * level.energy && Math.abs(level.psi[n + 1]) > PSI_MAX) {
+                break;
+            }
+        }
+        return nodes;
+    }
+
+    private int findMatchingIndex(double energy) {
+        Grid grid = system.getGrid();
+        // Scan from right to left, within safe range
+        for (int i = grid.getNumberOfPoints() - 3; i >= 2; i--) {
+            if (system.UTilde(grid.getYValue(i)) <= energy) {
+                return i;
+            }
+        }
+
+        // Fallback to midpoint if always classically forbidden
+        return grid.getNumberOfPoints() / 2;
+    }
 
 }
