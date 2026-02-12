@@ -2,7 +2,7 @@ package schrodinger;
 
 import schrodinger.grid.Grid;
 
-public class EnergyLevel {
+public class QuantumState {
     public int numberOfNodes;
     public double energy;
     public double upperBound;
@@ -12,10 +12,8 @@ public class EnergyLevel {
     public double perturbativeCorrectionToEnergy;
     private final Grid grid;
     private boolean isPsiNormalized = false;
-    public Integer numberOfNodesUpperBound;
-    public Integer numberOfNodesLowerBound;
 
-    public EnergyLevel(Grid grid) {
+    public QuantumState(Grid grid) {
         this.grid = grid;
         this.psi = new double[grid.getNumberOfPoints()];
     }
@@ -51,16 +49,6 @@ public class EnergyLevel {
 
     public boolean isPsiNormalized() {
         return isPsiNormalized;
-    }
-
-    public int countNumberOfNodes() {
-        int nOfNodes = 0;
-        for (int n = 0; n < grid.getNumberOfPoints() - 1; n++) {
-            if (psi[n] * psi[n + 1] < 0.d) {
-                nOfNodes++;
-            }
-        }
-        return nOfNodes;
     }
 
 }

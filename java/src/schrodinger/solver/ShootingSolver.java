@@ -1,6 +1,6 @@
 package schrodinger.solver;
 
-import schrodinger.EnergyLevel;
+import schrodinger.QuantumState;
 import schrodinger.grid.Grid;
 import schrodinger.integrator.Integrator;
 import schrodinger.potential.SchrodingerSystem;
@@ -21,9 +21,9 @@ public class ShootingSolver {
      * Locates the energy interval [lowerBound, upperBound] containing the
      * state with 'nOfDesiredNodes' nodes.
      */
-    private EnergyLevel findInitialEnergyBracket(int nOfDesiredNodes) {
+    private QuantumState findInitialEnergyBracket(int nOfDesiredNodes) {
         Grid grid = system.getGrid();
-        EnergyLevel level = new EnergyLevel(grid);
+        QuantumState level = new QuantumState(grid);
         level.numberOfNodes = nOfDesiredNodes;
 
         double energyScale = findSystemEnergyScale(level);
@@ -51,7 +51,7 @@ public class ShootingSolver {
         throw new RuntimeException("Failed to bracket energy level.");
     }
 
-    private Double findSystemEnergyScale(EnergyLevel level) {
+    private Double findSystemEnergyScale(QuantumState level) {
         Grid grid = system.getGrid();
 
         // 1. Scan the *Effective Potential* U_tilde(y) for the minimum
@@ -103,9 +103,9 @@ public class ShootingSolver {
 
     }
 
-    public EnergyLevel findEigenvalueByBisection(int nOfDesiredNodes) {
+    public QuantumState findEigenvalueByBisection(int nOfDesiredNodes) {
 
-        EnergyLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
+        QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
 
         for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
             double mid = (level.lowerBound + level.upperBound) * 0.5;
@@ -133,7 +133,7 @@ public class ShootingSolver {
 
     // TODO implement findEigenvalueBySecant
 
-    private int countNodes(EnergyLevel level) {
+    private int countNodes(QuantumState level) {
         int nPoints = system.getGrid().getNumberOfPoints();
 
         // --- Shoot Forward

@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 
 import schrodinger.grid.Grid;
 
-class EnergyLevelTest {
+class QuantumStateTest {
     private static final double SMALL_EPS = 1e-15;
     private static final double LARGE_EPS = 8e-4;
 
     @Test
     void normalizePsiTrapezoidalRuleConstantIntegrand() {
         Grid grid = GridFactory.generateUniformGrid(0, 1, 50);
-        EnergyLevel level = new EnergyLevel(grid);
+        QuantumState level = new QuantumState(grid);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
             level.psi[i] = 1;
         }
@@ -25,7 +25,7 @@ class EnergyLevelTest {
     @Test
     void normalizePsiTrapezoidalRuleLinearIntegrand() {
         Grid grid = GridFactory.generateUniformGrid(0, 1, 50);
-        EnergyLevel level = new EnergyLevel(grid);
+        QuantumState level = new QuantumState(grid);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
             level.psi[i] = grid.getRValue(i);
         }
@@ -36,7 +36,7 @@ class EnergyLevelTest {
     @Test
     void normalizePsiTrapezoidalRuleQuadraticIntegrand() {
         Grid grid = GridFactory.generateUniformGrid(0, 1, 50);
-        EnergyLevel level = new EnergyLevel(grid);
+        QuantumState level = new QuantumState(grid);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
             level.psi[i] = Math.pow(grid.getRValue(i), 2);
         }
@@ -47,7 +47,7 @@ class EnergyLevelTest {
     @Test
     void normalizePsiTrapezoidalRuleCubicIntegrand() {
         Grid grid = GridFactory.generateUniformGrid(0, 1, 50);
-        EnergyLevel level = new EnergyLevel(grid);
+        QuantumState level = new QuantumState(grid);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
             level.psi[i] = Math.pow(grid.getRValue(i), 3);
         }
@@ -58,7 +58,7 @@ class EnergyLevelTest {
     @Test
     void normalizePsiTrapezoidalRuleQuarticIntegrand() {
         Grid grid = GridFactory.generateUniformGrid(0, 1, 50);
-        EnergyLevel level = new EnergyLevel(grid);
+        QuantumState level = new QuantumState(grid);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
             level.psi[i] = Math.pow(grid.getRValue(i), 4);
         }

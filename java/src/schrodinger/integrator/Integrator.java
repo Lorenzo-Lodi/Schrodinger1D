@@ -1,6 +1,6 @@
 package schrodinger.integrator;
 
-import schrodinger.EnergyLevel;
+import schrodinger.QuantumState;
 import schrodinger.potential.SchrodingerSystem;
 
 public interface Integrator {
@@ -8,7 +8,7 @@ public interface Integrator {
     double propagate(double[] psi, int n, SchrodingerSystem system, Direction direction);
 
     // TODO computePerturbativeCorrection should probably go into a separate interface. Consider refactoring.
-    default double computePerturbativeCorrection(EnergyLevel level, SchrodingerSystem system) {
+    default double computePerturbativeCorrection(QuantumState level, SchrodingerSystem system) {
         return 0;
     }
 

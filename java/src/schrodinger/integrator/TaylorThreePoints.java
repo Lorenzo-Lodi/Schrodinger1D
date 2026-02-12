@@ -1,6 +1,6 @@
 package schrodinger.integrator;
 
-import schrodinger.EnergyLevel;
+import schrodinger.QuantumState;
 import schrodinger.potential.SchrodingerSystem;
 
 public class TaylorThreePoints implements Integrator {
@@ -11,7 +11,7 @@ public class TaylorThreePoints implements Integrator {
     }
 
     @Override
-    public double computePerturbativeCorrection(EnergyLevel level, SchrodingerSystem system) {
+    public double computePerturbativeCorrection(QuantumState level, SchrodingerSystem system) {
         double result = 0;
         if (!level.isPsiNormalized()) {
             level.normalizePsi();
