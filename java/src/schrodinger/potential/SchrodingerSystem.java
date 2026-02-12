@@ -18,11 +18,11 @@ public class SchrodingerSystem {
     /**
      * Potential U(r) for the equation: -(hbar^2 / 2m) ψ''(r) + U(r) ψ(r) = E ψ(r)
      */
-    public double U(double r) {
+    private double U(double r) {
         return physicalPotential.value(r);
     }
 
-    public double UTilde(double y) {
+    private double UTilde(double y) {
         double u = physicalPotential.value(grid.r(y));
         double factor = grid.F(y) / Math.pow(grid.g(y), 2);
         return u - factor / (2.d * mass);
@@ -36,7 +36,7 @@ public class SchrodingerSystem {
     /**
      * Q-function Q(r) for the equation: ψ''(r) = -Q(r)ψ(r)
      */
-    public double Q(double r) {
+    private double Q(double r) {
         return 2.d * mass * (energy - physicalPotential.value(r));
     }
 
@@ -44,7 +44,7 @@ public class SchrodingerSystem {
      * Transformed Q-function Q̃(y) for the mapped equation: ϕ''(y) = -Q̃(y)ϕ(y)
      * MSL Eq. (8): Q̃(y) = g²(y)·Q(r(y)) + F(y)
      */
-    public double QTilde(double y) {
+    private double QTilde(double y) {
         return Math.pow(grid.g(y), 2) * Q(grid.r(y)) + grid.F(y);
     }
 
