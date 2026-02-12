@@ -47,7 +47,7 @@ public class Main {
     }
 
     private static String padInt(Integer number, int width) {
-        return padding(number, width) + number.toString();
+        return padding(number, width) + number;
     }
 
     private static String padding(double number, int width) {

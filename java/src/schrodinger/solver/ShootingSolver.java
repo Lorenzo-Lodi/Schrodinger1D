@@ -23,7 +23,7 @@ public class ShootingSolver {
      */
     private QuantumState findInitialEnergyBracket(int nOfDesiredNodes) {
         Grid grid = system.getGrid();
-        QuantumState level = new QuantumState(grid);
+        QuantumState level = new QuantumState(system, grid);
         level.numberOfNodes = nOfDesiredNodes;
 
         double energyScale = findSystemEnergyScale(level);

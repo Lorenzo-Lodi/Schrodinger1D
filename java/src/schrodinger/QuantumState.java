@@ -1,6 +1,7 @@
 package schrodinger;
 
 import schrodinger.grid.Grid;
+import schrodinger.potential.SchrodingerSystem;
 
 public class QuantumState {
     public int numberOfNodes;
@@ -13,7 +14,7 @@ public class QuantumState {
     private final Grid grid;
     private boolean isPsiNormalized = false;
 
-    public QuantumState(Grid grid) {
+    public QuantumState(SchrodingerSystem system, Grid grid) {
         this.grid = grid;
         this.psi = new double[grid.getNumberOfPoints()];
     }
