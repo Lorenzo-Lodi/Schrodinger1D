@@ -29,18 +29,19 @@ public class ShootingSolver {
 
         // 3. Exponential Scan to find upper bound to the energy
         double currentEnergy = level.energy;
-        int maxIterations = 100;
 
-        for (int i = 0; i < maxIterations; i++) {
+        for (int i = 0; i < MAXIMUM_NUMBER_OF_BISECTIONS; i++) {
             // Update the energy in the system
             level.energy = currentEnergy;
             int nodes = countNodes(level);
 
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = currentEnergy;
+                level.numberOfNodesUpperBound = nodes;
                 return level;
             } else {
                 level.lowerBound = currentEnergy;
+                level.numberOfNodesLowerBound = nodes;
                 energyScale *= 2.0;
                 currentEnergy += energyScale;
             }
@@ -141,6 +142,9 @@ public class ShootingSolver {
     public QuantumState findEigenvalueHybridMethod(int nOfDesiredNodes) {
         QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
         refineByBisection(level, nOfDesiredNodes, 1e-3);
+
+
+
         integrator.computePerturbativeCorrection(level);
 
         return level;
