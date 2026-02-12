@@ -5,9 +5,9 @@ import schrodinger.potential.SchrodingerSystem;
 
 public class QuantumState {
     private final SchrodingerSystem system;
-    public int numberOfNodes;
-    public Integer numberOfNodesUpperBound;
-    public Integer numberOfNodesLowerBound;
+    public int nodes;
+    public int nodesUpper = -1; // Set to "sentinel" unphysical value
+    public int nodesLower = -1; // Set to "sentinel" unphysical value
     public double energy;
     public double upperBound;
     public double lowerBound;

@@ -23,7 +23,6 @@ public class ShootingSolver {
      */
     private QuantumState findInitialEnergyBracket(int nOfDesiredNodes) {
         QuantumState level = new QuantumState(system);
-        level.numberOfNodes = nOfDesiredNodes;
 
         double energyScale = findSystemEnergyScale(level);
 
@@ -37,11 +36,11 @@ public class ShootingSolver {
 
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = currentEnergy;
-                level.numberOfNodesUpperBound = nodes;
+                level.nodesUpper = nodes;
                 return level;
             } else {
                 level.lowerBound = currentEnergy;
-                level.numberOfNodesLowerBound = nodes;
+                level.nodesLower = nodes;
                 energyScale *= 2.0;
                 currentEnergy += energyScale;
             }
@@ -68,7 +67,7 @@ public class ShootingSolver {
             }
         }
         level.lowerBound = uMin;
-        level.numberOfNodesLowerBound = 0; // Should be always correct
+        level.nodesLower = 0; // Should be always correct
 
         // 2. Estimate Step Size (Energy Scale)
         Double energyScale = null;
@@ -106,14 +105,15 @@ public class ShootingSolver {
     public QuantumState findEigenvalueByBisection(int nOfDesiredNodes) {
 
         QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
-        refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR);
+        refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR, 0);
         integrator.computePerturbativeCorrection(level);
 
         return level;
     }
 
-    private void refineByBisection(QuantumState level, int nOfDesiredNodes, double targetAbsoluteError) {
+    private void refineByBisection(QuantumState level, int nOfDesiredNodes, double maxAbsError, int minBisections) {
 
+        int nOfBisectionAfterStrictBracketing = 0;
         for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
             double mid = (level.lowerBound + level.upperBound) * 0.5;
             level.energy = mid;
@@ -121,15 +121,18 @@ public class ShootingSolver {
 
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = level.energy;
-                level.numberOfNodesUpperBound = nodes;
+                level.nodesUpper = nodes;
             } else {
                 level.lowerBound = level.energy;
-                level.numberOfNodesLowerBound = nodes;
+                level.nodesLower = nodes;
             }
 
-            if (Math.abs((level.upperBound - level.lowerBound)) < targetAbsoluteError &&
-                    level.numberOfNodesLowerBound == nOfDesiredNodes
-                    && level.numberOfNodesUpperBound == nOfDesiredNodes + 1) {
+            if (level.nodesLower == nOfDesiredNodes && level.nodesUpper == nOfDesiredNodes + 1) {
+                nOfBisectionAfterStrictBracketing++;
+            }
+
+            if (Math.abs(level.upperBound - level.lowerBound) < maxAbsError &&
+                    nOfBisectionAfterStrictBracketing >= minBisections) {
                 break;
             }
 
@@ -141,8 +144,7 @@ public class ShootingSolver {
     // TODO WIP on bi-directional matching method
     public QuantumState findEigenvalueHybridMethod(int nOfDesiredNodes) {
         QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
-        refineByBisection(level, nOfDesiredNodes, 1e-3);
-
+        refineByBisection(level, nOfDesiredNodes, 1e-1, 3);
 
 
         integrator.computePerturbativeCorrection(level);
