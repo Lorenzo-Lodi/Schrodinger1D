@@ -33,7 +33,6 @@ public class ShootingSolver {
 
         for (int i = 0; i < maxIterations; i++) {
             // Update the energy in the system
-            system.setEnergy(currentEnergy);
             level.energy = currentEnergy;
             int nodes = countNodes(level);
 
@@ -108,7 +107,6 @@ public class ShootingSolver {
 
         for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
             double mid = (level.lowerBound + level.upperBound) * 0.5;
-            system.setEnergy(mid);
             level.energy = mid;
             int nodes = countNodes(level);
 
@@ -123,9 +121,8 @@ public class ShootingSolver {
             }
 
         }
-        system.setEnergy(level.energy);
         level.normalizePsi();
-        level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level, system);
+        level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level);
 
         return level;
     }
@@ -141,13 +138,13 @@ public class ShootingSolver {
 
         int nodes = 0;
         for (int n = 1; n < nPoints - 1; n++) {
-            level.psi[n + 1] = integrator.propagate(level.psi, n, system, Integrator.Direction.FORWARD);
+            level.psi[n + 1] = integrator.propagate(level.psi, n, level, Integrator.Direction.FORWARD);
             if (level.psi[n] * level.psi[n + 1] < 0.0) {
                 nodes++;
             }
 
             // If we are deep in the classically-forbidded region and the wavefunction is blowing up, we can stop early
-            if (system.QTildeValueAt(n) > 2.0 * level.energy && Math.abs(level.psi[n + 1]) > PSI_MAX) {
+            if (level.QTildeValueAt(n) > 2.0 * level.energy && Math.abs(level.psi[n + 1]) > PSI_MAX) {
                 break;
             }
         }

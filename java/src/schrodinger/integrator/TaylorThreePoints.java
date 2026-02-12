@@ -5,22 +5,22 @@ import schrodinger.potential.SchrodingerSystem;
 
 public class TaylorThreePoints implements Integrator {
 
-    public double propagate(double[] psi, int n, SchrodingerSystem system, Direction direction) {
-        double stepSizeSquared = Math.pow(system.getGrid().getStepSizeYCoordinate(), 2);
-        return psi[n] * (2.0d - stepSizeSquared * system.QTildeValueAt(n)) - psi[n - direction.getValue()];
+    public double propagate(double[] psi, int n, QuantumState state, Direction direction) {
+        double hy = state.getGrid().getStepSizeYCoordinate();
+        return psi[n] * (2.0d - hy * hy * state.QTildeValueAt(n)) - psi[n - direction.getValue()];
     }
 
     @Override
-    public double computePerturbativeCorrection(QuantumState level, SchrodingerSystem system) {
+    public double computePerturbativeCorrection(QuantumState level) {
         double result = 0;
         if (!level.isPsiNormalized()) {
             level.normalizePsi();
         }
-        for (int i = 0; i < system.getGrid().getNumberOfPoints(); i++) {
-            result += Math.pow(system.QTildeValueAt(i) * level.psi[i], 2);
+        for (int i = 0; i < level.getGrid().getNumberOfPoints(); i++) {
+            result += Math.pow(level.QTildeValueAt(i) * level.psi[i], 2);
         }
-        double h = system.getGrid().getStepSizeYCoordinate();
-        result = result * h * h * h / (24.0 * system.getMass());
+        double h = level.getGrid().getStepSizeYCoordinate();
+        result = result * h * h * h / (24.0 * level.getMass());
         return result;
     }
 

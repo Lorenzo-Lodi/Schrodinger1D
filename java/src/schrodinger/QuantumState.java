@@ -4,6 +4,7 @@ import schrodinger.grid.Grid;
 import schrodinger.potential.SchrodingerSystem;
 
 public class QuantumState {
+    private final SchrodingerSystem system;
     public int numberOfNodes;
     public double energy;
     public double upperBound;
@@ -11,12 +12,32 @@ public class QuantumState {
     public int numberOfBisections;
     public double[] psi;
     public double perturbativeCorrectionToEnergy;
-    private final Grid grid;
     private boolean isPsiNormalized = false;
 
+
     public QuantumState(SchrodingerSystem system) {
-        this.grid = system.getGrid();
-        this.psi = new double[grid.getNumberOfPoints()];
+        this.system = system;
+        this.psi = new double[system.getGrid().getNumberOfPoints()];
+    }
+
+    /**
+     * Q-function Q(r) for the equation: ψ''(r) = -Q(r)ψ(r)
+     */
+    public double Q(double r) {
+        return 2.d * system.getMass() * (energy - system.U(r));
+    }
+
+    /**
+     * Transformed Q-function Q̃(y) for the mapped equation: ϕ''(y) = -Q̃(y)ϕ(y)
+     * MSL Eq. (8): Q̃(y) = g²(y)·Q(r(y)) + F(y)
+     */
+    private double QTilde(double y) {
+        return Math.pow(getGrid().g(y), 2) * Q(getGrid().r(y)) + getGrid().F(y);
+    }
+
+    public double QTildeValueAt(int i) {
+        double y = getGrid().getYValue(i);
+        return QTilde(y);
     }
 
     // Note: because the wavefunctions are exponentially decreasing (or faster), the
@@ -26,19 +47,19 @@ public class QuantumState {
     // The rectangle rule is practically the same.
     public double normalizePsi() {
         // Pre-calculate end points to avoid if-checks or method calls in loop
-        int maxIndex = grid.getNumberOfPoints() - 1;
+        int maxIndex = getGrid().getNumberOfPoints() - 1;
 
         // Trapezoidal rule boundaries
-        double valStart = psi[0] * grid.g(0);
-        double valEnd = psi[maxIndex] * grid.g(maxIndex);
+        double valStart = psi[0] * getGrid().g(0);
+        double valEnd = psi[maxIndex] * getGrid().g(maxIndex);
         double sum = 0.5 * (valStart * valStart + valEnd * valEnd);
 
         for (int i = 1; i < maxIndex; i++) {
-            double val = psi[i] * grid.g(i);
+            double val = psi[i] * getGrid().g(i);
             sum += val * val;
         }
 
-        sum = sum * grid.getStepSizeYCoordinate();
+        sum = sum * getGrid().getStepSizeYCoordinate();
         double normalizationFactor = 1.0 / Math.sqrt(sum);
         for (int i = 0; i <= maxIndex; i++) {
             psi[i] *= normalizationFactor;
@@ -50,6 +71,14 @@ public class QuantumState {
 
     public boolean isPsiNormalized() {
         return isPsiNormalized;
+    }
+
+    public Grid getGrid() {
+        return system.getGrid();
+    }
+
+    public double getMass() {
+        return system.getMass();
     }
 
 }
