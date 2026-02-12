@@ -14,8 +14,8 @@ public class QuantumState {
     private final Grid grid;
     private boolean isPsiNormalized = false;
 
-    public QuantumState(SchrodingerSystem system, Grid grid) {
-        this.grid = grid;
+    public QuantumState(SchrodingerSystem system) {
+        this.grid = system.getGrid();
         this.psi = new double[grid.getNumberOfPoints()];
     }
 
