@@ -7,8 +7,8 @@ import schrodinger.potential.SchrodingerSystem;
 
 public class ShootingSolver {
     private static final double TARGET_ABSOLUTE_ERROR = 1e-13;
-    private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 50; // reduces error by 2**n
-    private static final double PSI_MAX = 1e30; // stop integrating forward if wave function exeeds this value
+    private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
+    private static final double PSI_MAX = 1e30; // stop integrating forward if wave function exceeds this value
     private final Integrator integrator;
     private final SchrodingerSystem system;
 
@@ -67,6 +67,7 @@ public class ShootingSolver {
             }
         }
         level.lowerBound = uMin;
+        level.numberOfNodesLowerBound = 0; // Should be always correct
 
         // 2. Estimate Step Size (Energy Scale)
         Double energyScale = null;
@@ -104,6 +105,13 @@ public class ShootingSolver {
     public QuantumState findEigenvalueByBisection(int nOfDesiredNodes) {
 
         QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
+        refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR);
+        integrator.computePerturbativeCorrection(level);
+
+        return level;
+    }
+
+    private void refineByBisection(QuantumState level, int nOfDesiredNodes, double targetAbsoluteError) {
 
         for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
             double mid = (level.lowerBound + level.upperBound) * 0.5;
@@ -112,20 +120,32 @@ public class ShootingSolver {
 
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = level.energy;
+                level.numberOfNodesUpperBound = nodes;
             } else {
                 level.lowerBound = level.energy;
+                level.numberOfNodesLowerBound = nodes;
             }
 
-            if (Math.abs((level.upperBound - level.lowerBound)) < TARGET_ABSOLUTE_ERROR) {
+            if (Math.abs((level.upperBound - level.lowerBound)) < targetAbsoluteError &&
+                    level.numberOfNodesLowerBound == nOfDesiredNodes
+                    && level.numberOfNodesUpperBound == nOfDesiredNodes + 1) {
                 break;
             }
 
         }
-        level.normalizePsi();
-        level.perturbativeCorrectionToEnergy = integrator.computePerturbativeCorrection(level);
+
+    }
+
+
+    // TODO WIP on bi-directional matching method
+    public QuantumState findEigenvalueHybridMethod(int nOfDesiredNodes) {
+        QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
+        refineByBisection(level, nOfDesiredNodes, 1e-3);
+        integrator.computePerturbativeCorrection(level);
 
         return level;
     }
+
 
     // TODO implement findEigenvalueBySecant
 

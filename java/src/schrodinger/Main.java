@@ -28,7 +28,7 @@ public class Main {
 //            Grid grid = GridFactory.generateSqrtGrid(14.0d, 26.0d, nOfPoints, 22);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
-            QuantumState ek = finder.findEigenvalueByBisection(nOfDesiredNodes);
+            QuantumState ek = finder.findEigenvalueHybridMethod(nOfDesiredNodes);
 
             int floatDecimals = 16;
             System.out.println(padInt(i, 4) + padInt(grid.getNumberOfPoints(), 6)

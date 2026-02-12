@@ -6,6 +6,8 @@ import schrodinger.potential.SchrodingerSystem;
 public class QuantumState {
     private final SchrodingerSystem system;
     public int numberOfNodes;
+    public Integer numberOfNodesUpperBound;
+    public Integer numberOfNodesLowerBound;
     public double energy;
     public double upperBound;
     public double lowerBound;

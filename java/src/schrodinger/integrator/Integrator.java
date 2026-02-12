@@ -8,8 +8,7 @@ public interface Integrator {
     double propagate(double[] psi, int n, QuantumState state, Direction direction);
 
     // TODO computePerturbativeCorrection should probably go into a separate interface. Consider refactoring.
-    default double computePerturbativeCorrection(QuantumState state) {
-        return 0;
+    default void computePerturbativeCorrection(QuantumState state) {
     }
 
     enum Direction {
