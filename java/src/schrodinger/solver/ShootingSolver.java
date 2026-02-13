@@ -155,13 +155,65 @@ public class ShootingSolver {
         // I'll compute the matching index once and for all and then keep it fixed. It should be okay.
         int matchIndex = findMatchingIndex(level.energy);
 
+        // WIP implement the regula falsi
         level.energy = level.upperBound;
         double diffUpper = computeDerivativeMismatch(level, matchIndex);
 
         level.energy = level.lowerBound;
         double diffLower = computeDerivativeMismatch(level, matchIndex);
 
-        // WIP implement the regula falsi
+
+        System.out.println("Regula Falsi, starting points are: ");
+        System.out.println(level.upperBound + " " + diffUpper);
+        System.out.println(level.lowerBound + " " + diffLower);
+
+        // Regula falsi (false position) iteration
+        double x0 = level.lowerBound;
+        double f0 = diffLower;
+        double x1 = level.upperBound;
+        double f1 = diffUpper;
+
+        // Ensure the bracket is valid (f0 and f1 have opposite signs)
+        if (f0 * f1 > 0) {
+            // Handle error: the function does not bracket a root
+            throw new IllegalArgumentException("The function values at the bounds must have opposite signs.");
+        }
+
+        double x2 = x0; // initialize
+        double f2;
+        int maxIter = 50;   // prevent infinite loops
+        double tol = 1e-12;  // tolerance on function value
+
+        for (int iter = 0; iter < maxIter; iter++) {
+            // Compute the false position point (secant line crossing zero)
+            // Avoid division by zero (should not happen if f0 and f1 have opposite signs)
+            x2 = x1 - f1 * (x1 - x0) / (f1 - f0);
+
+            // Evaluate function at x2
+            level.energy = x2;
+            f2 = computeDerivativeMismatch(level, matchIndex);
+            System.out.println("iter, energy, f2 = " + iter + " " + level.energy +  " " + f2);
+
+            // Check for convergence
+            if (Math.abs(f2) < tol) {
+                break;
+            }
+
+            // Update the bracket while keeping the root inside
+            if (f0 * f2 < 0) {
+                // Root lies between x0 and x2
+                x1 = x2;
+                f1 = f2;
+            } else {
+                // Root lies between x2 and x1
+                x0 = x2;
+                f0 = f2;
+            }
+        }
+
+        // Store the final approximation
+        level.energy = x2;
+
 
     }
 

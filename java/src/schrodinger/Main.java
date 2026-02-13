@@ -22,13 +22,14 @@ public class Main {
                 + "          Energy + Pert. " + "     n bisec");
         for (int i = 0; i < 1; i++) {
 //            int nOfPoints = 20 + 50 * i;
-            int nOfPoints = 80;
+            int nOfPoints = 300;
             Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
 //            Grid grid = GridFactory.generateLogarithmicGrid(14.0d, 26.0d, nOfPoints, 22);
 //            Grid grid = GridFactory.generateSqrtGrid(14.0d, 26.0d, nOfPoints, 22);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
-            QuantumState ek = finder.findEigenvalueHybridMethod(nOfDesiredNodes);
+//            QuantumState ek = finder.findEigenvalueHybridMethod(nOfDesiredNodes);
+            QuantumState ek = finder.findEigenvalueByBisection(nOfDesiredNodes);
 
             int floatDecimals = 16;
             System.out.println(padInt(i, 4) + padInt(grid.getNumberOfPoints(), 6)
