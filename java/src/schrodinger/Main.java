@@ -20,9 +20,9 @@ public class Main {
 
         System.out.println("   i nPoints       1/Ystep          Lower               Upper" + "               Energy"
                 + "          Energy + Pert. " + "     n bisec");
-        for (int i = 0; i < 20; i++) {
-            int nOfPoints = 20 + 50 * i;
-//            int nOfPoints = 81;
+        for (int i = 0; i < 1; i++) {
+//            int nOfPoints = 20 + 50 * i;
+            int nOfPoints = 80;
             Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
 //            Grid grid = GridFactory.generateLogarithmicGrid(14.0d, 26.0d, nOfPoints, 22);
 //            Grid grid = GridFactory.generateSqrtGrid(14.0d, 26.0d, nOfPoints, 22);

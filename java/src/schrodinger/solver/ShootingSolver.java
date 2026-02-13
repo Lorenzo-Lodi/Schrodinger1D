@@ -115,8 +115,7 @@ public class ShootingSolver {
 
         int nOfBisectionAfterStrictBracketing = 0;
         for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
-            double mid = (level.lowerBound + level.upperBound) * 0.5;
-            level.energy = mid;
+            level.energy = (level.lowerBound + level.upperBound) * 0.5;
             int nodes = countNodes(level);
 
             if (nodes > nOfDesiredNodes) {
@@ -141,19 +140,54 @@ public class ShootingSolver {
     }
 
 
-    // TODO WIP on bi-directional matching method
+
     public QuantumState findEigenvalueHybridMethod(int nOfDesiredNodes) {
         QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
-        refineByBisection(level, nOfDesiredNodes, 1e-1, 3);
-
-
+        refineByBisection(level, nOfDesiredNodes, 1e-4, 3);
+        refineByBidirectionalMatching(level);
         integrator.computePerturbativeCorrection(level);
-
         return level;
     }
 
+    // TODO WIP
+    private void refineByBidirectionalMatching(QuantumState level) {
+        int matchIndex = findMatchingIndex(level.energy);
 
-    // TODO implement findEigenvalueBySecant
+        // --- Shoot Forward
+        level.psi[0] = 0.0;
+        level.psi[1] = 1e-16;
+
+        for (int n = 1; n < matchIndex - 2; n++) {
+            level.psi[n + 1] = integrator.propagate(level.psi, n, level, Integrator.Direction.FORWARD);
+        }
+        double[] forward = new double[5];
+        forward[0] = level.psi[matchIndex - 3];
+        forward[1] = level.psi[matchIndex - 2];
+        for (int n = 1; n < 4; n++) {
+            forward[n + 1] = integrator.propagate(forward, n, level, Integrator.Direction.FORWARD);
+        }
+        double forwardDer = (forward[4] - forward[2]) / forward[3];
+
+        // --- Shoot Backward
+        int np = system.getGrid().getNumberOfPoints();
+        level.psi[np - 1] = 0.0;
+        level.psi[np - 2] = 1.e-16;
+
+        for (int n = np - 2; n > matchIndex + 2; n--) {
+            level.psi[n - 1] = integrator.propagate(level.psi, n, level, Integrator.Direction.BACKWARD);
+        }
+        double[] backward = new double[5];
+        backward[4] = level.psi[matchIndex + 3];
+        backward[3] = level.psi[matchIndex + 2];
+        for (int n = 3; n > 0; n--) {
+            backward[n - 1] = integrator.propagate(forward, n, level, Integrator.Direction.BACKWARD);
+        }
+        double backwardDer = (backward[2] - backward[0]) / backward[1];
+        System.out.println(forwardDer);
+        System.out.println(backwardDer);
+
+    }
+
 
     private int countNodes(QuantumState level) {
         int nPoints = system.getGrid().getNumberOfPoints();
