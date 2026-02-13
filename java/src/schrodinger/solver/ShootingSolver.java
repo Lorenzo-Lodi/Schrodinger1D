@@ -108,6 +108,7 @@ public class ShootingSolver {
 
         QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
         refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR, 0);
+        level.normalizePsi();
         integrator.computePerturbativeCorrection(level);
 
         return level;
@@ -142,10 +143,11 @@ public class ShootingSolver {
     }
 
 
-    public QuantumState findEigenvalueHybridMethod(int nOfDesiredNodes) {
+    public QuantumState findEigenvalueByHybridMethod(int nOfDesiredNodes) {
         QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
         refineByBisection(level, nOfDesiredNodes, 1e-2, 3);
         refineByBidirectionalMatching(level);
+        level.normalizePsi();
         integrator.computePerturbativeCorrection(level);
         return level;
     }
@@ -163,9 +165,9 @@ public class ShootingSolver {
         double diffLower = computeDerivativeMismatch(level, matchIndex);
 
 
-        System.out.println("Regula Falsi, starting points are: ");
-        System.out.println(level.upperBound + " " + diffUpper);
-        System.out.println(level.lowerBound + " " + diffLower);
+//        System.out.println("Regula Falsi, starting points are: ");
+//        System.out.println(level.upperBound + " " + diffUpper);
+//        System.out.println(level.lowerBound + " " + diffLower);
 
         // Regula falsi (false position) iteration
         double x0 = level.lowerBound;
@@ -192,7 +194,7 @@ public class ShootingSolver {
             // Evaluate function at x2
             level.energy = x2;
             f2 = computeDerivativeMismatch(level, matchIndex);
-            System.out.println("iter, energy, f2 = " + iter + " " + level.energy +  " " + f2);
+//            System.out.println("iter, energy, f2 = " + iter + " " + level.energy +  " " + f2);
 
             // Check for convergence
             if (Math.abs(f2) < tol) {
