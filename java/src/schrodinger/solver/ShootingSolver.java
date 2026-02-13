@@ -5,6 +5,8 @@ import schrodinger.grid.Grid;
 import schrodinger.integrator.Integrator;
 import schrodinger.potential.SchrodingerSystem;
 
+import java.util.Arrays;
+
 public class ShootingSolver {
     private static final double TARGET_ABSOLUTE_ERROR = 1e-13;
     private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
@@ -140,10 +142,9 @@ public class ShootingSolver {
     }
 
 
-
     public QuantumState findEigenvalueHybridMethod(int nOfDesiredNodes) {
         QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
-        refineByBisection(level, nOfDesiredNodes, 1e-4, 3);
+        refineByBisection(level, nOfDesiredNodes, 1e-2, 3);
         refineByBidirectionalMatching(level);
         integrator.computePerturbativeCorrection(level);
         return level;
@@ -151,40 +152,54 @@ public class ShootingSolver {
 
     // TODO WIP
     private void refineByBidirectionalMatching(QuantumState level) {
+        // I'll compute the matching index once and for all and then keep it fixed. It should be okay.
         int matchIndex = findMatchingIndex(level.energy);
 
+        level.energy = level.upperBound;
+        double diffUpper = computeDerivativeMismatch(level, matchIndex);
+
+        level.energy = level.lowerBound;
+        double diffLower = computeDerivativeMismatch(level, matchIndex);
+
+        // WIP implement the regula falsi
+
+    }
+
+    private double computeDerivativeMismatch(QuantumState level, int matchIndex) {
         // --- Shoot Forward
+        Arrays.fill(level.psi, 0.0d); // Let us zero the wave function for clarity (not necessary).
         level.psi[0] = 0.0;
         level.psi[1] = 1e-16;
-
-        for (int n = 1; n < matchIndex - 2; n++) {
+        for (int n = 1; n < matchIndex + 1; n++) {
             level.psi[n + 1] = integrator.propagate(level.psi, n, level, Integrator.Direction.FORWARD);
         }
-        double[] forward = new double[5];
-        forward[0] = level.psi[matchIndex - 3];
-        forward[1] = level.psi[matchIndex - 2];
-        for (int n = 1; n < 4; n++) {
-            forward[n + 1] = integrator.propagate(forward, n, level, Integrator.Direction.FORWARD);
-        }
-        double forwardDer = (forward[4] - forward[2]) / forward[3];
+
+        double forwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / level.psi[matchIndex];
+        double forwardPsiAtMatchIndexMinusOne = level.psi[matchIndex - 1];
+        double forwardPsiAtMatchIndex = level.psi[matchIndex];
 
         // --- Shoot Backward
+//        Arrays.fill(level.psi, 0.0d); // Let us zero the wave function for clarity (not necessary).
         int np = system.getGrid().getNumberOfPoints();
         level.psi[np - 1] = 0.0;
         level.psi[np - 2] = 1.e-16;
 
-        for (int n = np - 2; n > matchIndex + 2; n--) {
+        for (int n = np - 2; n > matchIndex - 2; n--) {
             level.psi[n - 1] = integrator.propagate(level.psi, n, level, Integrator.Direction.BACKWARD);
         }
-        double[] backward = new double[5];
-        backward[4] = level.psi[matchIndex + 3];
-        backward[3] = level.psi[matchIndex + 2];
-        for (int n = 3; n > 0; n--) {
-            backward[n - 1] = integrator.propagate(forward, n, level, Integrator.Direction.BACKWARD);
+        double backwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / level.psi[matchIndex];
+
+        // Let us rescale the correct psi (probably unnecessary doing this at each step).
+        level.psi[matchIndex - 1] = forwardPsiAtMatchIndexMinusOne;
+        for (int n = 0; n < matchIndex; n++) {
+            level.psi[n] = level.psi[n] / forwardPsiAtMatchIndex;
         }
-        double backwardDer = (backward[2] - backward[0]) / backward[1];
-        System.out.println(forwardDer);
-        System.out.println(backwardDer);
+        for (int n = matchIndex + 1; n < np - 1; n++) {
+            level.psi[n] = level.psi[n] / level.psi[matchIndex];
+        }
+        level.psi[matchIndex] = 1.;
+
+        return forwardDer - backwardDer;
 
     }
 

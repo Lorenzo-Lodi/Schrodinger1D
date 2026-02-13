@@ -14,7 +14,6 @@ public class QuantumState {
     public int numberOfBisections;
     public double[] psi;
     public double perturbativeCorrectionToEnergy;
-    private boolean isPsiNormalized = false;
 
 
     public QuantumState(SchrodingerSystem system) {
@@ -67,12 +66,7 @@ public class QuantumState {
             psi[i] *= normalizationFactor;
         }
 
-        isPsiNormalized = true;
         return normalizationFactor;
-    }
-
-    public boolean isPsiNormalized() {
-        return isPsiNormalized;
     }
 
     public Grid getGrid() {

@@ -13,9 +13,6 @@ public class TaylorThreePoints implements Integrator {
     @Override
     public void computePerturbativeCorrection(QuantumState level) {
         double result = 0;
-        if (!level.isPsiNormalized()) {
-            level.normalizePsi();
-        }
         for (int i = 0; i < level.getGrid().getNumberOfPoints(); i++) {
             result += Math.pow(level.QTildeValueAt(i) * level.psi[i], 2);
         }
