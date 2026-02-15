@@ -154,15 +154,12 @@ public class ShootingSolver {
 
     // TODO WIP
     private void refineByBidirectionalMatching(QuantumState level) {
-        // I'll compute the matching index once and for all and then keep it fixed. It should be okay.
-        int matchIndex = findMatchingIndex(level.energy);
 
-        // WIP implement the regula falsi
         level.energy = level.upperBound;
-        double diffUpper = computeDerivativeMismatch(level, matchIndex);
+        double diffUpper = computeDerivativeMismatch(level);
 
         level.energy = level.lowerBound;
-        double diffLower = computeDerivativeMismatch(level, matchIndex);
+        double diffLower = computeDerivativeMismatch(level);
 
 
 //        System.out.println("Regula Falsi, starting points are: ");
@@ -193,7 +190,7 @@ public class ShootingSolver {
 
             // Evaluate function at x2
             level.energy = x2;
-            f2 = computeDerivativeMismatch(level, matchIndex);
+            f2 = computeDerivativeMismatch(level);
 //            System.out.println("iter, energy, f2 = " + iter + " " + level.energy +  " " + f2);
 
             // Check for convergence
@@ -219,7 +216,10 @@ public class ShootingSolver {
 
     }
 
-    private double computeDerivativeMismatch(QuantumState level, int matchIndex) {
+    private double computeDerivativeMismatch(QuantumState level) {
+        int matchIndex = findMatchingIndex(level.energy);
+        double hy = system.getGrid().getStepSizeYCoordinate();
+
         // --- Shoot Forward
         Arrays.fill(level.psi, 0.0d); // Let us zero the wave function for clarity (not necessary).
         level.psi[0] = 0.0;
@@ -228,7 +228,7 @@ public class ShootingSolver {
             level.psi[n + 1] = integrator.propagate(level.psi, n, level, Integrator.Direction.FORWARD);
         }
 
-        double forwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / level.psi[matchIndex];
+        double forwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (level.psi[matchIndex] * 2. * hy);
         double forwardPsiAtMatchIndexMinusOne = level.psi[matchIndex - 1];
         double forwardPsiAtMatchIndex = level.psi[matchIndex];
 
@@ -241,7 +241,7 @@ public class ShootingSolver {
         for (int n = np - 2; n > matchIndex - 1; n--) {
             level.psi[n - 1] = integrator.propagate(level.psi, n, level, Integrator.Direction.BACKWARD);
         }
-        double backwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / level.psi[matchIndex];
+        double backwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (level.psi[matchIndex] * 2. * hy);
 
         // Let us rescale the correct psi (probably unnecessary doing this at each step).
         level.psi[matchIndex - 1] = forwardPsiAtMatchIndexMinusOne;
