@@ -104,7 +104,7 @@ public class ShootingSolver {
 
     }
 
-    public QuantumState findEigenvalueByBisection(int nOfDesiredNodes) {
+    private QuantumState findEigenvalueByBisection(int nOfDesiredNodes) {
 
         QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
         refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR, 0);
@@ -138,10 +138,23 @@ public class ShootingSolver {
             }
 
         }
-
     }
 
-    public QuantumState findEigenvalueByHybridMethod(int nOfDesiredNodes) {
+    public QuantumState findEigenvalue(int nOfDesiredNodes) {
+        return findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
+    }
+
+    public QuantumState findEigenvalue(int nOfDesiredNodes, RefinementStrategy strategy) {
+        switch (strategy) {
+            case BISECTION_ONLY:
+                return findEigenvalueByBisection(nOfDesiredNodes);
+            case BISECTION_THEN_REGULA_FALSI:
+                return findEigenvalueByHybridMethod(nOfDesiredNodes);
+        }
+        return null;
+    }
+
+    private QuantumState findEigenvalueByHybridMethod(int nOfDesiredNodes) {
         QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
         refineByBisection(level, nOfDesiredNodes, 1e-2, 3);
         refineByBidirectionalMatching(level);
