@@ -238,7 +238,7 @@ public class ShootingSolver {
         level.psi[np - 1] = 0.0;
         level.psi[np - 2] = 1.e-16;
 
-        for (int n = np - 2; n > matchIndex - 2; n--) {
+        for (int n = np - 2; n > matchIndex - 1; n--) {
             level.psi[n - 1] = integrator.propagate(level.psi, n, level, Integrator.Direction.BACKWARD);
         }
         double backwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / level.psi[matchIndex];
