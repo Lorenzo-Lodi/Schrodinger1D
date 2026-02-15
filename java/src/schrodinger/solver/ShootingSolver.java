@@ -115,8 +115,16 @@ public class ShootingSolver {
     }
 
     private void refineByBisection(QuantumState level, int nOfDesiredNodes, double maxAbsError, int minBisections) {
-        int nOfBisectionAfterStrictBracketing = 0;
-        for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
+        QuantumState.ConvergenceInfo info1 = new QuantumState.ConvergenceInfo();
+        info1.convergengeStage = "Bisection (to strick bracketing)";
+        level.convergenceInfo.add(info1);
+        QuantumState.ConvergenceInfo info2 = new QuantumState.ConvergenceInfo();
+        info2.convergengeStage = "Bisection (after strict bracketing)";
+        info2.iterations = 0;
+        level.convergenceInfo.add(info2);
+
+        for (int i = 1; i <= MAXIMUM_NUMBER_OF_BISECTIONS; i++) {
+            info1.iterations = i;
             level.energy = (level.lowerBound + level.upperBound) * 0.5;
             int nodes = countNodes(level);
 
@@ -129,11 +137,11 @@ public class ShootingSolver {
             }
 
             if (level.nodesLower == nOfDesiredNodes && level.nodesUpper == nOfDesiredNodes + 1) {
-                nOfBisectionAfterStrictBracketing++;
+                info2.iterations++;
             }
 
             if (Math.abs(level.upperBound - level.lowerBound) < maxAbsError &&
-                    nOfBisectionAfterStrictBracketing >= minBisections) {
+                    info2.iterations >= minBisections) {
                 break;
             }
 
@@ -164,12 +172,18 @@ public class ShootingSolver {
     }
 
     private void refineByBidirectionalMatching(QuantumState level) {
+        QuantumState.ConvergenceInfo info = new QuantumState.ConvergenceInfo();
+        info.convergengeStage = "Refinement by regula falsi";
+        info.iterations = 0;
+        level.convergenceInfo.add(info);
 
         level.energy = level.upperBound;
         double diffUpper = computeDerivativeMismatch(level);
+        info.iterations++;
 
         level.energy = level.lowerBound;
         double diffLower = computeDerivativeMismatch(level);
+        info.iterations++;
 
         // Regula falsi (false position) iteration
         double x0 = level.lowerBound;
@@ -196,6 +210,7 @@ public class ShootingSolver {
             // Evaluate function at x2
             level.energy = x2;
             f2 = computeDerivativeMismatch(level);
+            info.iterations++;
 
             // Check for convergence
             if (Math.abs(f2) < tol) {

@@ -3,17 +3,19 @@ package schrodinger;
 import schrodinger.grid.Grid;
 import schrodinger.potential.SchrodingerSystem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class QuantumState {
     private final SchrodingerSystem system;
-    public int nodes;
     public int nodesUpper = -1; // Set to "sentinel" unphysical value
     public int nodesLower = -1; // Set to "sentinel" unphysical value
     public double energy;
     public double upperBound;
     public double lowerBound;
-    public int numberOfBisections;
     public double[] psi;
     public double perturbativeCorrectionToEnergy;
+    public List<ConvergenceInfo> convergenceInfo = new ArrayList<>();
 
 
     public QuantumState(SchrodingerSystem system) {
@@ -75,6 +77,11 @@ public class QuantumState {
 
     public double getMass() {
         return system.getMass();
+    }
+
+    public static class ConvergenceInfo {
+        public String convergengeStage;
+        public int iterations;
     }
 
 }

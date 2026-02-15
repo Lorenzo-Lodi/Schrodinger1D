@@ -21,10 +21,8 @@ public class Main {
         System.out.println("   i nPoints       1/Ystep          Lower               Upper" + "               Energy"
                 + "          Energy + Pert. " + "     n bisec");
         for (int i = 0; i < 20; i++) {
-            int nOfPoints = 20 + 50 * i;
+            int nOfPoints = 50 + 50 * i;
             Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
-//            Grid grid = GridFactory.generateLogarithmicGrid(14.0d, 26.0d, nOfPoints, 22);
-//            Grid grid = GridFactory.generateSqrtGrid(14.0d, 26.0d, nOfPoints, 22);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
             QuantumState ek = finder.findEigenvalue(nOfDesiredNodes);
@@ -36,7 +34,10 @@ public class Main {
                     + padFloat(ek.upperBound, floatDecimals, floatDecimals + 4)
                     + padFloat(ek.energy, floatDecimals, floatDecimals + 4)
                     + padFloat(ek.energy + ek.perturbativeCorrectionToEnergy, floatDecimals, floatDecimals + 6)
-                    + padInt(ek.numberOfBisections, 6));
+                    + padInt(ek.convergenceInfo.get(0).iterations, 6)
+                    + padInt(ek.convergenceInfo.get(1).iterations, 6)
+                    + padInt(ek.convergenceInfo.get(2).iterations, 6)
+            );
         }
 
     }
