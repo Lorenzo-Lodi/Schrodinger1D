@@ -115,7 +115,6 @@ public class ShootingSolver {
     }
 
     private void refineByBisection(QuantumState level, int nOfDesiredNodes, double maxAbsError, int minBisections) {
-
         int nOfBisectionAfterStrictBracketing = 0;
         for (level.numberOfBisections = 1; level.numberOfBisections <= MAXIMUM_NUMBER_OF_BISECTIONS; level.numberOfBisections++) {
             level.energy = (level.lowerBound + level.upperBound) * 0.5;
@@ -142,7 +141,6 @@ public class ShootingSolver {
 
     }
 
-
     public QuantumState findEigenvalueByHybridMethod(int nOfDesiredNodes) {
         QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
         refineByBisection(level, nOfDesiredNodes, 1e-2, 3);
@@ -152,7 +150,6 @@ public class ShootingSolver {
         return level;
     }
 
-    // TODO WIP
     private void refineByBidirectionalMatching(QuantumState level) {
 
         level.energy = level.upperBound;
@@ -160,11 +157,6 @@ public class ShootingSolver {
 
         level.energy = level.lowerBound;
         double diffLower = computeDerivativeMismatch(level);
-
-
-//        System.out.println("Regula Falsi, starting points are: ");
-//        System.out.println(level.upperBound + " " + diffUpper);
-//        System.out.println(level.lowerBound + " " + diffLower);
 
         // Regula falsi (false position) iteration
         double x0 = level.lowerBound;
@@ -191,7 +183,6 @@ public class ShootingSolver {
             // Evaluate function at x2
             level.energy = x2;
             f2 = computeDerivativeMismatch(level);
-//            System.out.println("iter, energy, f2 = " + iter + " " + level.energy +  " " + f2);
 
             // Check for convergence
             if (Math.abs(f2) < tol) {
@@ -212,8 +203,6 @@ public class ShootingSolver {
 
         // Store the final approximation
         level.energy = x2;
-
-
     }
 
     private double computeDerivativeMismatch(QuantumState level) {
@@ -233,7 +222,6 @@ public class ShootingSolver {
         double forwardPsiAtMatchIndex = level.psi[matchIndex];
 
         // --- Shoot Backward
-//        Arrays.fill(level.psi, 0.0d); // Let us zero the wave function for clarity (not necessary).
         int np = system.getGrid().getNumberOfPoints();
         level.psi[np - 1] = 0.0;
         level.psi[np - 2] = 1.e-16;
@@ -254,7 +242,6 @@ public class ShootingSolver {
         level.psi[matchIndex] = 1.;
 
         return forwardDer - backwardDer;
-
     }
 
 
