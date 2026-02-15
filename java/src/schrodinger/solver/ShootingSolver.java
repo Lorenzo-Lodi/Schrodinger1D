@@ -26,7 +26,7 @@ public class ShootingSolver {
     private QuantumState findInitialEnergyBracket(int nOfDesiredNodes) {
         QuantumState level = new QuantumState(system);
 
-        double energyScale = findSystemEnergyScale(level);
+        double energyScale = estimateEnergyScaleAndLowerBound(level);
 
         // 3. Exponential Scan to find upper bound to the energy
         double currentEnergy = level.energy;
@@ -51,7 +51,7 @@ public class ShootingSolver {
         throw new RuntimeException("Failed to bracket energy level.");
     }
 
-    private Double findSystemEnergyScale(QuantumState level) {
+    private Double estimateEnergyScaleAndLowerBound(QuantumState level) {
         Grid grid = system.getGrid();
 
         // 1. Scan the *Effective Potential* U_tilde(y) for the minimum
@@ -259,7 +259,7 @@ public class ShootingSolver {
                 nodes++;
             }
 
-            // If we are deep in the classically-forbidded region and the wavefunction is blowing up, we can stop early
+            // If we are deep in the classically-forbidden region and the wavefunction is blowing up, we can stop early
             if (level.QTildeValueAt(n) > 2.0 * level.energy && Math.abs(level.psi[n + 1]) > PSI_MAX) {
                 break;
             }
