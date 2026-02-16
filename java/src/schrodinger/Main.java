@@ -3,8 +3,7 @@ package schrodinger;
 import schrodinger.grid.Grid;
 import schrodinger.grid.GridFactory;
 import schrodinger.integrator.Integrator;
-import schrodinger.integrator.Numerov;
-import schrodinger.integrator.TaylorThreePoints;
+import schrodinger.integrator.IntegratorFactory;
 import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.SchrodingerSystem;
@@ -15,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
 
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
-        Integrator integrator = new Numerov();
+        Integrator integrator = IntegratorFactory.getVignoli();
         double mass = 2.0d;
         int nOfDesiredNodes = 10;
 
