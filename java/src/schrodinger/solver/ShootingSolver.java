@@ -13,6 +13,7 @@ public class ShootingSolver {
     private static final double PSI_MAX = 1e30; // stop integrating forward if wave function exceeds this value
     private final Integrator integrator;
     private final SchrodingerSystem system;
+    private RefinementStrategy strategy;
 
     public ShootingSolver(SchrodingerSystem system, Integrator integrator) {
         this.system = system;
@@ -152,10 +153,12 @@ public class ShootingSolver {
         return findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
     }
 
-    public QuantumState findEigenvalue(int nOfDesiredNodes, RefinementStrategy strategy) {
+    public QuantumState findEigenvalue(int nOfDesiredNodes, RefinementStrategy refinementStrategy) {
+        this.strategy = refinementStrategy;
         switch (strategy) {
             case BISECTION_ONLY:
                 return findEigenvalueByBisection(nOfDesiredNodes);
+            case BISECTION_THEN_SECANT:
             case BISECTION_THEN_REGULA_FALSI:
                 return findEigenvalueByHybridMethod(nOfDesiredNodes);
         }
@@ -177,12 +180,15 @@ public class ShootingSolver {
         info.iterations = 0;
         level.convergenceInfo.add(info);
 
+        // It seems preferable to compute the matching index once and for all
+        int matchIndex = findMatchingIndex(level.energy);
+
         level.energy = level.upperBound;
-        double diffUpper = computeDerivativeMismatch(level);
+        double diffUpper = computeDerivativeMismatch(level, matchIndex);
         info.iterations++;
 
         level.energy = level.lowerBound;
-        double diffLower = computeDerivativeMismatch(level);
+        double diffLower = computeDerivativeMismatch(level, matchIndex);
         info.iterations++;
 
         // Regula falsi (false position) iteration
@@ -191,8 +197,10 @@ public class ShootingSolver {
         double x1 = level.upperBound;
         double f1 = diffUpper;
 
+        boolean isFalsePosition = (strategy == RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
+
         // Ensure the bracket is valid (f0 and f1 have opposite signs)
-        if (f0 * f1 > 0) {
+        if (isFalsePosition && f0 * f1 > 0) {
             // Handle error: the function does not bracket a root
             throw new IllegalArgumentException("The function values at the bounds must have opposite signs.");
         }
@@ -209,7 +217,7 @@ public class ShootingSolver {
 
             // Evaluate function at x2
             level.energy = x2;
-            f2 = computeDerivativeMismatch(level);
+            f2 = computeDerivativeMismatch(level, matchIndex);
             info.iterations++;
 
             // Check for convergence
@@ -217,15 +225,23 @@ public class ShootingSolver {
                 break;
             }
 
-            // Update the bracket while keeping the root inside
-            if (f0 * f2 < 0) {
-                // Root lies between x0 and x2
+            if (isFalsePosition) {
+                // Update the bracket while keeping the root inside
+                if (f0 * f2 < 0) {
+                    // Root lies between x0 and x2
+                    x1 = x2;
+                    f1 = f2;
+                } else {
+                    // Root lies between x2 and x1
+                    x0 = x2;
+                    f0 = f2;
+                }
+            } else {
+                // Secant update: always shift forward, discard oldest point
+                x0 = x1;
+                f0 = f1;
                 x1 = x2;
                 f1 = f2;
-            } else {
-                // Root lies between x2 and x1
-                x0 = x2;
-                f0 = f2;
             }
         }
 
@@ -233,8 +249,7 @@ public class ShootingSolver {
         level.energy = x2;
     }
 
-    private double computeDerivativeMismatch(QuantumState level) {
-        int matchIndex = findMatchingIndex(level.energy);
+    private double computeDerivativeMismatch(QuantumState level, int matchIndex) {
         double hy = system.getGrid().getStepSizeYCoordinate();
 
         // --- Shoot Forward
