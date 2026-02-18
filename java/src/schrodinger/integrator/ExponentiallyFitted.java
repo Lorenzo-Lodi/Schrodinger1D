@@ -6,10 +6,10 @@ public class ExponentiallyFitted extends ExponentiallyFittedAbstract {
      * Computes b0 (beta) for S1 EF Numerov.
      * Exact formula: b0 = [Z - 2(1 - c)] / [2 Z (1 - c)], where c = cos(sqrt|Z|) or cosh(sqrt|Z|)
      */
-    double getBeta(double Z) {
+    public double getBeta(double Z) {
 
-        if (Math.abs(Z) < 1e-10) {
-            return 1.0 / 12.0 + Z / 240.;  // Standard Numerov value
+        if (Math.abs(Z) < 1e-3) {
+            return 1.0 / 12.0 + Z / 240. + Z * Z / 6048.;  // Standard Numerov value
         }
 
         double sqrtModZ = Math.sqrt(Math.abs(Z));
@@ -24,7 +24,7 @@ public class ExponentiallyFitted extends ExponentiallyFittedAbstract {
         return (Z - 2.0 * c) / (2.0 * Z * c);
     }
 
-    double getGamma(double Z, double beta) {
+    public double getGamma(double Z, double beta) {
         return 1.0 - 2.0 * beta;
     }
 }
