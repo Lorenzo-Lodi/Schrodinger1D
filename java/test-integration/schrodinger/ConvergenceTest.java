@@ -28,10 +28,12 @@ public class ConvergenceTest {
             ShootingSolver finder1 = new ShootingSolver(system, IntegratorFactory.getTaylorThreePoints());
             ShootingSolver finder2 = new ShootingSolver(system, IntegratorFactory.getNumerov());
             ShootingSolver finder3 = new ShootingSolver(system, IntegratorFactory.getVignoli());
+            ShootingSolver finder4 = new ShootingSolver(system, IntegratorFactory.getExponentiallyFitted());
 
             QuantumState e1 = finder1.findEigenvalue(nOfDesidedNodes);
             QuantumState e2 = finder2.findEigenvalue(nOfDesidedNodes);
             QuantumState e3 = finder3.findEigenvalue(nOfDesidedNodes);
+            QuantumState e4 = finder4.findEigenvalue(nOfDesidedNodes);
 
             double exact = 0.5 + nOfDesidedNodes;
             double err1 = exact - e1.energy;
@@ -39,9 +41,11 @@ public class ConvergenceTest {
             double err2 = exact - e2.energy;
             double err2p = exact - e2.energy - e2.perturbativeCorrectionToEnergy;
             double err3 = exact - e3.energy;
+            double err4 = exact - e4.energy;
             System.out.println(padInt(nOfPoints) + " " + padFloat(err1) + " " + padFloat(err1p)
                     + " " + padFloat(err2) + " " + padFloat(err2p)
                     + " " + padFloat(err3)
+                    + " " + padFloat(err4)
             );
         }
 
