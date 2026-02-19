@@ -32,7 +32,7 @@ public abstract class ExponentiallyFittedAbstract implements Integrator {
         return numerator / denominator;
     }
 
-    abstract double getBeta(double Z);
+    public abstract double getBeta(double Z);
 
-    abstract double getGamma(double Z, double beta);
+    public abstract double getGamma(double Z, double beta);
 }

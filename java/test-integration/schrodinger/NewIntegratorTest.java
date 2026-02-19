@@ -26,14 +26,13 @@ public class NewIntegratorTest {
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
         QuantumState ek = finder.findEigenvalue(nOfDesiredNodes);
-        System.out.println(ek.energy);
-//        double refEnergy = 0.4997726295700777;
-//        assertEquals(refEnergy, ek.energy, 1e-12);
-//        assertTrue(ek.nodesUpper > refEnergy);
-//        assertTrue(ek.nodesLower < refEnergy);
-//
-//        double refPerturbative = 2.270604341323613E-4;
-//        assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
+        double refEnergy = 0.4999997794980129;
+        assertEquals(refEnergy, ek.energy, 1e-12);
+        assertTrue(ek.nodesUpper > refEnergy);
+        assertTrue(ek.nodesLower < refEnergy);
+
+        double refPerturbative = 0.;
+        assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
 
 
