@@ -26,10 +26,8 @@ public abstract class ExponentiallyFittedAbstract implements Integrator {
         double gamma_curr = getGamma(Z_curr, beta_curr);
 
         // 4. Propagate: (1 + β Z_next) y_next = (2 - γ Z_curr) y_curr - (1 + β Z_prev) y_prev
-        double numerator = (2.0 - Z_curr * gamma_curr) * psi[curr]
-                - (1.0 + Z_prev * beta_prev) * psi[prev];
-
-        double denominator = 1.0 + Z_next * beta_next;
+        double numerator = (2.0 - gamma_curr * Z_curr) * psi[curr] - (1.0 + beta_prev * Z_prev) * psi[prev];
+        double denominator = 1.0 + beta_next * Z_next;
 
         return numerator / denominator;
     }
