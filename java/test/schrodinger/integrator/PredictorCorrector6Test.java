@@ -17,6 +17,6 @@ public class PredictorCorrector6Test extends AbstractIntegratorTest {
 
     @Override
     protected double getGlobalConvergenceOrder() {
-        return 5.8; // TODO investigate why it's so poor
+        return 6.0;
     }
 }
