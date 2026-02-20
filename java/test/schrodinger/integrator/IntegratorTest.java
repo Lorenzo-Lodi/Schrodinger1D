@@ -11,17 +11,31 @@ import schrodinger.potential.SchrodingerSystem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaylorThreePointsTest {
+public class IntegratorTest {
 
     @Test
-    public void tracking_harmonic_ground_state() {
+    public void testIntegrator() {
+//        Integrator integrator = new TaylorThreePoints(); // CHECKED: order 2
+//        Integrator integrator = new Numerov(); // CHECKED: order 4
+//        Integrator integrator = new Vignoli(); // CHECKED: order 4
+//        Integrator integrator = new RaptisAllison(); // CHECKED: order 4
+//        Integrator integrator = new ExponentiallyFitted(); // CHECKED: order 4
+//        Integrator integrator = new PredictorCorrector6(); // NEEDS ONE FURTHER POINTS! Order about 6
+        Integrator integrator = new PredictorCorrector8(); // NEEDS TWO FURTHER POINTS! Order about 6
+//        Integrator integrator = new Stormer7(); // NEEDS TWO FURTHER POINTS! Order about 4.8 or so!
+//        Integrator integrator = new Stormer8(); // NEED THREE FURTHER POINTS! Order about 5.8 or so!
+
+        tracking_harmonic_ground_state(integrator);
+    }
+
+    public static void tracking_harmonic_ground_state(Integrator integrator) {
         PhysicalPotential potential = new PhysicalPotentialHarmonic(10, 1.0);
 
         List<Double> errors_points_over_10 = new ArrayList<>();
         List<Double> errors_points_over_4 = new ArrayList<>();
         List<Double> errors_points_over_2 = new ArrayList<>();
 
-        for (int nOfPoints = 100; nOfPoints <= 600; nOfPoints += 100) {
+        for (int nOfPoints = 100; nOfPoints <= 1000; nOfPoints += 100) {
             Grid grid = GridFactory.generateUniformGrid(6.0, 14.0, nOfPoints);
             SchrodingerSystem system = new SchrodingerSystem(potential, 2., grid);
             QuantumState state = new QuantumState(system);
@@ -29,8 +43,11 @@ public class TaylorThreePointsTest {
             state.psi[0] = exactSolution(grid.getRValue(0));
             state.psi[1] = exactSolution(grid.getRValue(1));
 
-            Integrator integrator = new TaylorThreePoints();
-            for (int n = 1; n < nOfPoints - 1; n++) {
+            state.psi[2] = exactSolution(grid.getRValue(2));
+            state.psi[3] = exactSolution(grid.getRValue(3));
+//            state.psi[4] = exactSolution(grid.getRValue(4));
+
+            for (int n = 3; n < nOfPoints - 1; n++) {
                 state.psi[n + 1] = integrator.propagate(state.psi, n, state, Integrator.Direction.FORWARD);
             }
 
@@ -40,14 +57,14 @@ public class TaylorThreePointsTest {
 
         }
 
-        int i = 0;
-        for (int nOfPoints = 100; nOfPoints <= 600; nOfPoints += 100) {
-            System.out.println(nOfPoints + " " + errors_points_over_10.get(i) + " " + errors_points_over_4.get(i) + " " + errors_points_over_2.get(i));
-            i++;
-        }
-        System.out.println();
-        i = 1;
-        for (int nOfPoints = 200; nOfPoints <= 600; nOfPoints += 100) {
+//        int i = 0;
+//        for (int nOfPoints = 100; nOfPoints <= 1000; nOfPoints += 100) {
+//            System.out.println(nOfPoints + " " + errors_points_over_10.get(i) + " " + errors_points_over_4.get(i) + " " + errors_points_over_2.get(i));
+//            i++;
+//        }
+//        System.out.println();
+        int i = 1;
+        for (int nOfPoints = 200; nOfPoints <= 1000; nOfPoints += 100) {
             double denom = Math.log10(((double) nOfPoints) / ((double) nOfPoints - 100));
             double f1 = Math.log10(errors_points_over_10.get(i) / errors_points_over_10.get(i - 1)) / denom;
             double f2 = Math.log10(errors_points_over_4.get(i) / errors_points_over_4.get(i - 1)) / denom;

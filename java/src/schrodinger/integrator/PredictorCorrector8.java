@@ -16,11 +16,6 @@ public class PredictorCorrector8 implements Integrator {
      *
      * Available correctors (all using y_{n+1} - 2y_n + y_{n-1} = h²·Σβ_k·f_{n+k}):
      *
-     *   ORDER 6  — symmetric {-2..+2}:
-     *     β: ±2→ -1/240,  ±1→ 1/10,  0→ 97/120
-     *     Error constant: 31/60480 ≈ 5.1e-4   (8× smaller than Numerov)
-     *     Needs: psi[n-1], psi[n-2] as history; predicts psi[n+1], psi[n+2]
-     *
      *   ORDER 8  — symmetric {-3..+3}:
      *     β: ±3→ 31/60480,  ±2→ -73/10080,  ±1→ 2171/20160,  0→ 12067/15120
      *     Error constant: -289/3628800 ≈ 8.0e-5  (52× smaller than Numerov)

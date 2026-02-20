@@ -30,7 +30,6 @@ public class IntegratorsTest {
         double f2 = new Numerov().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
         double f3 = new Vignoli().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
         double f4 = new RaptisAllison().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
-        double f5 = new RaptisAllison2().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
         double f6 = new ExponentiallyFitted().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
         double f7 = new Stormer7().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
         double f8 = new Stormer8().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
@@ -41,7 +40,6 @@ public class IntegratorsTest {
         myPrint("Numerov", f2, exact);
         myPrint("Vignoli", f3, exact);
         myPrint("RaptisAllison", f4, exact);
-        myPrint("RaptisAllison2", f5, exact);
         myPrint("ExponentiallyFitted", f6, exact);
         myPrint("Stormer7", f7, exact);
         myPrint("Stormer8", f8, exact);
