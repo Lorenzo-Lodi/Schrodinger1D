@@ -24,14 +24,16 @@ public class HarmonicOscillatorExactSolution {
     
     /**
      * Creates an exact solution for the n-th quantum state of a harmonic oscillator.
-     * By default, returns unnormalized wavefunction for backward compatibility.
-     * 
+     * By default, returns unnormalized wavefunction for use in convergence testing.
+     * The integrator propagates from initial conditions with a fixed amplitude scaling,
+     * so comparing unnormalized solutions (which preserve relative amplitudes) is appropriate.
+     *
      * @param r0 The center of the harmonic potential
      * @param alpha The spring constant parameter (V = alpha * (r - r0)^2)
      * @param quantumNumber The quantum number n (0 = ground state, 1 = first excited, etc.)
      */
     public HarmonicOscillatorExactSolution(double r0, double alpha, int quantumNumber) {
-        this(r0, alpha, quantumNumber, false); // Default to unnormalized for backward compatibility
+        this(r0, alpha, quantumNumber, false); // Default to unnormalized for convergence tests
     }
     
     /**
@@ -74,56 +76,65 @@ public class HarmonicOscillatorExactSolution {
     
     /**
      * Evaluates the exact wavefunction at position r.
-     * For backward compatibility with ground state (n=0), uses the original formula exp(-alpha*(r-r0)^2).
-     * For excited states (n>0), uses the proper harmonic oscillator form: H_n(x) * exp(-x^2/2)
-     * 
+     * For n=0: uses exp(-alpha*(r-r0)^2) for backward compatibility
+     * For n>0: uses standard H_n(x) * exp(-x^2/2) where x = sqrt(2*alpha)*(r-r0)
+     *
      * @param r the position
      * @return the wavefunction value ψ(r)
      */
     public double evaluate(double r) {
-        // For ground state (n=0), use the original backward-compatible formula
-        // Original: exp(-(r - 10)^2) with alpha=1, r0=10
         if (quantumNumber == 0) {
-            return Math.exp(-alpha * (r - r0) * (r - r0));
+            // Ground state: use original formula
+            double gaussian = Math.exp(-alpha * (r - r0) * (r - r0));
+            if (normalized) {
+                // For exp(-alpha*x²), normalization is (2*alpha/pi)^(1/4)
+                return Math.pow(2.0 * alpha / Math.PI, 0.25) * gaussian;
+            } else {
+                return gaussian;
+            }
         }
-        
-        // For excited states (n>0), use proper harmonic oscillator form
-        // Reduced coordinate
-        double x = Math.sqrt(alpha) * (r - r0);
-        
+
+        // Excited states: use standard textbook formula with exp(-x²/2)
+        // The coordinate scaling needs to be x = sqrt(2*alpha) * (r - r0)
+        // so that the Schrödinger equation is satisfied
+        double x = Math.sqrt(2.0 * alpha) * (r - r0);
+
         // Hermite polynomial
         double hermite = hermiteH(quantumNumber, x);
-        
+
         // Gaussian factor: exp(-x^2/2)
         double gaussian = Math.exp(-x * x / 2.0);
-        
+
         // Apply normalization if requested
         if (normalized) {
             double normalization = normalizationConstant(quantumNumber);
             return normalization * hermite * gaussian;
         } else {
-            // Return unnormalized (just the Hermite * Gaussian)
+            // Return unnormalized
             return hermite * gaussian;
         }
     }
     
     /**
-     * Evaluates the exact wavefunction at position r using the proper harmonic oscillator form.
-     * This method always uses exp(-x^2/2) regardless of quantum number.
-     * 
+     * Evaluates the exact wavefunction at position r using the standard harmonic oscillator form.
+     * This method uses exp(-x^2/2) which is the standard quantum mechanics textbook formula,
+     * but may not match the specific potential and mass parameters used in this codebase.
+     * Use evaluate() instead for consistency with the Schrödinger equation being solved.
+     *
      * @param r the position
      * @return the wavefunction value ψ(r)
      */
+    @Deprecated
     public double evaluateProper(double r) {
         // Reduced coordinate
         double x = Math.sqrt(alpha) * (r - r0);
-        
+
         // Hermite polynomial
         double hermite = hermiteH(quantumNumber, x);
-        
-        // Gaussian factor (proper form)
+
+        // Gaussian factor (standard textbook form, may not match actual Schrödinger equation)
         double gaussian = Math.exp(-x * x / 2);
-        
+
         // Apply normalization if requested
         if (normalized) {
             double normalization = normalizationConstant(quantumNumber);
@@ -136,44 +147,26 @@ public class HarmonicOscillatorExactSolution {
     
     /**
      * Evaluates the exact wavefunction at position r with normalization.
-     * 
+     *
      * @param r the position
      * @return the normalized wavefunction value ψ(r)
      */
     public double evaluateNormalized(double r) {
-        // Reduced coordinate
-        double x = Math.sqrt(alpha) * (r - r0);
-        
-        // Hermite polynomial
-        double hermite = hermiteH(quantumNumber, x);
-        
-        // Gaussian factor
-        double gaussian = Math.exp(-x * x / 2);
-        
-        // Normalization constant
-        double normalization = normalizationConstant(quantumNumber);
-        
-        return normalization * hermite * gaussian;
+        boolean wasNormalized = this.normalized;
+        // Temporarily enable normalization
+        HarmonicOscillatorExactSolution tempSol = new HarmonicOscillatorExactSolution(r0, alpha, quantumNumber, true);
+        return tempSol.evaluate(r);
     }
-    
+
     /**
      * Evaluates the unnormalized (raw) wavefunction at position r.
-     * This returns H_n(x) * exp(-x^2/2) without the normalization constant.
-     * 
+     *
      * @param r the position
      * @return the unnormalized wavefunction value
      */
     public double evaluateUnnormalized(double r) {
-        // Reduced coordinate
-        double x = Math.sqrt(alpha) * (r - r0);
-        
-        // Hermite polynomial
-        double hermite = hermiteH(quantumNumber, x);
-        
-        // Gaussian factor
-        double gaussian = Math.exp(-x * x / 2);
-        
-        return hermite * gaussian;
+        HarmonicOscillatorExactSolution tempSol = new HarmonicOscillatorExactSolution(r0, alpha, quantumNumber, false);
+        return tempSol.evaluate(r);
     }
     
     /**
@@ -191,13 +184,14 @@ public class HarmonicOscillatorExactSolution {
     }
     
     /**
-     * Computes the normalization constant N_n = 1 / sqrt(2^n * n! * sqrt(pi))
-     * 
+     * Computes the normalization constant for the standard form H_n(x) * exp(-x^2/2).
+     * N_n = 1 / sqrt(2^n * n! * sqrt(pi))
+     *
      * @param n the quantum number
      * @return the normalization constant
      */
     private double normalizationConstant(int n) {
-        // N_n = 1 / sqrt(2^n * n! * sqrt(pi))
+        // Standard normalization for H_n(x) * exp(-x^2/2)
         double factorial = factorial(n);
         double normalizationFactor = Math.sqrt(Math.pow(2, n) * factorial * Math.sqrt(Math.PI));
         return 1.0 / normalizationFactor;
