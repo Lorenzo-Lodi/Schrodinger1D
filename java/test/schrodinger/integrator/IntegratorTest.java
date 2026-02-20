@@ -20,9 +20,15 @@ public class IntegratorTest {
 //        Integrator integrator = new Vignoli(); // CHECKED: order 4
 //        Integrator integrator = new RaptisAllison(); // CHECKED: order 4
 //        Integrator integrator = new ExponentiallyFitted(); // CHECKED: order 4
+
 //        Integrator integrator = new PredictorCorrector6(); // NEEDS ONE FURTHER POINTS! Order about 6
-        Integrator integrator = new PredictorCorrector8(); // NEEDS TWO FURTHER POINTS! Order about 6
+
+//        Integrator integrator = new PredictorCorrector8(); // NEEDS TWO FURTHER POINTS! Order about 6
+        Integrator integrator = new PredictorCorrector8Alt(); // NEEDS TWO FURTHER POINTS!
+
+
 //        Integrator integrator = new Stormer7(); // NEEDS TWO FURTHER POINTS! Order about 4.8 or so!
+
 //        Integrator integrator = new Stormer8(); // NEED THREE FURTHER POINTS! Order about 5.8 or so!
 
         tracking_harmonic_ground_state(integrator);
@@ -57,13 +63,14 @@ public class IntegratorTest {
 
         }
 
-//        int i = 0;
-//        for (int nOfPoints = 100; nOfPoints <= 1000; nOfPoints += 100) {
-//            System.out.println(nOfPoints + " " + errors_points_over_10.get(i) + " " + errors_points_over_4.get(i) + " " + errors_points_over_2.get(i));
-//            i++;
-//        }
-//        System.out.println();
-        int i = 1;
+        int i = 0;
+        for (int nOfPoints = 100; nOfPoints <= 1000; nOfPoints += 100) {
+            System.out.println(nOfPoints + " " + errors_points_over_10.get(i) + " " + errors_points_over_4.get(i) + " " + errors_points_over_2.get(i));
+            i++;
+        }
+        System.out.println();
+//        int i = 1;
+        i=1;
         for (int nOfPoints = 200; nOfPoints <= 1000; nOfPoints += 100) {
             double denom = Math.log10(((double) nOfPoints) / ((double) nOfPoints - 100));
             double f1 = Math.log10(errors_points_over_10.get(i) / errors_points_over_10.get(i - 1)) / denom;
