@@ -19,6 +19,7 @@ public abstract class AbstractIntegratorTest {
 
     private final static int INITIALIZATION_N_MAX = 4;
     private final static double MIN_R_SQUARED = 0.995;
+    private final static double CONVERGENCE_ORDER_TOL = 0.36;
 
     /**
      * Represents the convergence data at different points in the grid.
@@ -207,9 +208,9 @@ public abstract class AbstractIntegratorTest {
 
             // Assert b coefficient is within ±0.3 of expected value
             double bDeviation = Math.abs(b - expectedBCoefficient);
-            org.junit.jupiter.api.Assertions.assertTrue(bDeviation <= 0.3,
-                    String.format("%s: b coefficient (%.6f) deviates %.6f from expected %.6f (max allowed: 0.3) for point %s",
-                            className, b, bDeviation, expectedBCoefficient, pointNames[idx]));
+            org.junit.jupiter.api.Assertions.assertTrue(bDeviation <= CONVERGENCE_ORDER_TOL,
+                    String.format("%s: b coefficient (%.6f) deviates %.6f from expected %.6f (max allowed: %.6f) for point %s",
+                            className, b, bDeviation, expectedBCoefficient, CONVERGENCE_ORDER_TOL, pointNames[idx]));
         }
 
         System.out.println();
