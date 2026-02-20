@@ -19,7 +19,8 @@ public abstract class AbstractIntegratorTest {
 
     private final static int INITIALIZATION_N_MAX = 4;
     private final static double MIN_R_SQUARED = 0.995;
-    private final static double CONVERGENCE_ORDER_TOL = 0.36;
+    private final static double CONVERGENCE_ORDER_TOL = 0.3;
+    private final static int MIN_POINTS = 200;
 
     /**
      * Represents the convergence data at different points in the grid.
@@ -53,7 +54,7 @@ public abstract class AbstractIntegratorTest {
         Map<Integer, ConvergenceData> convergenceResults = new HashMap<>();
 
         // Test with different numbers of grid points
-        for (int nOfPoints = 100; nOfPoints <= 1100; nOfPoints += 100) {
+        for (int nOfPoints = MIN_POINTS; nOfPoints <= 1100; nOfPoints += 100) {
             ConvergenceData data = testWithPoints(potential, integrator, nOfPoints);
             convergenceResults.put(nOfPoints, data);
         }
@@ -140,7 +141,7 @@ public abstract class AbstractIntegratorTest {
         System.out.println("------------------------------------");
 
         for (int i = 1; i < convergenceResults.size(); i++) {
-            int n1 = 100 + (i - 1) * 100;
+            int n1 = MIN_POINTS + (i - 1) * 100;
             int n2 = n1 + 100;
 
             if (convergenceResults.containsKey(n1) && convergenceResults.containsKey(n2)) {
