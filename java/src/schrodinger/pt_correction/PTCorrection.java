@@ -6,7 +6,7 @@ import schrodinger.QuantumState;
  * Interface for computing perturbative corrections to the energy.
  * Each correction implementation is specific to a particular integration method.
  */
-public interface PerturbativeCorrection {
+public interface PTCorrection {
     
     /**
      * Computes and stores the perturbative correction to the energy in the given quantum state.

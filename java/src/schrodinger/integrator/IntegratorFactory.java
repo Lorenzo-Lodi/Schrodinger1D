@@ -1,8 +1,8 @@
 package schrodinger.integrator;
 
-import schrodinger.pt_correction.NumerovCorrection;
-import schrodinger.pt_correction.PerturbativeCorrection;
-import schrodinger.pt_correction.TaylorThreePointsCorrection;
+import schrodinger.pt_correction.NumerovPTCorrection;
+import schrodinger.pt_correction.PTCorrection;
+import schrodinger.pt_correction.TaylorThreePointsPTCorrection;
 
 /**
  * Factory for creating integrators paired with their corresponding perturbative corrections.
@@ -19,9 +19,9 @@ public class IntegratorFactory {
     public static IntegratorPair createIntegrator(String integratorType) {
         switch (integratorType) {
             case "Numerov":
-                return new IntegratorPair(new Numerov(), new NumerovCorrection());
+                return new IntegratorPair(new Numerov(), new NumerovPTCorrection());
             case "TaylorThreePoints":
-                return new IntegratorPair(new TaylorThreePoints(), new TaylorThreePointsCorrection());
+                return new IntegratorPair(new TaylorThreePoints(), new TaylorThreePointsPTCorrection());
             case "PredictorCorrector6":
                 return new IntegratorPair(new PredictorCorrector6(), null);
             case "PredictorCorrector8":
@@ -89,9 +89,9 @@ public class IntegratorFactory {
      */
     public static class IntegratorPair {
         private final Integrator integrator;
-        private final PerturbativeCorrection correction;
+        private final PTCorrection correction;
 
-        public IntegratorPair(Integrator integrator, PerturbativeCorrection correction) {
+        public IntegratorPair(Integrator integrator, PTCorrection correction) {
             this.integrator = integrator;
             this.correction = correction;
         }
@@ -100,7 +100,7 @@ public class IntegratorFactory {
             return integrator;
         }
 
-        public PerturbativeCorrection getCorrection() {
+        public PTCorrection getCorrection() {
             return correction;
         }
     }
