@@ -1,9 +1,14 @@
 package schrodinger.integrator.notworking;
 
-import schrodinger.QuantumState;
 import schrodinger.integrator.Integrator;
 
-public class SymplecticRKN8  {
+import java.util.function.IntToDoubleFunction;
+
+/**
+ * Symplectic Runge-Kutta-Nyström 8th-order method.
+ * Uses Yoshida composition for symplectic integration.
+ */
+public class SymplecticRKN8 implements Integrator {
 
     // Yoshida 8th-order composition weights
     private static final double w1 = 0.741670364350612953;
@@ -15,13 +20,15 @@ public class SymplecticRKN8  {
             w1, w2, w3, w0, w3, w2, w1
     };
 
+    @Override
     public double propagate(double[] psi,
-                            int n,
-                            QuantumState state,
-                            Integrator.Direction direction) {
+                         int n,
+                         double step,
+                         IntToDoubleFunction qTildeFunction,
+                         Direction direction) {
 
         int d = direction.getValue();
-        double h = state.getGrid().getStepSizeYCoordinate();
+        double h = step;
 
         // Current and previous values
         double yPrev = psi[n - d];
@@ -36,7 +43,7 @@ public class SymplecticRKN8  {
             double hh2 = hh * hh;
 
             // Current Q value
-            double q = state.QTildeValueAt(n);
+            double q = qTildeFunction.applyAsDouble(n);
 
             // Verlet kernel in 2-point form
             double yTemp = 2.0 * yNext - yBefore + hh2 * q * yNext;

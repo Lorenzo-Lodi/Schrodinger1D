@@ -1,18 +1,20 @@
 package schrodinger.integrator.notworking;
 
-import schrodinger.QuantumState;
 import schrodinger.integrator.Integrator;
 
-public class IxaruRizea  {
+import java.util.function.IntToDoubleFunction;
 
-    /**
-     * Propagates using the Ixaru-Rizea (CP) method.
-     * This is a 4-step exponentially fitted method of high accuracy.
-     * <p>
-     * Requires history: psi[n], psi[n-1], psi[n-2], psi[n-3].
-     */
-    public double propagate(double[] psi, int n, QuantumState state, Integrator.Direction direction) {
-        double h = state.getGrid().getStepSizeYCoordinate();
+/**
+ * Propagates using Ixaru-Rizea (CP) method.
+ * This is a 4-step exponentially fitted method of high accuracy.
+ * <p>
+ * Requires history: psi[n], psi[n-1], psi[n-2], psi[n-3].
+ */
+public class IxaruRizea implements Integrator {
+
+    @Override
+    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
+        double h = step;
         double h2 = h * h;
 
         // 1. Identify indices
@@ -33,7 +35,7 @@ public class IxaruRizea  {
         // 2. Calculate Z = h^2 * Q (where f = -Qy)
         // Note: In the paper, the parameter z is often defined as h^2 * E (or related to energy).
         // For the Schrödinger equation y'' = 2m(V-E)/hbar^2 * y, Q is proportional to (V-E).
-        double z = -1.0 * h2 * state.QTildeValueAt(n0); // Usually Q = 2m(E-V)/hbar^2.
+        double z = -1.0 * h2 * qTildeFunction.applyAsDouble(n0); // Usually Q = 2m(E-V)/hbar^2.
         // Adjust sign based on your definition of Q.
         // If Q = k^2, then z = h^2 * k^2.
         // The Ixaru method typically defines z based on the energy E.
@@ -53,10 +55,10 @@ public class IxaruRizea  {
         // (1 - h^2 * a0 * Q_{n+1}) * y_{n+1} = 2y_n - y_{n-1} + h^2 [ a1*Q_n*y_n + a2*Q_{n-1}*y_{n-1} + a3*Q_{n-2}*y_{n-2} ]
         // Note signs: f = -Q*y. So h^2 * a * f = -h^2 * a * Q * y.
 
-        double Q_next = state.QTildeValueAt(next);
-        double Q_0 = state.QTildeValueAt(n0);
-        double Q_1 = state.QTildeValueAt(n1);
-        double Q_2 = state.QTildeValueAt(n2);
+        double Q_next = qTildeFunction.applyAsDouble(next);
+        double Q_0 = qTildeFunction.applyAsDouble(n0);
+        double Q_1 = qTildeFunction.applyAsDouble(n1);
+        double Q_2 = qTildeFunction.applyAsDouble(n2);
 
         double term_RHS =
                 2.0 * psi[n0]

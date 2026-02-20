@@ -1,23 +1,26 @@
 package schrodinger.integrator.notworking;
 
-import schrodinger.QuantumState;
 import schrodinger.integrator.Integrator;
 
-public class Cowell8  {
+import java.util.function.IntToDoubleFunction;
 
+public class Cowell8 implements Integrator {
+
+    @Override
     public double propagate(double[] psi,
-                            int n,
-                            QuantumState state,
-                            Integrator.Direction direction) {
+                         int n,
+                         double step,
+                         IntToDoubleFunction qTildeFunction,
+                         Direction direction) {
 
         int d = direction.getValue();
-        double h = state.getGrid().getStepSizeYCoordinate();
+        double h = step;
         double h2 = h * h;
         double h4 = h2 * h2;
 
-        double Qn   = state.QTildeValueAt(n);
-        double Qnm  = state.QTildeValueAt(n - d);
-        double Qnp  = state.QTildeValueAt(n + d);
+        double Qn   = qTildeFunction.applyAsDouble(n);
+        double Qnm  = qTildeFunction.applyAsDouble(n - d);
+        double Qnp  = qTildeFunction.applyAsDouble(n + d);
 
         double yn   = psi[n];
         double ynm  = psi[n - d];
