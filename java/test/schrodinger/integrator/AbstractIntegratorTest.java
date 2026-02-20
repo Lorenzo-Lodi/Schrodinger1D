@@ -18,6 +18,7 @@ import java.util.Map;
 public abstract class AbstractIntegratorTest {
 
     private final static int INITIALIZATION_N_MAX = 4;
+    private final static double MIN_R_SQUARED = 0.995;
 
     /**
      * Represents the convergence data at different points in the grid.
@@ -152,6 +153,66 @@ public abstract class AbstractIntegratorTest {
                 System.out.printf("%.4f\t\t%.4f\t\t%.4f%n", rate1, rate2, rate3);
             }
         }
+
+        System.out.println();
+
+        // Print linear fit results
+        printLinearFitResults(convergenceResults);
+    }
+
+    /**
+     * Computes and prints linear fit parameters for convergence analysis.
+     * Fits ln(|error|) = a + b * ln(nPoints) using least squares regression.
+     */
+    protected void printLinearFitResults(Map<Integer, ConvergenceData> convergenceResults) {
+        String className = this.getClass().getSimpleName();
+        System.out.println("Linear Fit Results for " + className + ":");
+        System.out.println("Fitting ln(|error|) = a + b * ln(nPoints)");
+        System.out.println("--------------------------------------------------------");
+
+        String[] pointFractions = {"10", "4", "2"};
+        String[] pointNames = {"10%", "25%", "50%"};
+        double expectedBCoefficient = -getGlobalConvergenceOrder();
+
+        for (int idx = 0; idx < pointFractions.length; idx++) {
+            String fraction = pointFractions[idx];
+
+            // Create arrays for ln(points) and ln(|error|)
+            int n = convergenceResults.size();
+            double[] lnPoints = new double[n];
+            double[] lnErrors = new double[n];
+
+            int i = 0;
+            for (Map.Entry<Integer, ConvergenceData> entry : convergenceResults.entrySet()) {
+                int nOfPoints = entry.getKey();
+                double error = entry.getValue().getError(fraction);
+
+                lnPoints[i] = Math.log(nOfPoints);
+                lnErrors[i] = Math.log(Math.abs(error));
+                i++;
+            }
+
+            // Compute linear fit
+            double[] fitParams = LinearFit.fit(lnPoints, lnErrors);
+            double a = fitParams[0];  // intercept
+            double b = fitParams[1];  // slope
+            double rSquared = fitParams[2];  // R-squared
+
+            System.out.printf("Point %s:\t\ta = %.6f\tb = %.6f\tR² = %.6f%n",
+                    pointNames[idx], a, b, rSquared);
+
+            // Assert R² is greater than 0.95
+            org.junit.jupiter.api.Assertions.assertTrue(rSquared > MIN_R_SQUARED,
+                    String.format("%s: R² (%.6f) should be > (%.6f) for point %s", className, rSquared, MIN_R_SQUARED, pointNames[idx]));
+
+            // Assert b coefficient is within ±0.3 of expected value
+            double bDeviation = Math.abs(b - expectedBCoefficient);
+            org.junit.jupiter.api.Assertions.assertTrue(bDeviation <= 0.3,
+                    String.format("%s: b coefficient (%.6f) deviates %.6f from expected %.6f (max allowed: 0.3) for point %s",
+                            className, b, bDeviation, expectedBCoefficient, pointNames[idx]));
+        }
+
+        System.out.println();
     }
 
     /**
@@ -176,6 +237,15 @@ public abstract class AbstractIntegratorTest {
      * Subclasses must implement this method to provide their specific integrator.
      */
     protected abstract Integrator getIntegrator();
+
+    /**
+     * Returns the expected b coefficient (slope) for the linear fit
+     * ln(|error|) = a + b * ln(nPoints).
+     * Subclasses must implement this method to provide the theoretical convergence rate.
+     *
+     * @return the expected b coefficient
+     */
+    protected abstract double getGlobalConvergenceOrder();
 
     /**
      * Utility method to format floating point numbers for display.

@@ -11,4 +11,9 @@ public class NumerovTest extends AbstractIntegratorTest {
     protected Integrator getIntegrator() {
         return new Numerov();
     }
+
+    @Override
+    protected double getGlobalConvergenceOrder() {
+        return 4.0;
+    }
 }

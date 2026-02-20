@@ -11,4 +11,9 @@ public class TaylorThreePointsTest extends AbstractIntegratorTest {
     protected Integrator getIntegrator() {
         return new TaylorThreePoints();
     }
+
+    @Override
+    protected double getGlobalConvergenceOrder() {
+        return 2.0;
+    }
 }

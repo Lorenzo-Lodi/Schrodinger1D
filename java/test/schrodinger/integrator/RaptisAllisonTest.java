@@ -11,4 +11,9 @@ public class RaptisAllisonTest extends AbstractIntegratorTest {
     protected Integrator getIntegrator() {
         return new RaptisAllison();
     }
+
+    @Override
+    protected double getGlobalConvergenceOrder() {
+        return 4.0;
+    }
 }
