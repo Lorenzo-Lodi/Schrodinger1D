@@ -11,14 +11,6 @@ import schrodinger.grid.Grid;
 public class PredictorCorrector8AltTest extends AbstractIntegratorTest {
 
     @Override
-    protected void initializeState(QuantumState state, Grid grid) {
-        // PredictorCorrector8Alt needs two further points
-        super.initializeState(state, grid);
-        state.psi[4] = exactSolution(grid.getRValue(4));
-        state.psi[5] = exactSolution(grid.getRValue(5));
-    }
-
-    @Override
     protected Integrator getIntegrator() {
         return new PredictorCorrector8Alt();
     }

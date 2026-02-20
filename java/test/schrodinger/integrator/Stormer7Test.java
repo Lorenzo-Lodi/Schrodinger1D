@@ -11,14 +11,6 @@ import schrodinger.grid.Grid;
 public class Stormer7Test extends AbstractIntegratorTest {
 
     @Override
-    protected void initializeState(QuantumState state, Grid grid) {
-        // Stormer7 needs two further points
-        super.initializeState(state, grid);
-        state.psi[4] = exactSolution(grid.getRValue(4));
-        state.psi[5] = exactSolution(grid.getRValue(5));
-    }
-
-    @Override
     protected Integrator getIntegrator() {
         return new Stormer7();
     }

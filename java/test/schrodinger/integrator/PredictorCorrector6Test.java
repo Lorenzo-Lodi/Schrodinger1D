@@ -11,13 +11,6 @@ import schrodinger.grid.Grid;
 public class PredictorCorrector6Test extends AbstractIntegratorTest {
 
     @Override
-    protected void initializeState(QuantumState state, Grid grid) {
-        // PredictorCorrector6 needs one further point
-        super.initializeState(state, grid);
-        state.psi[4] = exactSolution(grid.getRValue(4));
-    }
-
-    @Override
     protected Integrator getIntegrator() {
         return new PredictorCorrector6();
     }

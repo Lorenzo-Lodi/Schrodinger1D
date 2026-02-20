@@ -2,6 +2,8 @@ package schrodinger.integrator;
 
 import schrodinger.QuantumState;
 
+
+// CURRENTLY THIS VERSION GIVES ORDER 6, so it seems to be wrong
 public class Stormer8 implements Integrator{
 
     /**
