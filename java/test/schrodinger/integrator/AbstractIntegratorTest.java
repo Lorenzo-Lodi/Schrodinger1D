@@ -14,6 +14,7 @@ import java.util.Map;
 /**
  * Abstract base class for integrator tests.
  * Provides common functionality for testing integrator convergence.
+ * Supports testing against exact solutions for any quantum state of the harmonic oscillator.
  */
 public abstract class AbstractIntegratorTest {
 
@@ -21,6 +22,13 @@ public abstract class AbstractIntegratorTest {
     private final static double MIN_R_SQUARED = 0.995;
     private final static double CONVERGENCE_ORDER_TOL = 0.3;
     private final static int MIN_POINTS = 200;
+    
+    // Default potential parameters (matching the existing test setup)
+    protected static final double DEFAULT_R0 = 10.0;
+    protected static final double DEFAULT_ALPHA = 1.0;
+    
+    // The exact solution for the current quantum state
+    private HarmonicOscillatorExactSolution exactSolutionInstance;
 
     /**
      * Represents the convergence data at different points in the grid.
@@ -43,27 +51,80 @@ public abstract class AbstractIntegratorTest {
     }
 
     /**
+     * Returns the quantum number for the state being tested.
+     * Subclasses can override this to test different excited states.
+     * 
+     * @return the quantum number n (0 = ground state, 1 = first excited, etc.)
+     */
+    protected int getQuantumNumber() {
+        return 0; // Default to ground state
+    }
+
+    /**
+     * Returns the exact solution for the current quantum state.
+     * This method is called once per test to initialize the exact solution instance.
+     * 
+     * @return the exact solution for the quantum state being tested
+     */
+    protected HarmonicOscillatorExactSolution getExactSolution() {
+        return HarmonicOscillatorExactSolution.excitedState(DEFAULT_R0, DEFAULT_ALPHA, getQuantumNumber());
+    }
+
+    /**
      * Tests the convergence of the integrator by comparing numerical solutions
-     * with the exact analytical solution.
+     * with the exact analytical solution for the ground state (n=0).
      */
     @Test
     public void testIntegratorConvergence() {
-        PhysicalPotential potential = new PhysicalPotentialHarmonic(10, 1.0);
+        testIntegratorConvergence(0); // Default: ground state
+    }
+
+    /**
+     * Tests the convergence of the integrator by comparing numerical solutions
+     * with the exact analytical solution for the 10th excited state (n=10, has 10 nodes).
+     */
+    @Test
+    public void testIntegratorConvergence10thExcitedState() {
+        testIntegratorConvergence(10);
+    }
+
+    /**
+     * Tests the convergence of the integrator against the exact analytical solution
+     * for a specified quantum state.
+     * 
+     * @param quantumNumber the quantum number n (0 = ground state, 1 = first excited, etc.)
+     */
+    protected void testIntegratorConvergence(int quantumNumber) {
+        // Initialize the exact solution for the specified quantum state
+        exactSolutionInstance = HarmonicOscillatorExactSolution.excitedState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
+        
+        PhysicalPotential potential = new PhysicalPotentialHarmonic(DEFAULT_R0, DEFAULT_ALPHA);
         Integrator integrator = getIntegrator();
 
         Map<Integer, ConvergenceData> convergenceResults = new HashMap<>();
 
         // Test with different numbers of grid points
         for (int nOfPoints = MIN_POINTS; nOfPoints <= 1100; nOfPoints += 100) {
-            ConvergenceData data = testWithPoints(potential, integrator, nOfPoints);
+            ConvergenceData data = testWithPoints(potential, integrator, nOfPoints, quantumNumber);
             convergenceResults.put(nOfPoints, data);
         }
 
         // Print results
+        String stateName = (quantumNumber == 0) ? "Ground State" : quantumNumber + "th Excited State";
+        System.out.println("\n=== Testing " + stateName + " (n=" + quantumNumber + ") ===\n");
         printResults(convergenceResults);
 
         // Calculate and print convergence rates
         printConvergenceRates(convergenceResults);
+    }
+
+    /**
+     * Returns the exact energy for the current quantum state.
+     * 
+     * @return the exact energy eigenvalue
+     */
+    protected double getExactEnergy() {
+        return exactSolutionInstance.getEnergy();
     }
 
     /**
@@ -75,17 +136,36 @@ public abstract class AbstractIntegratorTest {
      * @return Convergence data containing errors at different points
      */
     protected ConvergenceData testWithPoints(PhysicalPotential potential, Integrator integrator, int nOfPoints) {
+        return testWithPoints(potential, integrator, nOfPoints, 0);
+    }
+
+    /**
+     * Tests the integrator with a specific number of grid points for a given quantum state.
+     *
+     * @param potential     The potential to use
+     * @param integrator    The integrator to test
+     * @param nOfPoints    The number of grid points
+     * @param quantumNumber The quantum number for the state being tested
+     * @return Convergence data containing errors at different points
+     */
+    protected ConvergenceData testWithPoints(PhysicalPotential potential, Integrator integrator, int nOfPoints, int quantumNumber) {
         Grid grid = GridFactory.generateUniformGrid(6.0, 14.0, nOfPoints);
         SchrodingerSystem system = new SchrodingerSystem(potential, 2., grid);
         QuantumState state = new QuantumState(system);
-        state.energy = 0.5;
+        
+        // Use the exact energy for the specified quantum state
+        HarmonicOscillatorExactSolution exactSol = HarmonicOscillatorExactSolution.excitedState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
+        state.energy = exactSol.getEnergy();
 
-        // Initialize with exact solution
-        initializeState(state, grid);
+        // Initialize with exact solution - use more points for higher quantum numbers
+        int initMax = Math.max(INITIALIZATION_N_MAX, quantumNumber + 1);
+        for (int n = 0; n <= initMax && n < nOfPoints; n++) {
+            state.psi[n] = exactSol.evaluate(grid.getRValue(n));
+        }
 
         // Propagate the wavefunction
         double step = state.getGrid().getStepSizeYCoordinate();
-        for (int n = INITIALIZATION_N_MAX; n < nOfPoints - 1; n++) {
+        for (int n = initMax; n < nOfPoints - 1; n++) {
             state.psi[n + 1] = integrator.propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
         }
 
@@ -228,10 +308,13 @@ public abstract class AbstractIntegratorTest {
     }
 
     /**
-     * Returns the exact analytical solution at position x.
+     * Returns the exact analytical solution at position x using the modular solution.
+     * 
+     * @param x the position
+     * @return the wavefunction value ψ(x)
      */
     protected double exactSolution(double x) {
-        return Math.exp(-(x - 10.) * (x - 10.));
+        return exactSolutionInstance.evaluate(x);
     }
 
     /**
