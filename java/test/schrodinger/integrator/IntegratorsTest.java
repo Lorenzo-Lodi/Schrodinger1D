@@ -24,17 +24,17 @@ public class IntegratorsTest {
         for (int k = 0; k <= n; k++) {
             state.psi[k] = exactSolution(grid.getRValue(k));
         }
-
+        double step = state.getGrid().getStepSizeYCoordinate();
         double exact = exactSolution(grid.getRValue(n + 1));
-        double f1 = new TaylorThreePoints().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
-        double f2 = new Numerov().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
-        double f3 = new Vignoli().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
-        double f4 = new RaptisAllison().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
-        double f6 = new ExponentiallyFitted().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
-        double f7 = new Stormer7().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
-        double f8 = new Stormer8().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
-        double f9 = new PredictorCorrector6().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
-        double f10 = new PredictorCorrector8().propagate(state.psi, n, state, Integrator.Direction.FORWARD);
+        double f1 = new TaylorThreePoints().propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
+        double f2 = new Numerov().propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
+        double f3 = new Vignoli().propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
+        double f4 = new RaptisAllison().propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
+        double f6 = new ExponentiallyFitted().propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
+        double f7 = new Stormer7().propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
+        double f8 = new Stormer8().propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
+        double f9 = new PredictorCorrector6().propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
+        double f10 = new PredictorCorrector8().propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
 
         myPrint("TaylorThreePoints", f1, exact);
         myPrint("Numerov", f2, exact);

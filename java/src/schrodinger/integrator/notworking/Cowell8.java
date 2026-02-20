@@ -3,13 +3,12 @@ package schrodinger.integrator.notworking;
 import schrodinger.QuantumState;
 import schrodinger.integrator.Integrator;
 
-public class Cowell8 implements Integrator {
+public class Cowell8  {
 
-    @Override
     public double propagate(double[] psi,
                             int n,
                             QuantumState state,
-                            Direction direction) {
+                            Integrator.Direction direction) {
 
         int d = direction.getValue();
         double h = state.getGrid().getStepSizeYCoordinate();

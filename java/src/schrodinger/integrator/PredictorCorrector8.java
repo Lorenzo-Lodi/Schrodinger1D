@@ -1,28 +1,29 @@
 package schrodinger.integrator;
 
-import schrodinger.QuantumState;
+import java.util.function.IntToDoubleFunction;
 
+/**
+ * Predictor-Corrector Störmer method of order 8 for integrating the Schrödinger equation.
+ * <p>
+ * Uses Numerov as predictor to estimate future psi values (psi[n+1], psi[n+2], ...),
+ * then applies a symmetric high-order corrector.
+ * <p>
+ * The key insight: since Q is known analytically everywhere, predicted values
+ * only appear as f = -Q·psi_predicted. The prediction error enters one order
+ * lower and does NOT degrade the corrector's order (standard PECE result).
+ * <p>
+ * Available correctors (all using y_{n+1} - 2y_n + y_{n-1} = h²·Σβ_k·f_{n+k}):
+ * <p>
+ * ORDER 8  — symmetric {-3..+3}:
+ * β: ±3→ 31/60480,  ±2→ -73/10080,  ±1→ 2171/20160,  0→ 12067/15120
+ * Error constant: -289/3628800 ≈ 8.0e-5  (52× smaller than Numerov)
+ * Needs: psi[n-1], psi[n-2], psi[n-3] as history; predicts psi[n+1..n+3]
+ */
 public class PredictorCorrector8 implements Integrator {
 
     /**
-     * Predictor-Corrector Störmer methods for y'' = -Q(x)·y.
-     * <p>
-     * Uses Numerov as predictor to estimate future psi values (psi[n+1], psi[n+2], ...),
-     * then applies a symmetric high-order corrector.
-     * <p>
-     * The key insight: since Q is known analytically everywhere, predicted values
-     * only appear as f = -Q·psi_predicted. The prediction error enters one order
-     * lower and does NOT degrade the corrector's order (standard PECE result).
-     * <p>
-     * Available correctors (all using y_{n+1} - 2y_n + y_{n-1} = h²·Σβ_k·f_{n+k}):
-     * <p>
-     * ORDER 8  — symmetric {-3..+3}:
-     * β: ±3→ 31/60480,  ±2→ -73/10080,  ±1→ 2171/20160,  0→ 12067/15120
-     * Error constant: -289/3628800 ≈ 8.0e-5  (52× smaller than Numerov)
-     * Needs: psi[n-1], psi[n-2], psi[n-3] as history; predicts psi[n+1..n+3]
+     * Numerov predictor step (reusable helper).
      */
-
-// ── Numerov predictor (reusable helper) ──────────────────────────────────────
     private double numerovStep(double psi_curr, double psi_prev,
                                double Q_next, double Q_curr, double Q_prev,
                                double h2) {
@@ -31,11 +32,9 @@ public class PredictorCorrector8 implements Integrator {
         return num / (1.0 + 1.0 / 12.0 * h2 * Q_next);
     }
 
-// ── Order 8 predictor-corrector ───────────────────────────────────────────────
-
     @Override
-    public double propagate(double[] psi, int n, QuantumState state, Direction direction) {
-        double h = state.getGrid().getStepSizeYCoordinate();
+    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
+        double h = step;
         double h2 = h * h;
         int d = direction.getValue();
 
@@ -47,13 +46,13 @@ public class PredictorCorrector8 implements Integrator {
         int n2 = n - 2 * d;
         int n3 = n - 3 * d;
 
-        double Q_n3 = state.QTildeValueAt(n3);
-        double Q_n2 = state.QTildeValueAt(n2);
-        double Q_n1 = state.QTildeValueAt(n1);
-        double Q_n0 = state.QTildeValueAt(n0);
-        double Q_nP1 = state.QTildeValueAt(nP1);
-        double Q_nP2 = state.QTildeValueAt(nP2);
-        double Q_nP3 = state.QTildeValueAt(nP3);
+        double Q_n3 = qTildeFunction.applyAsDouble(n3);
+        double Q_n2 = qTildeFunction.applyAsDouble(n2);
+        double Q_n1 = qTildeFunction.applyAsDouble(n1);
+        double Q_n0 = qTildeFunction.applyAsDouble(n0);
+        double Q_nP1 = qTildeFunction.applyAsDouble(nP1);
+        double Q_nP2 = qTildeFunction.applyAsDouble(nP2);
+        double Q_nP3 = qTildeFunction.applyAsDouble(nP3);
 
         // ── Predict psi[n+1], psi[n+2], psi[n+3] using chained Numerov ──
         double psi_nP1_pred = numerovStep(psi[n0], psi[n1], Q_nP1, Q_n0, Q_n1, h2);

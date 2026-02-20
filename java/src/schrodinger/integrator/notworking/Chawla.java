@@ -3,7 +3,7 @@ package schrodinger.integrator.notworking;
 import schrodinger.QuantumState;
 import schrodinger.integrator.Integrator;
 
-public class Chawla  implements Integrator {
+public class Chawla {
     /**
      * Propagates using a 4-step, 6th-order Extended Numerov method.
      *
@@ -11,8 +11,7 @@ public class Chawla  implements Integrator {
      * This method has a local truncation error of O(h^8), making it significantly
      * more accurate than the standard Numerov method (O(h^6)).
      */
-    @Override
-    public double propagate(double[] psi, int n, QuantumState state, Direction direction) {
+    public double propagate(double[] psi, int n, QuantumState state, Integrator.Direction direction) {
         double h = state.getGrid().getStepSizeYCoordinate();
         double h2 = h * h;
 

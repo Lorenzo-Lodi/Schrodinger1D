@@ -1,21 +1,21 @@
 package schrodinger.integrator;
 
-import schrodinger.QuantumState;
+import java.util.function.IntToDoubleFunction;
 
+/**
+ * Predictor-Corrector Störmer method of order 8 for integrating Schrödinger equation.
+ * <p>
+ * Uses Numerov (4th order) as predictor to estimate future psi values,
+ * then applies an 8th-order symmetric corrector with stencil {-3..+3}.
+ * <p>
+ * Implements full PECE scheme to achieve 8th-order convergence:
+ * Predict -> Evaluate -> Correct -> Evaluate -> Correct
+ * <p>
+ * Coefficients for ODE form y'' = -Q(x)·y:
+ *   β: ±3→ 31/60480,  ±2→ -73/10080,  ±1→ 2171/20160,  0→ 12067/15120
+ *   Error constant: -289/3628800 ≈ -8.0e-5
+ */
 public class PredictorCorrector8Alt implements Integrator {
-    /**
-     * Predictor-Corrector Störmer method for y'' = -Q(x)·y.
-     *
-     * Uses Numerov (4th order) as predictor to estimate future psi values,
-     * then applies an 8th-order symmetric corrector with stencil {-3..+3}.
-     *
-     * Implements full PECE scheme to achieve 8th-order convergence:
-     * Predict -> Evaluate -> Correct -> Evaluate -> Correct
-     *
-     * Coefficients for ODE form y'' = -Q(x)·y:
-     *   β: ±3→ 31/60480,  ±2→ -73/10080,  ±1→ 2171/20160,  0→ 12067/15120
-     *   Error constant: -289/3628800 ≈ -8.0e-5
-     */
 
     private static final double B3 =    31.0 / 60480.0;
     private static final double B2 =   -73.0 / 10080.0;
@@ -45,8 +45,8 @@ public class PredictorCorrector8Alt implements Integrator {
      */
 
     @Override
-    public double propagate(double[] psi, int n, QuantumState state, Direction direction) {
-        final double h  = state.getGrid().getStepSizeYCoordinate();
+    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
+        final double h  = step;
         final double h2 = h * h;
         final int d = direction.getValue();
 
@@ -54,13 +54,13 @@ public class PredictorCorrector8Alt implements Integrator {
         final int n0  = n;
         final int n1  = n - d, n2 = n - 2*d, n3 = n - 3*d;
 
-        final double Q_n3  = state.QTildeValueAt(n3);
-        final double Q_n2  = state.QTildeValueAt(n2);
-        final double Q_n1  = state.QTildeValueAt(n1);
-        final double Q_n0  = state.QTildeValueAt(n0);
-        final double Q_nP1 = state.QTildeValueAt(nP1);
-        final double Q_nP2 = state.QTildeValueAt(nP2);
-        final double Q_nP3 = state.QTildeValueAt(nP3);
+        final double Q_n3  = qTildeFunction.applyAsDouble(n3);
+        final double Q_n2  = qTildeFunction.applyAsDouble(n2);
+        final double Q_n1  = qTildeFunction.applyAsDouble(n1);
+        final double Q_n0  = qTildeFunction.applyAsDouble(n0);
+        final double Q_nP1 = qTildeFunction.applyAsDouble(nP1);
+        final double Q_nP2 = qTildeFunction.applyAsDouble(nP2);
+        final double Q_nP3 = qTildeFunction.applyAsDouble(nP3);
 
         // ── P: Predict using Numerov ──
         double psi_nP1_pred = numerovStep(psi[n0], psi[n1], Q_nP1, Q_n0, Q_n1, h2);

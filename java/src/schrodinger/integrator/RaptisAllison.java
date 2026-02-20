@@ -1,27 +1,29 @@
 package schrodinger.integrator;
 
-import schrodinger.QuantumState;
+import java.util.function.IntToDoubleFunction;
 
-public class RaptisAllison implements Integrator{
-    /**
-     * Propagates using the Raptis-Allison Exponentially Fitted Method.
-     *
-     * Corrected to ensure:
-     * 1. Oscillatory region limit matches Numerov (beta -> 1/12).
-     * 2. Exponential region limit matches Numerov (beta -> -1/12).
-     * 3. High accuracy for large Z (exponential fitting).
-     */
-    public double propagate(double[] psi, int n, QuantumState state, Direction direction) {
-        double h = state.getGrid().getStepSizeYCoordinate();
+/**
+ * Raptis-Allison Exponentially Fitted Method for integrating the Schrödinger equation.
+ * 
+ * Corrected to ensure:
+ * 1. Oscillatory region limit matches Numerov (beta -> 1/12).
+ * 2. Exponential region limit matches Numerov (beta -> -1/12).
+ * 3. High accuracy for large Z (exponential fitting).
+ */
+public class RaptisAllison implements Integrator {
+
+    @Override
+    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
+        double h = step;
         double h2 = h * h;
 
         int n_prev = n - direction.getValue();
         int n_curr = n;
         int n_next = n + direction.getValue();
 
-        double Q_next = state.QTildeValueAt(n_next);
-        double Q_curr = state.QTildeValueAt(n_curr);
-        double Q_prev = state.QTildeValueAt(n_prev);
+        double Q_next = qTildeFunction.applyAsDouble(n_next);
+        double Q_curr = qTildeFunction.applyAsDouble(n_curr);
+        double Q_prev = qTildeFunction.applyAsDouble(n_prev);
 
         double Z_curr = h2 * Q_curr;
 

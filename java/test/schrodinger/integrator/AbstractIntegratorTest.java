@@ -81,8 +81,9 @@ public abstract class AbstractIntegratorTest {
         initializeState(state, grid);
 
         // Propagate the wavefunction
+        double step = state.getGrid().getStepSizeYCoordinate();
         for (int n = INITIALIZATION_N_MAX; n < nOfPoints - 1; n++) {
-            state.psi[n + 1] = integrator.propagate(state.psi, n, state, Integrator.Direction.FORWARD);
+            state.psi[n + 1] = integrator.propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
         }
 
         // Calculate errors at different points

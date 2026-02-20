@@ -3,7 +3,7 @@ package schrodinger.integrator.notworking;
 import schrodinger.QuantumState;
 import schrodinger.integrator.Integrator;
 
-public class IxaruRizea implements Integrator {
+public class IxaruRizea  {
 
     /**
      * Propagates using the Ixaru-Rizea (CP) method.
@@ -11,8 +11,7 @@ public class IxaruRizea implements Integrator {
      * <p>
      * Requires history: psi[n], psi[n-1], psi[n-2], psi[n-3].
      */
-    @Override
-    public double propagate(double[] psi, int n, QuantumState state, Direction direction) {
+    public double propagate(double[] psi, int n, QuantumState state, Integrator.Direction direction) {
         double h = state.getGrid().getStepSizeYCoordinate();
         double h2 = h * h;
 

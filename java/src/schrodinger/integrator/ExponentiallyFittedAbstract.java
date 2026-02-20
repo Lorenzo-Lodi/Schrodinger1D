@@ -1,11 +1,15 @@
 package schrodinger.integrator;
 
-import schrodinger.QuantumState;
+import java.util.function.IntToDoubleFunction;
 
+/**
+ * Abstract base class for exponentially fitted integration methods.
+ */
 public abstract class ExponentiallyFittedAbstract implements Integrator {
 
-    public double propagate(double[] psi, int n, QuantumState state, Direction direction) {
-        double h = state.getGrid().getStepSizeYCoordinate();
+    @Override
+    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
+        double h = step;
         double h2 = h * h;
 
         // 1. Identify neighbors
@@ -15,9 +19,9 @@ public abstract class ExponentiallyFittedAbstract implements Integrator {
 
         // 2. Calculate Z = h^2 * Q for each point
         // Positive Q -> Oscillatory. Negative Q -> Exponential.
-        double Z_prev = h2 * state.QTildeValueAt(prev);
-        double Z_curr = h2 * state.QTildeValueAt(curr);
-        double Z_next = h2 * state.QTildeValueAt(next);
+        double Z_prev = h2 * qTildeFunction.applyAsDouble(prev);
+        double Z_curr = h2 * qTildeFunction.applyAsDouble(curr);
+        double Z_next = h2 * qTildeFunction.applyAsDouble(next);
 
         // 3. Calculate EF coefficients dynamically
         double beta_prev = getBeta(Z_prev);
@@ -32,7 +36,13 @@ public abstract class ExponentiallyFittedAbstract implements Integrator {
         return numerator / denominator;
     }
 
+    /**
+     * Returns the beta coefficient for exponentially fitted method given Z = h^2 * Q.
+     */
     public abstract double getBeta(double Z);
 
+    /**
+     * Returns the gamma coefficient for exponentially fitted method given Z = h^2 * Q and beta.
+     */
     public abstract double getGamma(double Z, double beta);
 }

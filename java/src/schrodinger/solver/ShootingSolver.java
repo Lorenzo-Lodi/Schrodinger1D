@@ -1,23 +1,32 @@
 package schrodinger.solver;
 
 import schrodinger.QuantumState;
+import schrodinger.pt_correction.PerturbativeCorrection;
 import schrodinger.grid.Grid;
 import schrodinger.integrator.Integrator;
 import schrodinger.potential.SchrodingerSystem;
 
 import java.util.Arrays;
+import java.util.function.IntToDoubleFunction;
 
 public class ShootingSolver {
     private static final double TARGET_ABSOLUTE_ERROR = 1e-13;
     private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
     private static final double PSI_MAX = 1e30; // stop integrating forward if wave function exceeds this value
     private final Integrator integrator;
+    private final PerturbativeCorrection correction;
     private final SchrodingerSystem system;
     private RefinementStrategy strategy;
 
-    public ShootingSolver(SchrodingerSystem system, Integrator integrator) {
+    public ShootingSolver(SchrodingerSystem system, Integrator integrator, PerturbativeCorrection correction) {
         this.system = system;
         this.integrator = integrator;
+        this.correction = correction;
+    }
+
+    // Backward-compatible constructor (correction set to null)
+    public ShootingSolver(SchrodingerSystem system, Integrator integrator) {
+        this(system, integrator, null);
     }
 
     /**
@@ -110,7 +119,9 @@ public class ShootingSolver {
         QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
         refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR, 0);
         level.normalizePsi();
-        integrator.computePerturbativeCorrection(level);
+        if (correction != null) {
+            correction.compute(level);
+        }
 
         return level;
     }
@@ -170,7 +181,9 @@ public class ShootingSolver {
         refineByBisection(level, nOfDesiredNodes, 1e-2, 3);
         refineByBidirectionalMatching(level);
         level.normalizePsi();
-        integrator.computePerturbativeCorrection(level);
+        if (correction != null) {
+            correction.compute(level);
+        }
         return level;
     }
 
@@ -251,13 +264,14 @@ public class ShootingSolver {
 
     private double computeDerivativeMismatch(QuantumState level, int matchIndex) {
         double hy = system.getGrid().getStepSizeYCoordinate();
+        IntToDoubleFunction qTildeFunction = level::QTildeValueAt;
 
         // --- Shoot Forward
         Arrays.fill(level.psi, 0.0d); // Let us zero the wave function for clarity (not necessary).
         level.psi[0] = 0.0;
         level.psi[1] = 1e-16;
         for (int n = 1; n < matchIndex + 1; n++) {
-            level.psi[n + 1] = integrator.propagate(level.psi, n, level, Integrator.Direction.FORWARD);
+            level.psi[n + 1] = integrator.propagate(level.psi, n, hy, qTildeFunction, Integrator.Direction.FORWARD);
         }
 
         double forwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (level.psi[matchIndex] * 2. * hy);
@@ -270,7 +284,7 @@ public class ShootingSolver {
         level.psi[np - 2] = 1.e-16;
 
         for (int n = np - 2; n > matchIndex - 1; n--) {
-            level.psi[n - 1] = integrator.propagate(level.psi, n, level, Integrator.Direction.BACKWARD);
+            level.psi[n - 1] = integrator.propagate(level.psi, n, hy, qTildeFunction, Integrator.Direction.BACKWARD);
         }
         double backwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (level.psi[matchIndex] * 2. * hy);
 
@@ -290,6 +304,8 @@ public class ShootingSolver {
 
     private int countNodes(QuantumState level) {
         int nPoints = system.getGrid().getNumberOfPoints();
+        double hy = system.getGrid().getStepSizeYCoordinate();
+        IntToDoubleFunction qTildeFunction = level::QTildeValueAt;
 
         // --- Shoot Forward
         level.psi[0] = 0.0;
@@ -297,7 +313,7 @@ public class ShootingSolver {
 
         int nodes = 0;
         for (int n = 1; n < nPoints - 1; n++) {
-            level.psi[n + 1] = integrator.propagate(level.psi, n, level, Integrator.Direction.FORWARD);
+            level.psi[n + 1] = integrator.propagate(level.psi, n, hy, qTildeFunction, Integrator.Direction.FORWARD);
             if (level.psi[n] * level.psi[n + 1] < 0.0) {
                 nodes++;
             }

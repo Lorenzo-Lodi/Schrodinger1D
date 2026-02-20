@@ -3,7 +3,7 @@ package schrodinger.integrator.notworking;
 import schrodinger.QuantumState;
 import schrodinger.integrator.Integrator;
 
-public class SymplecticRKN8 implements Integrator {
+public class SymplecticRKN8  {
 
     // Yoshida 8th-order composition weights
     private static final double w1 = 0.741670364350612953;
@@ -15,11 +15,10 @@ public class SymplecticRKN8 implements Integrator {
             w1, w2, w3, w0, w3, w2, w1
     };
 
-    @Override
     public double propagate(double[] psi,
                             int n,
                             QuantumState state,
-                            Direction direction) {
+                            Integrator.Direction direction) {
 
         int d = direction.getValue();
         double h = state.getGrid().getStepSizeYCoordinate();
