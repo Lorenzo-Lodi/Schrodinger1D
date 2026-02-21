@@ -13,11 +13,11 @@ public interface Integrator {
      * @param psi The wavefunction array containing partially filled values
      * @param n The current index (point n is assumed to be computed)
      * @param step The step size in the y-coordinate
-     * @param qTildeFunction Function that returns the Q-tilde value at a given index
+     * @param qTilde Function that returns the Q-tilde value at a given index
      * @param direction The integration direction (FORWARD or BACKWARD)
      * @return The value of the wavefunction at the next point (n+1 or n-1)
      */
-    double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction);
+    double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction);
 
     /**
      * Returns the minimum number of previously-computed psi values this integrator

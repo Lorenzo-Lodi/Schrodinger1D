@@ -19,7 +19,7 @@ public class RaptisAllison implements Integrator {
     public int globalConvergenceOrder() { return 4; }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
+    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
         double h = step;
         double h2 = h * h;
 
@@ -27,9 +27,9 @@ public class RaptisAllison implements Integrator {
         int n_curr = n;
         int n_next = n + direction.getValue();
 
-        double Q_next = qTildeFunction.applyAsDouble(n_next);
-        double Q_curr = qTildeFunction.applyAsDouble(n_curr);
-        double Q_prev = qTildeFunction.applyAsDouble(n_prev);
+        double Q_next = qTilde.applyAsDouble(n_next);
+        double Q_curr = qTilde.applyAsDouble(n_curr);
+        double Q_prev = qTilde.applyAsDouble(n_prev);
 
         double Z_curr = h2 * Q_curr;
 

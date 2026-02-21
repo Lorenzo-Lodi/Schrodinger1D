@@ -21,7 +21,7 @@ public class Stormer6 implements Integrator {
     public int globalConvergenceOrder() { return 6; }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
+    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
         double h = step;
         double h2 = h * h;
         int d = direction.getValue();
@@ -42,12 +42,12 @@ public class Stormer6 implements Integrator {
         double b_prev3 = -1.0 / 40.0;
         double b_prev4 = 1.0 / 240.0;
 
-        double Q_next = qTildeFunction.applyAsDouble(nP);
-        double Q_curr = qTildeFunction.applyAsDouble(n0);
-        double Q_prev = qTildeFunction.applyAsDouble(n1);
-        double Q_prev2 = qTildeFunction.applyAsDouble(n2);
-        double Q_prev3 = qTildeFunction.applyAsDouble(n3);
-        double Q_prev4 = qTildeFunction.applyAsDouble(n4);
+        double Q_next = qTilde.applyAsDouble(nP);
+        double Q_curr = qTilde.applyAsDouble(n0);
+        double Q_prev = qTilde.applyAsDouble(n1);
+        double Q_prev2 = qTilde.applyAsDouble(n2);
+        double Q_prev3 = qTilde.applyAsDouble(n3);
+        double Q_prev4 = qTilde.applyAsDouble(n4);
 
         double rhs = 2.0 * psi[n0] - psi[n1]
                 - h2 * (b_curr * Q_curr * psi[n0]

@@ -8,7 +8,7 @@ import java.util.function.IntToDoubleFunction;
 public abstract class ExponentiallyFittedAbstract implements Integrator {
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
+    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
         double h = step;
         double h2 = h * h;
 
@@ -19,9 +19,9 @@ public abstract class ExponentiallyFittedAbstract implements Integrator {
 
         // 2. Calculate Z = h^2 * Q for each point
         // Positive Q -> Oscillatory. Negative Q -> Exponential.
-        double Z_prev = h2 * qTildeFunction.applyAsDouble(prev);
-        double Z_curr = h2 * qTildeFunction.applyAsDouble(curr);
-        double Z_next = h2 * qTildeFunction.applyAsDouble(next);
+        double Z_prev = h2 * qTilde.applyAsDouble(prev);
+        double Z_curr = h2 * qTilde.applyAsDouble(curr);
+        double Z_next = h2 * qTilde.applyAsDouble(next);
 
         // 3. Calculate EF coefficients dynamically
         double beta_prev = getBeta(Z_prev);

@@ -41,7 +41,7 @@ public abstract class PredictorCorrector8Abstract extends PredictorCorrectorBase
     }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
+    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
         final double h = step;
         final double h2 = h * h;
         final int d = direction.getValue();
@@ -54,16 +54,16 @@ public abstract class PredictorCorrector8Abstract extends PredictorCorrectorBase
         int n2 = n - 2 * d;
         int n3 = n - 3 * d;
 
-        final double Q_n3 = qTildeFunction.applyAsDouble(n3);
-        final double Q_n2 = qTildeFunction.applyAsDouble(n2);
-        final double Q_n1 = qTildeFunction.applyAsDouble(n1);
-        final double Q_n0 = qTildeFunction.applyAsDouble(n0);
-        final double Q_nP1 = qTildeFunction.applyAsDouble(nP1);
-        final double Q_nP2 = qTildeFunction.applyAsDouble(nP2);
-        final double Q_nP3 = qTildeFunction.applyAsDouble(nP3);
+        final double Q_n3 = qTilde.applyAsDouble(n3);
+        final double Q_n2 = qTilde.applyAsDouble(n2);
+        final double Q_n1 = qTilde.applyAsDouble(n1);
+        final double Q_n0 = qTilde.applyAsDouble(n0);
+        final double Q_nP1 = qTilde.applyAsDouble(nP1);
+        final double Q_nP2 = qTilde.applyAsDouble(nP2);
+        final double Q_nP3 = qTilde.applyAsDouble(nP3);
 
         // ── P: Initial prediction (ψ[n+2] and ψ[n+3] are used; ψ[n+1] is discarded) ──
-        double[] pred = predictAhead(psi, n, 3, step, qTildeFunction, direction);
+        double[] pred = predictAhead(psi, n, 3, step, qTilde, direction);
         double psi_nP2 = pred[1];
         double psi_nP3 = pred[2];
 
@@ -80,7 +80,7 @@ public abstract class PredictorCorrector8Abstract extends PredictorCorrectorBase
 
             // E: re-predict ψ[n+2] and ψ[n+3] from corrected ψ[n+1], unless this was the last correction
             if (iter < maxIterations - 1) {
-                double[] repred = predictAhead(psi_nP1, psi, nP1, 2, step, qTildeFunction, direction);
+                double[] repred = predictAhead(psi_nP1, psi, nP1, 2, step, qTilde, direction);
                 psi_nP2 = repred[0];
                 psi_nP3 = repred[1];
             }

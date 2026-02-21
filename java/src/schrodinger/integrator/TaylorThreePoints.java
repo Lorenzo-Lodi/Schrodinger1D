@@ -15,8 +15,8 @@ public class TaylorThreePoints implements Integrator {
     public int globalConvergenceOrder() { return 2; }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
-        return psi[n] * (2.0d - step * step * qTildeFunction.applyAsDouble(n)) - psi[n - direction.getValue()];
+    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
+        return psi[n] * (2.0d - step * step * qTilde.applyAsDouble(n)) - psi[n - direction.getValue()];
     }
 
 }

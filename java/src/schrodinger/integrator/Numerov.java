@@ -15,12 +15,12 @@ public class Numerov implements Integrator {
     public int globalConvergenceOrder() { return 4; }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
+    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
         double h2 = step * step;
-        return (psi[n] * (2.0d - 5. * h2 * qTildeFunction.applyAsDouble(n) / 6.) -
-                (1. + h2 * qTildeFunction.applyAsDouble(n - direction.getValue()) / 12.)
+        return (psi[n] * (2.0d - 5. * h2 * qTilde.applyAsDouble(n) / 6.) -
+                (1. + h2 * qTilde.applyAsDouble(n - direction.getValue()) / 12.)
                         * psi[n - direction.getValue()]) /
-                (1. + h2 * qTildeFunction.applyAsDouble(n + direction.getValue()) / 12.);
+                (1. + h2 * qTilde.applyAsDouble(n + direction.getValue()) / 12.);
     }
 
 }
