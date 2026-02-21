@@ -24,10 +24,8 @@ public class IntegratorFactory {
                 return new IntegratorPair(new TaylorThreePoints(), new TaylorThreePointsPTCorrection());
             case "PredictorCorrector6":
                 return new IntegratorPair(new PredictorCorrector6(), null);
-            case "PredictorCorrector8":
-                return new IntegratorPair(new PredictorCorrector8(), null);
-            case "PredictorCorrector8Alt":
-                return new IntegratorPair(new PredictorCorrector8Alt(), null);
+            case "PredictorCorrector8NumerovIter1":
+                return new IntegratorPair(new PredictorCorrector8NumerovIter1(), null);
             case "RaptisAllison":
                 return new IntegratorPair(new RaptisAllison(), null);
             case "Stormer5":
@@ -56,12 +54,8 @@ public class IntegratorFactory {
         return new PredictorCorrector6();
     }
 
-    public static Integrator getPredictorCorrector8() {
-        return new PredictorCorrector8();
-    }
-
-    public static Integrator getPredictorCorrector8Alt() {
-        return new PredictorCorrector8Alt();
+    public static Integrator PredictorCorrector8NumerovIter1() {
+        return new PredictorCorrector8NumerovIter1();
     }
 
     public static Integrator getRaptisAllison() {
