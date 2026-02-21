@@ -39,6 +39,9 @@ public abstract class ExponentiallyFittedAbstract implements Integrator {
     @Override
     public int minHistoryLength() { return 2; }
 
+    @Override
+    public int globalConvergenceOrder() { return 4; }
+
     /**
      * Returns the beta coefficient for exponentially fitted method given Z = h^2 * Q.
      */

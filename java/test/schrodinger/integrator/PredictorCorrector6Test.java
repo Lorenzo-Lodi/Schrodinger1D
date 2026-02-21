@@ -15,8 +15,4 @@ public class PredictorCorrector6Test extends AbstractIntegratorTest {
         return new PredictorCorrector6();
     }
 
-    @Override
-    protected double getGlobalConvergenceOrder() {
-        return 6.0;
-    }
 }

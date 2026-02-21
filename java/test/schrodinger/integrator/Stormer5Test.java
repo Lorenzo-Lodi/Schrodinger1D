@@ -12,8 +12,4 @@ public class Stormer5Test extends AbstractIntegratorTest {
         return new Stormer5();
     }
 
-    @Override
-    protected double getGlobalConvergenceOrder() {
-        return 5.0;
-    }
 }

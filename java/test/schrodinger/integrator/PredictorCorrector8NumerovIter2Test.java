@@ -12,8 +12,4 @@ public class PredictorCorrector8NumerovIter2Test extends AbstractIntegratorTest 
         return new PredictorCorrector8NumerovIter2();
     }
 
-    @Override
-    protected double getGlobalConvergenceOrder() {
-        return 6.0;
-    }
 }

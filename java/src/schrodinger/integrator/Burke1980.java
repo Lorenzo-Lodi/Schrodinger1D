@@ -34,4 +34,9 @@ public class Burke1980 implements Integrator {
     public int minHistoryLength() {
         return 3;
     }
+
+    @Override
+    public int globalConvergenceOrder() {
+        return 4;
+    }
 }

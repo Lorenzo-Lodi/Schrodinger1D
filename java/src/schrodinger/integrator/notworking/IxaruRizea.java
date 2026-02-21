@@ -16,6 +16,9 @@ public class IxaruRizea implements Integrator {
     public int minHistoryLength() { return 3; }
 
     @Override
+    public int globalConvergenceOrder() { return 6; }
+
+    @Override
     public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
         double h = step;
         double h2 = h * h;

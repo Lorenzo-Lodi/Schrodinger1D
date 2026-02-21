@@ -12,8 +12,4 @@ public class RaptisAllisonTest extends AbstractIntegratorTest {
         return new RaptisAllison();
     }
 
-    @Override
-    protected double getGlobalConvergenceOrder() {
-        return 4.0;
-    }
 }

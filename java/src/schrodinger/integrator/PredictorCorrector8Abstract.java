@@ -36,6 +36,11 @@ public abstract class PredictorCorrector8Abstract extends PredictorCorrectorBase
     }
 
     @Override
+    public int globalConvergenceOrder() {
+        return 6;
+    }
+
+    @Override
     public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
         final double h = step;
         final double h2 = h * h;

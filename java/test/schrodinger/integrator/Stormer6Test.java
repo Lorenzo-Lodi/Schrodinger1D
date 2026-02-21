@@ -12,8 +12,4 @@ public class Stormer6Test extends AbstractIntegratorTest {
         return new Stormer6();
     }
 
-    @Override
-    protected double getGlobalConvergenceOrder() {
-        return 6.0;
-    }
 }

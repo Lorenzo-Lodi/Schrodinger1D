@@ -10,6 +10,9 @@ public class PadeNumerov8 implements Integrator {
     public int minHistoryLength() { return 2; }
 
     @Override
+    public int globalConvergenceOrder() { return 8; }
+
+    @Override
     public double propagate(double[] psi,
                          int n,
                          double step,

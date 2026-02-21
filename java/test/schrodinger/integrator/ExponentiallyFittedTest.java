@@ -12,8 +12,4 @@ public class ExponentiallyFittedTest extends AbstractIntegratorTest {
         return new ExponentiallyFitted();
     }
 
-    @Override
-    protected double getGlobalConvergenceOrder() {
-        return 4.0;
-    }
 }

@@ -12,8 +12,4 @@ public class VignoliTest extends AbstractIntegratorTest {
         return new Vignoli();
     }
 
-    @Override
-    protected double getGlobalConvergenceOrder() {
-        return 4.0;
-    }
 }

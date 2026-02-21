@@ -28,6 +28,15 @@ public interface Integrator {
      */
     int minHistoryLength();
 
+    /**
+     * Returns the global convergence order of this integration method.
+     * For a method of order p, the global error scales as O(h^p) as the step size h → 0.
+     *
+     * <p>This is informative metadata about the algorithm's mathematical properties.
+     * It is also used by the test framework to calibrate convergence tolerance checks.
+     */
+    int globalConvergenceOrder();
+
     enum Direction {
         FORWARD(1), BACKWARD(-1);
 

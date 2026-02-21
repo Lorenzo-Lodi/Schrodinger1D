@@ -447,11 +447,13 @@ public abstract class AbstractIntegratorTest {
     /**
      * Returns the expected b coefficient (slope) for the linear fit
      * ln(|error|) = a + b * ln(nPoints).
-     * Subclasses must implement this method to provide the theoretical convergence rate.
+     * Delegates to the integrator under test.
      *
      * @return the expected b coefficient
      */
-    protected abstract double getGlobalConvergenceOrder();
+    protected double getGlobalConvergenceOrder() {
+        return getIntegrator().globalConvergenceOrder();
+    }
 
     /**
      * Utility method to format floating point numbers for display.
