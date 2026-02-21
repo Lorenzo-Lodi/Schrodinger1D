@@ -9,6 +9,9 @@ import java.util.function.IntToDoubleFunction;
 public class TaylorThreePoints implements Integrator {
 
     @Override
+    public int minHistoryLength() { return 2; }
+
+    @Override
     public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
         return psi[n] * (2.0d - step * step * qTildeFunction.applyAsDouble(n)) - psi[n - direction.getValue()];
     }

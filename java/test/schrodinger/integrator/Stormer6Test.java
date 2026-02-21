@@ -14,7 +14,6 @@ public class Stormer6Test extends AbstractIntegratorTest {
 
     @Override
     protected double getGlobalConvergenceOrder() {
-        // TODO verify whether the poorer-than-expected rate is correct!
         return 6.0;
     }
 }

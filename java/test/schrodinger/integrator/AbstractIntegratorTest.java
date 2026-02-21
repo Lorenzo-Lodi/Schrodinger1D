@@ -400,7 +400,7 @@ public abstract class AbstractIntegratorTest {
             double b = fitParams[1];  // slope
             double rSquared = fitParams[2];  // R-squared
 
-            System.out.printf("Point %s:\t\ta = %.6f\tb = %.6f\tR² = %.6f%n",
+            System.out.printf("Point %s:\t\ta = %.6f\tb = %.6f\tR^2 = %.6f%n",
                     pointNames[idx], a, b, rSquared);
 
             // Assert R² is greater than minimum threshold (state-dependent)

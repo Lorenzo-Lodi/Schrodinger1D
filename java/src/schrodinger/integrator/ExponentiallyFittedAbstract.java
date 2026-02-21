@@ -36,6 +36,9 @@ public abstract class ExponentiallyFittedAbstract implements Integrator {
         return numerator / denominator;
     }
 
+    @Override
+    public int minHistoryLength() { return 2; }
+
     /**
      * Returns the beta coefficient for exponentially fitted method given Z = h^2 * Q.
      */

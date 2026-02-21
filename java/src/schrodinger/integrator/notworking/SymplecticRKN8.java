@@ -21,6 +21,9 @@ public class SymplecticRKN8 implements Integrator {
     };
 
     @Override
+    public int minHistoryLength() { return 2; }
+
+    @Override
     public double propagate(double[] psi,
                          int n,
                          double step,

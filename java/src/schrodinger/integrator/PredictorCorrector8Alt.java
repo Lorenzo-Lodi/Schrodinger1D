@@ -5,7 +5,7 @@ import java.util.function.IntToDoubleFunction;
 /**
  * Predictor-Corrector Störmer method of order 8 for integrating Schrödinger equation.
  * <p>
- * Uses Numerov (4th order) as predictor to estimate future psi values,
+ * Uses an injected predictor (default: Numerov) to estimate future psi values,
  * then applies an 8th-order symmetric corrector with stencil {-3..+3}.
  * <p>
  * Implements full PECE scheme to achieve 8th-order convergence:
@@ -15,34 +15,18 @@ import java.util.function.IntToDoubleFunction;
  *   β: ±3→ 31/60480,  ±2→ -73/10080,  ±1→ 2171/20160,  0→ 12067/15120
  *   Error constant: -289/3628800 ≈ -8.0e-5
  */
-public class PredictorCorrector8Alt implements Integrator {
+public class PredictorCorrector8Alt extends PredictorCorrectorBase {
 
     private static final double B3 =    31.0 / 60480.0;
     private static final double B2 =   -73.0 / 10080.0;
     private static final double B1 =  2171.0 / 20160.0;
     private static final double B0 = 12067.0 / 15120.0;
 
-    private double numerovStep(double psi_curr, double psi_prev,
-                               double Q_next, double Q_curr, double Q_prev,
-                               double h2) {
-        double num = (2.0 - 10.0/12.0 * h2 * Q_curr) * psi_curr
-                - (1.0 +  1.0/12.0 * h2 * Q_prev) * psi_prev;
-        return num / (1.0 + 1.0/12.0 * h2 * Q_next);
-    }
+    public PredictorCorrector8Alt() { super(new Numerov()); }
+    public PredictorCorrector8Alt(Integrator predictor) { super(predictor); }
 
-    /**
-     * Computes the corrector RHS excluding the implicit β₁ term.
-     *
-     * The corrector formula is:
-     *   ψ_{n+1} - 2ψ_n + ψ_{n-1} = h² Σ β_k f_{n+k}
-     *
-     * where f_{n+k} = -Q_{n+k} ψ_{n+k}.
-     *
-     * Moving the implicit term (k=+1) to LHS:
-     *   ψ_{n+1}(1 + h²β₁Q_{n+1}) = 2ψ_n - ψ_{n-1} + h² Σ_{k≠+1} β_k f_{n+k}
-     *
-     * This method computes the RHS sum.
-     */
+    @Override
+    public int minHistoryLength() { return 4; }
 
     @Override
     public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
@@ -62,10 +46,10 @@ public class PredictorCorrector8Alt implements Integrator {
         final double Q_nP2 = qTildeFunction.applyAsDouble(nP2);
         final double Q_nP3 = qTildeFunction.applyAsDouble(nP3);
 
-        // ── P: Predict using Numerov ──
-        double psi_nP1_pred = numerovStep(psi[n0], psi[n1], Q_nP1, Q_n0, Q_n1, h2);
-        double psi_nP2_pred = numerovStep(psi_nP1_pred, psi[n0], Q_nP2, Q_nP1, Q_n0, h2);
-        double psi_nP3_pred = numerovStep(psi_nP2_pred, psi_nP1_pred, Q_nP3, Q_nP2, Q_nP1, h2);
+        // ── P: First prediction pass (from n) ──
+        double[] pred = predictAhead(psi, n, 3, step, qTildeFunction, direction);
+        double psi_nP2_pred = pred[1];
+        double psi_nP3_pred = pred[2];
 
         // ── C: Correct ψ[n+1] ──
         double rhs = 2.0 * psi[n0]
@@ -76,10 +60,11 @@ public class PredictorCorrector8Alt implements Integrator {
 
         double psi_nP1 = rhs / (1.0 + h2 * B1 * Q_nP1);
 
-        // ── E & C: Re-predict ψ[n+2] using corrected ψ[n+1], then correct ──
-        // Use corrected ψ[n+1] as better "history" for next predictions
-        double psi_nP2_repred = numerovStep(psi_nP1, psi[n0], Q_nP2, Q_nP1, Q_n0, h2);
-        double psi_nP3_repred = numerovStep(psi_nP2_repred, psi_nP1, Q_nP3, Q_nP2, Q_nP1, h2);
+        // ── E & C: Re-predict ψ[n+2], ψ[n+3] using corrected ψ[n+1], then correct ──
+        // Second prediction pass starts from the corrected psi_nP1 as its seed.
+        double[] repred = predictAhead(psi_nP1, psi[n0], nP1, 2, step, qTildeFunction, direction);
+        double psi_nP2_repred = repred[0];
+        double psi_nP3_repred = repred[1];
 
         // Re-correct ψ[n+1] with improved future values
         double rhs2 = 2.0 * psi[n0]

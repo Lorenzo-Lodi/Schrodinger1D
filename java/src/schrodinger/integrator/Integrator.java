@@ -19,6 +19,15 @@ public interface Integrator {
      */
     double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction);
 
+    /**
+     * Returns the minimum number of previously-computed psi values this integrator
+     * needs to propagate one step. A value of 2 means psi[n] and psi[n-1] must both
+     * be known; 3 means psi[n], psi[n-1], psi[n-2] must be known; etc.
+     *
+     * <p>The actual psi array may be longer — this is only the minimum requirement.
+     */
+    int minHistoryLength();
+
     enum Direction {
         FORWARD(1), BACKWARD(-1);
 

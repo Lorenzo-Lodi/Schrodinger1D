@@ -13,6 +13,9 @@ import java.util.function.IntToDoubleFunction;
 public class IxaruRizea implements Integrator {
 
     @Override
+    public int minHistoryLength() { return 3; }
+
+    @Override
     public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
         double h = step;
         double h2 = h * h;

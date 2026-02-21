@@ -5,8 +5,8 @@ import java.util.function.IntToDoubleFunction;
 /**
  * Predictor-Corrector Störmer method of order 6 for integrating the Schrödinger equation.
  * <p>
- * Uses Numerov as predictor to estimate future psi values (psi[n+1], psi[n+2], ...),
- * then applies a symmetric high-order corrector.
+ * Uses an injected predictor (default: Numerov) to estimate future psi values
+ * (psi[n+1], psi[n+2]), then applies a symmetric high-order corrector.
  * <p>
  * The key insight: since Q is known analytically everywhere, predicted values
  * only appear as f = -Q·psi_predicted. The prediction error enters one order
@@ -19,18 +19,13 @@ import java.util.function.IntToDoubleFunction;
  * Error constant: 31/60480 ≈ 5.1e-4   (8× smaller than Numerov)
  * Needs: psi[n-1], psi[n-2] as history; predicts psi[n+1], psi[n+2]
  */
-public class PredictorCorrector6 implements Integrator {
+public class PredictorCorrector6 extends PredictorCorrectorBase {
 
-    /**
-     * Numerov predictor step (reusable helper).
-     */
-    private double numerovStep(double psi_curr, double psi_prev,
-                               double Q_next, double Q_curr, double Q_prev,
-                               double h2) {
-        double num = (2.0 - 10.0 / 12.0 * h2 * Q_curr) * psi_curr
-                - (1.0 + 1.0 / 12.0 * h2 * Q_prev) * psi_prev;
-        return num / (1.0 + 1.0 / 12.0 * h2 * Q_next);
-    }
+    public PredictorCorrector6() { super(new Numerov()); }
+    public PredictorCorrector6(Integrator predictor) { super(predictor); }
+
+    @Override
+    public int minHistoryLength() { return 3; }
 
     @Override
     public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {
@@ -39,20 +34,20 @@ public class PredictorCorrector6 implements Integrator {
         int d = direction.getValue();
 
         int nP2 = n + 2 * d;  // n+2
-        int nP1 = n + d;  // n+1  (target)
-        int n0 = n;         // n
-        int n1 = n - d;  // n-1
-        int n2 = n - 2 * d;  // n-2
+        int nP1 = n + d;      // n+1  (target)
+        int n0 = n;            // n
+        int n1 = n - d;        // n-1
+        int n2 = n - 2 * d;   // n-2
 
-        double Q_n2 = qTildeFunction.applyAsDouble(n2);
-        double Q_n1 = qTildeFunction.applyAsDouble(n1);
-        double Q_n0 = qTildeFunction.applyAsDouble(n0);
+        double Q_n2  = qTildeFunction.applyAsDouble(n2);
+        double Q_n1  = qTildeFunction.applyAsDouble(n1);
+        double Q_n0  = qTildeFunction.applyAsDouble(n0);
         double Q_nP1 = qTildeFunction.applyAsDouble(nP1);
         double Q_nP2 = qTildeFunction.applyAsDouble(nP2);
 
-        // ── Predict psi[n+1] and psi[n+2] using Numerov ──
-        double psi_nP1_pred = numerovStep(psi[n0], psi[n1], Q_nP1, Q_n0, Q_n1, h2);
-        double psi_nP2_pred = numerovStep(psi_nP1_pred, psi[n0], Q_nP2, Q_nP1, Q_n0, h2);
+        // ── Predict psi[n+1] and psi[n+2] using the injected predictor ──
+        double[] pred = predictAhead(psi, n, 2, step, qTildeFunction, direction);
+        double psi_nP2_pred = pred[1];
 
         // ── Correct using symmetric {-2..+2} formula ──
         // β: {±2: -1/240,  ±1: 1/10,  0: 97/120}
