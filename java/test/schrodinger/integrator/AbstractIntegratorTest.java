@@ -35,7 +35,7 @@ public abstract class AbstractIntegratorTest {
      * near nodes (typically the 10% evaluation point).
      *
      * @param quantumNumber the quantum number
-     * @param pointName the evaluation point name (e.g., "10%", "25%", "50%")
+     * @param pointName     the evaluation point name (e.g., "10%", "25%", "50%")
      * @return minimum acceptable R²
      */
     protected double getMinRSquared(int quantumNumber, String pointName) {
@@ -77,7 +77,7 @@ public abstract class AbstractIntegratorTest {
      * and excited states with nodes show additional variation, especially near nodes.
      *
      * @param quantumNumber the quantum number
-     * @param pointName the evaluation point name (e.g., "10%", "25%", "50%")
+     * @param pointName     the evaluation point name (e.g., "10%", "25%", "50%")
      * @return maximum allowed deviation from expected convergence order
      */
     protected double getConvergenceOrderTolerance(int quantumNumber, String pointName) {
@@ -155,7 +155,7 @@ public abstract class AbstractIntegratorTest {
     /**
      * Returns the quantum number for the state being tested.
      * Subclasses can override this to test different excited states.
-     * 
+     *
      * @return the quantum number n (0 = ground state, 1 = first excited, etc.)
      */
     protected int getQuantumNumber() {
@@ -165,7 +165,7 @@ public abstract class AbstractIntegratorTest {
     /**
      * Returns the exact solution for the current quantum state.
      * This method is called once per test to initialize the exact solution instance.
-     * 
+     *
      * @return the exact solution for the quantum state being tested
      */
     protected HarmonicOscillatorExactSolution getExactSolution() {
@@ -193,13 +193,13 @@ public abstract class AbstractIntegratorTest {
     /**
      * Tests the convergence of the integrator against the exact analytical solution
      * for a specified quantum state.
-     * 
+     *
      * @param quantumNumber the quantum number n (0 = ground state, 1 = first excited, etc.)
      */
     protected void testIntegratorConvergence(int quantumNumber) {
         // Initialize the exact solution for the specified quantum state
         exactSolutionInstance = HarmonicOscillatorExactSolution.excitedState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
-        
+
         PhysicalPotential potential = new PhysicalPotentialHarmonic(DEFAULT_R0, DEFAULT_ALPHA);
         Integrator integrator = getIntegrator();
 
@@ -214,6 +214,7 @@ public abstract class AbstractIntegratorTest {
         // Print results
         String stateName = (quantumNumber == 0) ? "Ground State" : quantumNumber + "th Excited State";
         System.out.println("\n=== Testing " + stateName + " (n=" + quantumNumber + ") ===\n");
+        System.out.println("Results for: " + integrator.getClass().getSimpleName() + "\n");
         printResults(convergenceResults);
 
         // Calculate and print convergence rates
@@ -222,7 +223,7 @@ public abstract class AbstractIntegratorTest {
 
     /**
      * Returns the exact energy for the current quantum state.
-     * 
+     *
      * @return the exact energy eigenvalue
      */
     protected double getExactEnergy() {
@@ -246,7 +247,7 @@ public abstract class AbstractIntegratorTest {
      *
      * @param potential     The potential to use
      * @param integrator    The integrator to test
-     * @param nOfPoints    The number of grid points
+     * @param nOfPoints     The number of grid points
      * @param quantumNumber The quantum number for the state being tested
      * @return Convergence data containing errors at different points
      */
@@ -259,7 +260,7 @@ public abstract class AbstractIntegratorTest {
         Grid grid = GridFactory.generateUniformGrid(rMin, rMax, nOfPoints);
         SchrodingerSystem system = new SchrodingerSystem(potential, 2., grid);
         QuantumState state = new QuantumState(system);
-        
+
         // Use the exact energy for the specified quantum state
         HarmonicOscillatorExactSolution exactSol = HarmonicOscillatorExactSolution.excitedState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
         state.energy = exactSol.getEnergy();
@@ -296,59 +297,59 @@ public abstract class AbstractIntegratorTest {
     }
 
     /**
-     * Prints the convergence results.
+     * Prints the convergence results including point-to-point convergence rates.
      */
     protected void printResults(Map<Integer, ConvergenceData> convergenceResults) {
-        System.out.println("Grid Points\t\tError at 10%\t\t\tError at 25%\t\t\tError at 50%");
-        System.out.println("------------------------------------------------------------");
+        System.out.println("Grid Points       Error at 10%            Error at 25%            Error at 50%            Rate 10%   Rate 25%   Rate 50%");
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------");
 
-        // Sort the entries by number of points
-        convergenceResults.entrySet().stream()
+        // Convert to sorted list for easier access to previous entry
+        java.util.List<Map.Entry<Integer, ConvergenceData>> sortedEntries = convergenceResults.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .forEach(entry -> {
-                    int nOfPoints = entry.getKey();
-                    ConvergenceData data = entry.getValue();
+                .collect(java.util.stream.Collectors.toList());
 
-                    System.out.printf("%10d\t\t%20.16f\t%20.16f\t%20.16f%n",
-                            nOfPoints,
-                            data.getError("10"),
-                            data.getError("4"),
-                            data.getError("2"));
-                });
+        for (int i = 0; i < sortedEntries.size(); i++) {
+            Map.Entry<Integer, ConvergenceData> entry = sortedEntries.get(i);
+            int nOfPoints = entry.getKey();
+            ConvergenceData data = entry.getValue();
+
+            // Print grid points and errors (using % flag to align positive/negative values)
+            System.out.printf("%10d\t\t% 20.18f\t% 20.18f\t% 20.18f",
+                    nOfPoints,
+                    data.getError("10"),
+                    data.getError("4"),
+                    data.getError("2"));
+
+            // Calculate and print convergence rates if not the first entry
+            if (i > 0) {
+                Map.Entry<Integer, ConvergenceData> prevEntry = sortedEntries.get(i - 1);
+                int prevPoints = prevEntry.getKey();
+                ConvergenceData prevData = prevEntry.getValue();
+
+                double rate10 = calculateConvergenceRate(prevData.getError("10"), data.getError("10"), prevPoints, nOfPoints);
+                double rate25 = calculateConvergenceRate(prevData.getError("4"), data.getError("4"), prevPoints, nOfPoints);
+                double rate50 = calculateConvergenceRate(prevData.getError("2"), data.getError("2"), prevPoints, nOfPoints);
+
+                System.out.printf("\t%9.4f  %9.4f  %9.4f", rate10, rate25, rate50);
+            } else {
+                System.out.printf("\t%9s  %9s  %9s", "-", "-", "-");
+            }
+
+            System.out.println();
+        }
 
         System.out.println();
     }
 
     /**
-     * Calculates and prints the convergence rates.
+     * Prints the linear fit analysis for convergence order.
+     * Note: Point-to-point convergence rates are now shown in the main results table.
      *
      * @param convergenceResults the convergence data for different grid sizes
-     * @param quantumNumber the quantum number being tested
+     * @param quantumNumber      the quantum number being tested
      */
     protected void printConvergenceRates(Map<Integer, ConvergenceData> convergenceResults, int quantumNumber) {
-        System.out.println("Convergence Rates:");
-        System.out.println("Point 10%\tPoint 25%\tPoint 50%");
-        System.out.println("------------------------------------");
-
-        for (int i = 1; i < convergenceResults.size(); i++) {
-            int n1 = MIN_POINTS + (i - 1) * 100;
-            int n2 = n1 + 100;
-
-            if (convergenceResults.containsKey(n1) && convergenceResults.containsKey(n2)) {
-                ConvergenceData data1 = convergenceResults.get(n1);
-                ConvergenceData data2 = convergenceResults.get(n2);
-
-                double rate1 = calculateConvergenceRate(data1.getError("10"), data2.getError("10"), n1, n2);
-                double rate2 = calculateConvergenceRate(data1.getError("4"), data2.getError("4"), n1, n2);
-                double rate3 = calculateConvergenceRate(data1.getError("2"), data2.getError("2"), n1, n2);
-
-                System.out.printf("%.4f\t\t%.4f\t\t%.4f%n", rate1, rate2, rate3);
-            }
-        }
-
-        System.out.println();
-
-        // Print linear fit results
+        // Print linear fit results (global convergence order estimate)
         printLinearFitResults(convergenceResults, quantumNumber);
     }
 
@@ -357,7 +358,7 @@ public abstract class AbstractIntegratorTest {
      * Fits ln(|error|) = a + b * ln(nPoints) using least squares regression.
      *
      * @param convergenceResults the convergence data for different grid sizes
-     * @param quantumNumber the quantum number being tested
+     * @param quantumNumber      the quantum number being tested
      */
     protected void printLinearFitResults(Map<Integer, ConvergenceData> convergenceResults, int quantumNumber) {
         String className = this.getClass().getSimpleName();
@@ -429,7 +430,7 @@ public abstract class AbstractIntegratorTest {
 
     /**
      * Returns the exact analytical solution at position x using the modular solution.
-     * 
+     *
      * @param x the position
      * @return the wavefunction value ψ(x)
      */

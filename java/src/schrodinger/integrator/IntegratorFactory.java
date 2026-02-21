@@ -30,10 +30,10 @@ public class IntegratorFactory {
                 return new IntegratorPair(new PredictorCorrector8Alt(), null);
             case "RaptisAllison":
                 return new IntegratorPair(new RaptisAllison(), null);
-            case "Stormer7":
-                return new IntegratorPair(new Stormer7(), null);
-            case "Stormer8":
-                return new IntegratorPair(new Stormer8(), null);
+            case "Stormer5":
+                return new IntegratorPair(new Stormer5(), null);
+            case "Stormer6":
+                return new IntegratorPair(new Stormer6(), null);
             case "ExponentiallyFitted":
                 return new IntegratorPair(new ExponentiallyFitted(), null);
             case "Vignoli":
@@ -69,11 +69,11 @@ public class IntegratorFactory {
     }
 
     public static Integrator getStormer7() {
-        return new Stormer7();
+        return new Stormer5();
     }
 
     public static Integrator getStormer8() {
-        return new Stormer8();
+        return new Stormer6();
     }
 
     public static Integrator getExponentiallyFitted() {
