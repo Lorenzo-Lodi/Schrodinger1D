@@ -15,7 +15,7 @@ import java.util.function.IntToDoubleFunction;
 public class Stormer5 implements Integrator {
 
     @Override
-    public int minHistoryLength() { return 3; }
+    public int minHistoryLength() { return 4; }
 
     @Override
     public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTildeFunction, Direction direction) {

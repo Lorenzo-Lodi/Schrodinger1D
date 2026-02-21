@@ -62,7 +62,7 @@ public class PredictorCorrector8Alt extends PredictorCorrectorBase {
 
         // ── E & C: Re-predict ψ[n+2], ψ[n+3] using corrected ψ[n+1], then correct ──
         // Second prediction pass starts from the corrected psi_nP1 as its seed.
-        double[] repred = predictAhead(psi_nP1, psi[n0], nP1, 2, step, qTildeFunction, direction);
+        double[] repred = predictAhead(psi_nP1, psi, nP1, 2, step, qTildeFunction, direction);
         double psi_nP2_repred = repred[0];
         double psi_nP3_repred = repred[1];
 

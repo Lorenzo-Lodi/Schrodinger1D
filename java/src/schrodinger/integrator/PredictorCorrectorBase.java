@@ -9,22 +9,14 @@ import java.util.function.IntToDoubleFunction;
  * and provides {@code predictAhead} helpers that build a chain of predicted psi
  * values without modifying the main psi array.
  * <p>
- * Note on predictor compatibility: the 3-element buffer approach used internally
- * is designed for 2-point predictors (those reading only psi[n] and psi[n-1]).
- * Numerov and TaylorThreePoints both qualify. Multi-point predictors like Stormer5
- * would require a wider buffer and are not suitable as predictors here.
+ * The dynamic sliding-window buffer supports any predictor regardless of its
+ * history length, keyed off {@code predictor.minHistoryLength()}.
  */
 public abstract class PredictorCorrectorBase implements Integrator {
 
     protected final Integrator predictor;
 
     protected PredictorCorrectorBase(Integrator predictor) {
-        if (predictor.minHistoryLength() != 2) {
-            throw new IllegalArgumentException(
-                predictor.getClass().getSimpleName()
-                + " has minHistoryLength() = " + predictor.minHistoryLength()
-                + "; only 2-point predictors are compatible with predictAhead()");
-        }
         this.predictor = predictor;
     }
 
@@ -33,7 +25,7 @@ public abstract class PredictorCorrectorBase implements Integrator {
      * {@code n} in the grid, using the injected predictor.
      * Works for both FORWARD and BACKWARD directions.
      *
-     * @param psi   the wavefunction array (read-only; psi[n] and psi[n-d] are used as seeds)
+     * @param psi   the wavefunction array (read-only; deep history is read as needed)
      * @param n     starting grid index (psi[n] is the "current" seed)
      * @param steps number of predicted values to produce
      * @param step  grid step size h
@@ -43,46 +35,50 @@ public abstract class PredictorCorrectorBase implements Integrator {
      */
     protected double[] predictAhead(double[] psi, int n, int steps,
                                     double step, IntToDoubleFunction qFn, Direction dir) {
-        return predictAhead(psi[n], psi[n - dir.getValue()], n, steps, step, qFn, dir);
+        return predictAheadImpl(psi[n], psi, n, steps, step, qFn, dir);
     }
 
     /**
-     * Overload accepting explicit psi_curr / psi_prev starting values,
+     * Overload accepting an explicit corrected value for grid index {@code n},
      * needed when the prediction chain starts from a corrected value rather
      * than directly from the psi array.
      *
-     * @param psi_curr value at grid index {@code n}
-     * @param psi_prev value at grid index {@code n - d}
-     * @param n        starting grid index (where psi_curr lives)
-     * @param steps    number of predicted values to produce
-     * @param step     grid step size h
-     * @param qFn      Q-tilde function over grid indices
-     * @param dir      integration direction
+     * @param psiAtN corrected value at grid index {@code n} (overrides psi[n])
+     * @param psi    the wavefunction array (read-only; deep history is read as needed)
+     * @param n      starting grid index (where psiAtN lives)
+     * @param steps  number of predicted values to produce
+     * @param step   grid step size h
+     * @param qFn    Q-tilde function over grid indices
+     * @param dir    integration direction
      * @return array of length {@code steps} where result[i] = predicted psi at n+(i+1)*d
      */
-    protected double[] predictAhead(double psi_curr, double psi_prev,
+    protected double[] predictAhead(double psiAtN, double[] psi,
                                     int n, int steps,
                                     double step, IntToDoubleFunction qFn, Direction dir) {
-        int d = dir.getValue();
+        return predictAheadImpl(psiAtN, psi, n, steps, step, qFn, dir);
+    }
+
+    private double[] predictAheadImpl(double psiAtN, double[] psi, int n, int steps,
+                                      double step, IntToDoubleFunction qFn, Direction dir) {
+        int d   = dir.getValue();
+        int k   = predictor.minHistoryLength();
+        int nib = (d == 1) ? k - 1 : 1;        // n_in_buf
+        double[] buf    = new double[k + 1];
         double[] result = new double[steps];
-        double prev = psi_prev;
-        double curr = psi_curr;
 
         for (int i = 0; i < steps; i++) {
-            final int baseIdx = n + i * d;
-            final double fPrev = prev, fCurr = curr;
-            // Minimal 3-element buffer: [prev, curr, prediction-slot]
-            // Layout flips for BACKWARD so the predictor's direction logic still works.
-            double[] buf = (d == 1)
-                    ? new double[]{fPrev, fCurr, 0.0}
-                    : new double[]{0.0,   fCurr, fPrev};
-            // Map local buffer indices 0,1,2  →  grid indices baseIdx-1, baseIdx, baseIdx+1
-            IntToDoubleFunction adjQFn = idx -> qFn.applyAsDouble(baseIdx - 1 + idx);
-
-            double predicted = predictor.propagate(buf, 1, step, adjQFn, dir);
-            result[i] = predicted;
-            prev = curr;
-            curr = predicted;
+            int baseIdx = n + i * d;
+            for (int j = 0; j <= k; j++) {
+                int g = baseIdx - nib + j;
+                if (g == baseIdx + d) { buf[j] = 0.0; continue; }   // future slot
+                if (g == n)           { buf[j] = psiAtN; continue; } // override
+                buf[j] = (d == 1)
+                    ? ((g <= n) ? psi[g] : result[g - n - 1])
+                    : ((g >= n) ? psi[g] : result[n - g - 1]);
+            }
+            final int fb = baseIdx, fn = nib;
+            IntToDoubleFunction adjQFn = idx -> qFn.applyAsDouble(fb - fn + idx);
+            result[i] = predictor.propagate(buf, nib, step, adjQFn, dir);
         }
         return result;
     }
