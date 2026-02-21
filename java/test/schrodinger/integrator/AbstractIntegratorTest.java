@@ -138,6 +138,7 @@ public abstract class AbstractIntegratorTest {
      */
     protected static class ConvergenceData {
         private final Map<String, Double> errors = new HashMap<>();
+        private long elapsedNanos;
 
         public void addError(String pointFraction, double error) {
             errors.put(pointFraction, error);
@@ -150,6 +151,9 @@ public abstract class AbstractIntegratorTest {
         public Map<String, Double> getAllErrors() {
             return new HashMap<>(errors);
         }
+
+        public void setElapsedNanos(long ns) { this.elapsedNanos = ns; }
+        public long getElapsedNanos()        { return elapsedNanos; }
     }
 
     /**
@@ -273,12 +277,15 @@ public abstract class AbstractIntegratorTest {
 
         // Propagate the wavefunction
         double step = state.getGrid().getStepSizeYCoordinate();
+        long t0 = System.nanoTime();
         for (int n = initMax; n < nOfPoints - 1; n++) {
             state.psi[n + 1] = integrator.propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
         }
+        long elapsedNanos = System.nanoTime() - t0;
 
         // Calculate errors at different points
         ConvergenceData data = new ConvergenceData();
+        data.setElapsedNanos(elapsedNanos);
         data.addError("10", exactSolution(grid.getRValue(nOfPoints / 10)) - state.psi[nOfPoints / 10]);
         data.addError("4", exactSolution(grid.getRValue(nOfPoints / 4)) - state.psi[nOfPoints / 4]);
         data.addError("2", exactSolution(grid.getRValue(nOfPoints / 2)) - state.psi[nOfPoints / 2]);
@@ -300,8 +307,8 @@ public abstract class AbstractIntegratorTest {
      * Prints the convergence results including point-to-point convergence rates.
      */
     protected void printResults(Map<Integer, ConvergenceData> convergenceResults) {
-        System.out.println("Grid Points       Error at 10%            Error at 25%            Error at 50%            Rate 10%   Rate 25%   Rate 50%");
-        System.out.println("-------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("Grid Points       Error at 10%            Error at 25%            Error at 50%            Rate 10%   Rate 25%   Rate 50%   Time (ms)");
+        System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------");
 
         // Convert to sorted list for easier access to previous entry
         java.util.List<Map.Entry<Integer, ConvergenceData>> sortedEntries = convergenceResults.entrySet().stream()
@@ -335,10 +342,15 @@ public abstract class AbstractIntegratorTest {
                 System.out.printf("\t%9s  %9s  %9s", "-", "-", "-");
             }
 
-            System.out.println();
+            double ms = data.getElapsedNanos() / 1_000_000.0;
+            System.out.printf("  %9.3f%n", ms);
         }
 
         System.out.println();
+
+        long totalNanos = convergenceResults.values().stream()
+                .mapToLong(ConvergenceData::getElapsedNanos).sum();
+        System.out.printf("Total propagation time: %.3f ms%n%n", totalNanos / 1_000_000.0);
     }
 
     /**
