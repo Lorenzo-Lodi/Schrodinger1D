@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public abstract class AbstractIntegratorTest {
 
-    private final static int INITIALIZATION_N_MAX = 4;
+    private final static int INITIALIZATION_N_MAX = 8;
     private final static int MIN_POINTS = 200;
 
     // Default potential parameters (matching the existing test setup)
@@ -152,8 +152,13 @@ public abstract class AbstractIntegratorTest {
             return new HashMap<>(errors);
         }
 
-        public void setElapsedNanos(long ns) { this.elapsedNanos = ns; }
-        public long getElapsedNanos()        { return elapsedNanos; }
+        public void setElapsedNanos(long ns) {
+            this.elapsedNanos = ns;
+        }
+
+        public long getElapsedNanos() {
+            return elapsedNanos;
+        }
     }
 
     /**
@@ -201,11 +206,18 @@ public abstract class AbstractIntegratorTest {
      * @param quantumNumber the quantum number n (0 = ground state, 1 = first excited, etc.)
      */
     protected void testIntegratorConvergence(int quantumNumber) {
-        // Initialize the exact solution for the specified quantum state
-        exactSolutionInstance = HarmonicOscillatorExactSolution.excitedState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
+        Integrator integrator = getIntegrator();
+        if (integrator.minHistoryLength() > INITIALIZATION_N_MAX) {
+            String className = this.getClass().getSimpleName();
+            String msg = String.format("Integrator %s requires at least %d previously-computed points, but only %d are available!",
+                    className, integrator.minHistoryLength(), INITIALIZATION_N_MAX);
+            throw new RuntimeException(msg);
+        }
 
         PhysicalPotential potential = new PhysicalPotentialHarmonic(DEFAULT_R0, DEFAULT_ALPHA);
-        Integrator integrator = getIntegrator();
+
+        // Initialize the exact solution for the specified quantum state
+        exactSolutionInstance = HarmonicOscillatorExactSolution.excitedState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
 
         Map<Integer, ConvergenceData> convergenceResults = new HashMap<>();
 
@@ -223,27 +235,6 @@ public abstract class AbstractIntegratorTest {
 
         // Calculate and print convergence rates
         printConvergenceRates(convergenceResults, quantumNumber);
-    }
-
-    /**
-     * Returns the exact energy for the current quantum state.
-     *
-     * @return the exact energy eigenvalue
-     */
-    protected double getExactEnergy() {
-        return exactSolutionInstance.getEnergy();
-    }
-
-    /**
-     * Tests the integrator with a specific number of grid points.
-     *
-     * @param potential  The potential to use
-     * @param integrator The integrator to test
-     * @param nOfPoints  The number of grid points
-     * @return Convergence data containing errors at different points
-     */
-    protected ConvergenceData testWithPoints(PhysicalPotential potential, Integrator integrator, int nOfPoints) {
-        return testWithPoints(potential, integrator, nOfPoints, 0);
     }
 
     /**
