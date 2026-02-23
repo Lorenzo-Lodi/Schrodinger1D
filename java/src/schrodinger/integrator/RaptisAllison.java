@@ -4,7 +4,7 @@ import java.util.function.IntToDoubleFunction;
 
 /**
  * Raptis-Allison Exponentially Fitted Method for integrating the Schrödinger equation.
- * 
+ * <p>
  * Corrected to ensure:
  * 1. Oscillatory region limit matches Numerov (beta -> 1/12).
  * 2. Exponential region limit matches Numerov (beta -> -1/12).
@@ -13,10 +13,14 @@ import java.util.function.IntToDoubleFunction;
 public class RaptisAllison implements Integrator {
 
     @Override
-    public int minHistoryLength() { return 2; }
+    public int minHistoryLength() {
+        return 2;
+    }
 
     @Override
-    public int globalConvergenceOrder() { return 4; }
+    public int globalConvergenceOrder() {
+        return 4;
+    }
 
     @Override
     public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
@@ -34,12 +38,12 @@ public class RaptisAllison implements Integrator {
         double Z_curr = h2 * Q_curr;
 
         // 4. Calculate Fitted Coefficients (beta and gamma)
-        double beta, gamma;
+        double beta;
+
 
         if (Math.abs(Z_curr) < 1e-5) {
             // Standard Numerov limit
             beta = 1.0 / 12.0;
-            gamma = 10.0 / 12.0;
         } else if (Z_curr > 0) {
             // Oscillatory Region (Q > 0)
             // We need beta -> +1/12 as Z -> 0
@@ -51,7 +55,6 @@ public class RaptisAllison implements Integrator {
             beta = (1.0 / (4.0 * sin2 * sin2)) - (1.0 / Z_curr);
 
             // Consistency: 2*beta + gamma = 1  => gamma = 1 - 2*beta
-            gamma = 1.0 - 2.0 * beta;
 
         } else {
             // Exponential Region (Q < 0)
@@ -64,8 +67,9 @@ public class RaptisAllison implements Integrator {
             double sinh2 = Math.sinh(w / 2.0);
             beta = (1.0 / (w * w)) - (1.0 / (4.0 * sinh2 * sinh2));
 
-            gamma = 1.0 - 2.0 * beta;
         }
+
+        double gamma = getGamma(Z_curr, beta);
 
         // 5. Propagate using Numerov structure
         // y_{n+1} * (1 + beta * Z_{n+1}) = (2 - gamma * Z_n) * y_n - (1 + beta * Z_{n-1}) * y_{n-1}
@@ -79,6 +83,10 @@ public class RaptisAllison implements Integrator {
         double denominator = 1.0 + Z_next * beta;
 
         return numerator / denominator;
+    }
+
+    public double getGamma(double Z, double beta) {
+        return  1.0 - 2.0 * beta;
     }
 
 }
