@@ -33,13 +33,13 @@ public class RaptisAllison implements Integrator {
 
         double Z_curr = h2 * Q_curr;
 
-        // 4. Calculate Fitted Coefficients (beta and gamma/b1)
-        double beta, b1;
+        // 4. Calculate Fitted Coefficients (beta and gamma)
+        double beta, gamma;
 
         if (Math.abs(Z_curr) < 1e-5) {
             // Standard Numerov limit
             beta = 1.0 / 12.0;
-            b1 = 10.0 / 12.0;
+            gamma = 10.0 / 12.0;
         } else if (Z_curr > 0) {
             // Oscillatory Region (Q > 0)
             // We need beta -> +1/12 as Z -> 0
@@ -50,8 +50,8 @@ public class RaptisAllison implements Integrator {
             double sin2 = Math.sin(v / 2.0);
             beta = (1.0 / (4.0 * sin2 * sin2)) - (1.0 / Z_curr);
 
-            // Consistency: 2*beta + b1 = 1  => b1 = 1 - 2*beta
-            b1 = 1.0 - 2.0 * beta;
+            // Consistency: 2*beta + gamma = 1  => gamma = 1 - 2*beta
+            gamma = 1.0 - 2.0 * beta;
 
         } else {
             // Exponential Region (Q < 0)
@@ -64,16 +64,16 @@ public class RaptisAllison implements Integrator {
             double sinh2 = Math.sinh(w / 2.0);
             beta = (1.0 / (w * w)) - (1.0 / (4.0 * sinh2 * sinh2));
 
-            b1 = 1.0 - 2.0 * beta;
+            gamma = 1.0 - 2.0 * beta;
         }
 
         // 5. Propagate using Numerov structure
-        // y_{n+1} * (1 + beta * Z_{n+1}) = (2 - b1 * Z_n) * y_n - (1 + beta * Z_{n-1}) * y_{n-1}
+        // y_{n+1} * (1 + beta * Z_{n+1}) = (2 - gamma * Z_n) * y_n - (1 + beta * Z_{n-1}) * y_{n-1}
 
         double Z_prev = h2 * Q_prev;
         double Z_next = h2 * Q_next;
 
-        double numerator = (2.0 - Z_curr * b1) * psi[n_curr]
+        double numerator = (2.0 - Z_curr * gamma) * psi[n_curr]
                 - (1.0 + Z_prev * beta) * psi[n_prev];
 
         double denominator = 1.0 + Z_next * beta;
