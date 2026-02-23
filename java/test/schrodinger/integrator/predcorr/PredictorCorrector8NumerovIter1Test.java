@@ -1,4 +1,8 @@
-package schrodinger.integrator;
+package schrodinger.integrator.predcorr;
+
+import schrodinger.integrator.AbstractIntegratorTest;
+import schrodinger.integrator.Integrator;
+import schrodinger.integrator.predcorr.PredictorCorrector8NumerovIter1;
 
 /**
  * Test class for the PredictorCorrector8Abstract integrator.

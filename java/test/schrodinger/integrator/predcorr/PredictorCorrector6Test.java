@@ -1,7 +1,8 @@
-package schrodinger.integrator;
+package schrodinger.integrator.predcorr;
 
-import schrodinger.QuantumState;
-import schrodinger.grid.Grid;
+import schrodinger.integrator.AbstractIntegratorTest;
+import schrodinger.integrator.Integrator;
+import schrodinger.integrator.predcorr.PredictorCorrector6;
 
 /**
  * Test class for the PredictorCorrector6 integrator.

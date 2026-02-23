@@ -1,4 +1,7 @@
-package schrodinger.integrator;
+package schrodinger.integrator.expfitted;
+
+import schrodinger.integrator.AbstractIntegratorTest;
+import schrodinger.integrator.Integrator;
 
 /**
  * Test class for the ExponentiallyFitted integrator.

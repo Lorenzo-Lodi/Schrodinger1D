@@ -1,4 +1,7 @@
-package schrodinger.integrator;
+package schrodinger.integrator.predcorr;
+
+import schrodinger.integrator.Integrator;
+import schrodinger.integrator.expfitted.Numerov;
 
 import java.util.function.IntToDoubleFunction;
 
@@ -31,7 +34,7 @@ public class PredictorCorrector6 extends PredictorCorrectorBase {
     public int globalConvergenceOrder() { return 6; }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
+    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Integrator.Direction direction) {
         double h = step;
         double h2 = h * h;
         int d = direction.getValue();

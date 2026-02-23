@@ -1,4 +1,4 @@
-package schrodinger.integrator;
+package schrodinger.integrator.expfitted;
 
 /**
  * Raptis-Allison Exponentially Fitted Method for integrating the Schrödinger equation.

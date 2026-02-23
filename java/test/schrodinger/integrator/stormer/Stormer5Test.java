@@ -1,4 +1,8 @@
-package schrodinger.integrator;
+package schrodinger.integrator.stormer;
+
+import schrodinger.integrator.AbstractIntegratorTest;
+import schrodinger.integrator.Integrator;
+import schrodinger.integrator.stormer.Stormer5;
 
 /**
  * Test class for the Stormer5 integrator.

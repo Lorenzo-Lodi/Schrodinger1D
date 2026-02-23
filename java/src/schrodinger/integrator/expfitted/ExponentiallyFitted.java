@@ -1,4 +1,4 @@
-package schrodinger.integrator;
+package schrodinger.integrator.expfitted;
 
 public class ExponentiallyFitted extends ExponentiallyFittedAbstract {
 
