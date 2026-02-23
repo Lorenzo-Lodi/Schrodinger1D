@@ -1,7 +1,5 @@
 package schrodinger.integrator;
 
-import java.util.function.IntToDoubleFunction;
-
 /**
  * Raptis-Allison Exponentially Fitted Method for integrating the Schrödinger equation.
  * <p>
@@ -28,7 +26,7 @@ public class RaptisAllison extends ExponentiallyFittedAbstract {
             c = Math.sinh(sqrtModZ / 2.0);
         }
 
-        return Math.signum (Z)/ (4.0 * c * c) - 1.0 / Z;
+        return Math.signum(Z) / (4.0 * c * c) - 1.0 / Z;
     }
 
     public double getGamma(double Z, double beta) {
