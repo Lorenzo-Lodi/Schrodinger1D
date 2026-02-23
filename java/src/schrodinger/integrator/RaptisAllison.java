@@ -13,7 +13,6 @@ import java.util.function.IntToDoubleFunction;
 public class RaptisAllison extends ExponentiallyFittedAbstract {
 
     public double getBeta(double Z) {
-        double beta;
 
         if (Math.abs(Z) < 1e-3) {
             return 1.0 / 12.0 + Z / 240. + Z * Z / 6048.;
