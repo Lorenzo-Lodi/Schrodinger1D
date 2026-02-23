@@ -22,7 +22,8 @@ public class SchrodingerSystem {
 
     private double UTilde(double y) {
         double u = physicalPotential.value(grid.r(y));
-        double factor = grid.F(y) / Math.pow(grid.g(y), 2);
+        double gy = grid.g(y);
+        double factor = grid.F(y) / (gy * gy);
         return u - factor / (2.d * mass);
     }
 

@@ -40,7 +40,12 @@ public class QuantumState {
 
     public double QTildeValueAt(int i) {
         double y = getGrid().getYValue(i);
-        return QTilde(y);
+//        return QTilde(y);
+        // The form below is more useful to implement future pre-computation;
+        // Pre-computation of UTildeValueAt is straightforward.
+        // We probably (check!) also precompute g(y) to make it even faster; It should be enough without pre-computing the other functions.
+        double gy = getGrid().g(y);
+        return gy * gy * (2. * system.getMass() * (energy - system.UTildeValueAt(i)));
     }
 
     // Note: because the wavefunctions are exponentially decreasing (or faster), the
