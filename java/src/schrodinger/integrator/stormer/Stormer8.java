@@ -22,10 +22,15 @@ public class Stormer8 implements Integrator {
         int d = direction.getValue();
 
         // Indices of the 8 past points
-        int n0 = n, n1 = n - d, n2 = n - 2 * d, n3 = n - 3 * d;
-        int n4 = n - 4 * d, n5 = n - 5 * d, n6 = n - 6 * d, n7 = n - 7 * d;
+        int n0 = n;
+        int n1 = n - d;
+        int n2 = n - 2 * d;
+        int n3 = n - 3 * d;
+        int n4 = n - 4 * d;
+        int n5 = n - 5 * d;
+        int n6 = n - 6 * d;
+        int n7 = n - 7 * d;
 
-        // Q evaluated at integer grid points (no fractional positions needed)
         double F0 = qTilde.applyAsDouble(n0) * psi[n0];
         double F1 = qTilde.applyAsDouble(n1) * psi[n1];
         double F2 = qTilde.applyAsDouble(n2) * psi[n2];
