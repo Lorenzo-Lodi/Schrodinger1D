@@ -30,5 +30,29 @@ public class RaptisAllisonTest extends AbstractIntegratorTest {
         assertEquals(1.8054002416708996, val, 1e-14);
     }
 
+    @Test
+    public void integrateForwardNegativeQTest() {
+        double val = integrateOneStepNegativeQ(Integrator.Direction.FORWARD);
+        assertEquals(-13.568451076776496, val, 1e-14);
+    }
+
+    @Test
+    public void integrateBackwardNegativeQTest() {
+        double val = integrateOneStepNegativeQ(Integrator.Direction.BACKWARD);
+        assertEquals(-10.7939671605971, val, 1e-14);
+    }
+
+    @Test
+    public void integrateForwardSmallZTest() {
+        double val = integrateOneStepSmallZ(Integrator.Direction.FORWARD);
+        assertEquals(-0.766890839498507, val, 1e-14);
+    }
+
+    @Test
+    public void integrateBackwardSmallZTest() {
+        double val = integrateOneStepSmallZ(Integrator.Direction.BACKWARD);
+        assertEquals(-1.6824522709061138, val, 1e-14);
+    }
+
 
 }

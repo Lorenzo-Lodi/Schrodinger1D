@@ -482,12 +482,11 @@ public abstract class AbstractIntegratorTest {
     }
 
 
-    // This test uses (meaningless) "random" values for initialization and for the Q function (I tried to use values
-    // which are not in easy ratios and a Q function which is not shift-invariant.
-    // This serves just to "freeze" the value of the method against changes.
-    // In itself this test does not guarantee the method is correct.
-    public double integrateOneStep(Integrator.Direction direction) {
-        // Initialize with "random" values
+    // This is a freeze/regression test to detect accidental changes to integrator behavior during refactoring.
+    // Uses "meaningless" values: cos(k) for psi and a polynomial for Q.
+    // Does NOT guarantee correctness - other tests verify that.
+    // Subclasses implement getIntegrator() to provide specific integrator.
+    private double integrateOneStep(double qFactor, Integrator.Direction direction) {
         int arraySize = 20;
         double[] psi = new double[arraySize];
         for (int k = 0; k < arraySize; k++) {
@@ -495,9 +494,23 @@ public abstract class AbstractIntegratorTest {
         }
 
         Integrator integrator = getIntegrator();
-        IntToDoubleFunction q = i -> 0.1111 + 0.2222 * i + 0.3333 * i * i + 0.44444 * i * i * i; // Use "random" Q function
+        IntToDoubleFunction q = i -> qFactor * (0.1111 + 0.2222 * i + 0.3333 * i * i + 0.44444 * i * i * i);
         return integrator.propagate(psi, arraySize / 2, 0.123, q, direction);
-
     }
+
+    public double integrateOneStep(Integrator.Direction direction) {
+        return integrateOneStep(1., direction);
+    }
+
+    // Same as integrateOneStep but with negated Q to test Z < 0 branch in exponentially fitted methods.
+    public double integrateOneStepNegativeQ(Integrator.Direction direction) {
+        return integrateOneStep(-1., direction);
+    }
+
+    // Same as integrateOneStep but with very small Q  to test series expansion branch (|Z| < threshold).
+    public double integrateOneStepSmallZ(Integrator.Direction direction) {
+        return integrateOneStep(2.e-5, direction);
+    }
+
 
 }

@@ -9,7 +9,7 @@ public class ExponentiallyFitted extends ExponentiallyFittedAbstract {
     public double getBeta(double Z) {
 
         if (Math.abs(Z) < 1e-3) {
-            return 1.0 / 12.0 + Z / 240. + Z * Z / 6048.;  // Standard Numerov value
+            return 1.0 / 12.0 + Z / 240. + Z * Z / 6048.;
         }
 
         double sqrtModZ = Math.sqrt(Math.abs(Z));
