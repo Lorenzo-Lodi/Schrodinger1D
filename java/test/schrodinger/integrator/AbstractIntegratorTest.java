@@ -10,6 +10,7 @@ import schrodinger.potential.SchrodingerSystem;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.IntToDoubleFunction;
 
 /**
  * Abstract base class for integrator tests.
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 public abstract class AbstractIntegratorTest {
 
-    private final static int INITIALIZATION_N_MAX = 8;
+    private final static int INITIALIZATION_N_MAX = 7;
     private final static int MIN_POINTS = 200;
 
     // Default potential parameters (matching the existing test setup)
@@ -207,7 +208,7 @@ public abstract class AbstractIntegratorTest {
      */
     protected void testIntegratorConvergence(int quantumNumber) {
         Integrator integrator = getIntegrator();
-        if (integrator.minHistoryLength() > INITIALIZATION_N_MAX) {
+        if (integrator.minHistoryLength() > INITIALIZATION_N_MAX + 1) {
             String className = this.getClass().getSimpleName();
             String msg = String.format("Integrator %s requires at least %d previously-computed points, but only %d are available!",
                     className, integrator.minHistoryLength(), INITIALIZATION_N_MAX);
@@ -479,4 +480,24 @@ public abstract class AbstractIntegratorTest {
 
         return padding + String.format("%." + nOfDecimals + "f", number) + " ";
     }
+
+
+    // This test uses (meaningless) "random" values for initialization and for the Q function (I tried to use values
+    // which are not in easy ratios and a Q function which is not shift-invariant.
+    // This serves just to "freeze" the value of the method against changes.
+    // In itself this test does not guarantee the method is correct.
+    public double integrateOneStep(Integrator.Direction direction) {
+        // Initialize with "random" values
+        int arraySize = 20;
+        double[] psi = new double[arraySize];
+        for (int k = 0; k < arraySize; k++) {
+            psi[k] = Math.cos(k);
+        }
+
+        Integrator integrator = getIntegrator();
+        IntToDoubleFunction q = i -> 0.1111 + 0.2222 * i + 0.3333 * i * i + 0.44444 * i * i * i; // Use "random" Q function
+        return integrator.propagate(psi, arraySize / 2, 0.123, q, direction);
+
+    }
+
 }

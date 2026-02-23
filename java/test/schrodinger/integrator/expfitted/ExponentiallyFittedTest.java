@@ -1,7 +1,10 @@
 package schrodinger.integrator.expfitted;
 
+import org.junit.jupiter.api.Test;
 import schrodinger.integrator.AbstractIntegratorTest;
 import schrodinger.integrator.Integrator;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test class for the ExponentiallyFitted integrator.
@@ -13,6 +16,18 @@ public class ExponentiallyFittedTest extends AbstractIntegratorTest {
     @Override
     protected Integrator getIntegrator() {
         return new ExponentiallyFitted();
+    }
+
+    @Test
+    public void integrateForwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.FORWARD);
+        assertEquals(1.80922655958763, val, 1e-14);
+    }
+
+    @Test
+    public void integrateBackwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.BACKWARD);
+        assertEquals(1.8054002416708992, val, 1e-14);
     }
 
 }

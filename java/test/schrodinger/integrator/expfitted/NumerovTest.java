@@ -1,7 +1,10 @@
 package schrodinger.integrator.expfitted;
 
+import org.junit.jupiter.api.Test;
 import schrodinger.integrator.AbstractIntegratorTest;
 import schrodinger.integrator.Integrator;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test class for the Numerov integrator.
@@ -13,6 +16,18 @@ public class NumerovTest extends AbstractIntegratorTest {
     @Override
     protected Integrator getIntegrator() {
         return new Numerov();
+    }
+
+    @Test
+    public void integrateForwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.FORWARD);
+        assertEquals(2.620986993887933, val, 1e-14);
+    }
+
+    @Test
+    public void integrateBackwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.BACKWARD);
+        assertEquals(2.3476065744871613, val, 1e-14);
     }
 
 }

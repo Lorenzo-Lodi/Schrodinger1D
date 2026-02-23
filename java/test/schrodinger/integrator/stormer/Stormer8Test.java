@@ -1,8 +1,10 @@
 package schrodinger.integrator.stormer;
 
+import org.junit.jupiter.api.Test;
 import schrodinger.integrator.AbstractIntegratorTest;
 import schrodinger.integrator.Integrator;
-import schrodinger.integrator.stormer.Stormer8;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test class for the Stormer6 integrator.
@@ -15,5 +17,15 @@ public class Stormer8Test extends AbstractIntegratorTest {
     protected Integrator getIntegrator() {
         return new Stormer8();
     }
+    @Test
+    public void integrateForwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.FORWARD);
+        assertEquals(4.718050189782055, val, 1e-14);
+    }
 
+    @Test
+    public void integrateBackwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.BACKWARD);
+        assertEquals(4.444088283345244, val, 1e-14);
+    }
 }

@@ -1,8 +1,10 @@
 package schrodinger.integrator.predcorr;
 
+import org.junit.jupiter.api.Test;
 import schrodinger.integrator.AbstractIntegratorTest;
 import schrodinger.integrator.Integrator;
-import schrodinger.integrator.predcorr.PredictorCorrector6;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test class for the PredictorCorrector6 integrator.
@@ -14,6 +16,18 @@ public class PredictorCorrector6Test extends AbstractIntegratorTest {
     @Override
     protected Integrator getIntegrator() {
         return new PredictorCorrector6();
+    }
+
+    @Test
+    public void integrateForwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.FORWARD);
+        assertEquals(2.183237656208287, val, 1e-14);
+    }
+
+    @Test
+    public void integrateBackwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.BACKWARD);
+        assertEquals(2.105467768082526, val, 1e-14);
     }
 
 }

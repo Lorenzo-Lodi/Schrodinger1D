@@ -1,8 +1,10 @@
 package schrodinger.integrator.predcorr;
 
+import org.junit.jupiter.api.Test;
 import schrodinger.integrator.AbstractIntegratorTest;
 import schrodinger.integrator.Integrator;
-import schrodinger.integrator.predcorr.PredictorCorrector8NumerovIter1;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test class for the PredictorCorrector8Abstract integrator.
@@ -15,5 +17,15 @@ public class PredictorCorrector8NumerovIter1Test extends AbstractIntegratorTest 
     protected Integrator getIntegrator() {
         return new PredictorCorrector8NumerovIter1();
     }
+    @Test
+    public void integrateForwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.FORWARD);
+        assertEquals(1.8651037536285697, val, 1e-14);
+    }
 
+    @Test
+    public void integrateBackwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.BACKWARD);
+        assertEquals(2.0013275793801637, val, 1e-14);
+    }
 }
