@@ -38,37 +38,7 @@ public class RaptisAllison implements Integrator {
         double Z_curr = h2 * Q_curr;
 
         // 4. Calculate Fitted Coefficients (beta and gamma)
-        double beta;
-
-
-        if (Math.abs(Z_curr) < 1e-5) {
-            // Standard Numerov limit
-            beta = 1.0 / 12.0;
-        } else if (Z_curr > 0) {
-            // Oscillatory Region (Q > 0)
-            // We need beta -> +1/12 as Z -> 0
-            double v = Math.sqrt(Z_curr);
-
-            // Formula derived from: beta = 1/(4 sin^2(v/2)) - 1/v^2
-            // This ensures limit is 1/12
-            double sin2 = Math.sin(v / 2.0);
-            beta = (1.0 / (4.0 * sin2 * sin2)) - (1.0 / Z_curr);
-
-            // Consistency: 2*beta + gamma = 1  => gamma = 1 - 2*beta
-
-        } else {
-            // Exponential Region (Q < 0)
-            // We need beta -> -1/12 as Z -> 0 (so 1 + beta*Z -> 1 - |Z|/12)
-            double w = Math.sqrt(-Z_curr);
-
-            // Formula derived from: beta = 1/w^2 - 1/(4 sinh^2(w/2))
-            // Note: 1/w^2 = -1/Z.
-            // Limit check: 1/w^2 - 1/(w^2 * (1 + w^2/12)) = -1/12. Correct.
-            double sinh2 = Math.sinh(w / 2.0);
-            beta = (1.0 / (w * w)) - (1.0 / (4.0 * sinh2 * sinh2));
-
-        }
-
+        double beta = getBeta(Z_curr);
         double gamma = getGamma(Z_curr, beta);
 
         // 5. Propagate using Numerov structure
@@ -85,8 +55,42 @@ public class RaptisAllison implements Integrator {
         return numerator / denominator;
     }
 
+    public double getBeta(double Z) {
+        double beta;
+
+        if (Math.abs(Z) < 1e-5) {
+            // Standard Numerov limit
+            beta = 1.0 / 12.0;
+        } else if (Z > 0) {
+            // Oscillatory Region (Q > 0)
+            // We need beta -> +1/12 as Z -> 0
+            double v = Math.sqrt(Z);
+
+            // Formula derived from: beta = 1/(4 sin^2(v/2)) - 1/v^2
+            // This ensures limit is 1/12
+            double sin2 = Math.sin(v / 2.0);
+            beta = (1.0 / (4.0 * sin2 * sin2)) - (1.0 / Z);
+
+            // Consistency: 2*beta + gamma = 1  => gamma = 1 - 2*beta
+
+        } else {
+            // Exponential Region (Q < 0)
+            // We need beta -> -1/12 as Z -> 0 (so 1 + beta*Z -> 1 - |Z|/12)
+            double w = Math.sqrt(-Z);
+
+            // Formula derived from: beta = 1/w^2 - 1/(4 sinh^2(w/2))
+            // Note: 1/w^2 = -1/Z.
+            // Limit check: 1/w^2 - 1/(w^2 * (1 + w^2/12)) = -1/12. Correct.
+            double sinh2 = Math.sinh(w / 2.0);
+            beta = (1.0 / (w * w)) - (1.0 / (4.0 * sinh2 * sinh2));
+
+        }
+
+        return beta;
+    }
+
     public double getGamma(double Z, double beta) {
-        return  1.0 - 2.0 * beta;
+        return 1.0 - 2.0 * beta;
     }
 
 }
