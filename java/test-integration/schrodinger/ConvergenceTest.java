@@ -10,43 +10,47 @@ import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.SchrodingerSystem;
 import schrodinger.solver.ShootingSolver;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ConvergenceTest {
 
     @Test
-    void test001() {
+    void eigenvalue_errors_for_harmonic_energy() {
         double mass = 2.0d;
-//        int nOfPoints = 200;
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
         int nOfDesidedNodes = 15;
+        List<Integrator> integrators = IntegratorFactory.getAll();
+        integrators = integrators.stream().filter((x) -> x.minHistoryLength() <= 2).toList();
 
-        for (int nOfPoints = 100; nOfPoints <= 1000; nOfPoints += +100) {
+        for (Integrator integrator : integrators) {
+            System.out.print(integrator.getClass().getSimpleName() + " ");
+        }
+        System.out.println();
+
+        for (int nOfPoints = 200; nOfPoints <= 2000; nOfPoints += 100) {
             Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
-            ShootingSolver finder1 = new ShootingSolver(system, IntegratorFactory.getTaylorThreePoints());
-            ShootingSolver finder2 = new ShootingSolver(system, IntegratorFactory.getNumerov());
-            ShootingSolver finder3 = new ShootingSolver(system, IntegratorFactory.getVignoli());
-            ShootingSolver finder4 = new ShootingSolver(system, IntegratorFactory.getExponentiallyFitted());
+            List<ShootingSolver> solvers = new ArrayList<>();
+            for (Integrator integrator : integrators) {
+                solvers.add(new ShootingSolver(system, integrator));
+            }
+            double exactEnergy = 0.5 + nOfDesidedNodes;
+            List<Double> energies = new ArrayList<>();
+            for (ShootingSolver s : solvers) {
+                double energy = s.findEigenvalue(nOfDesidedNodes).energy;
+                energies.add(energy);
+            }
 
-            QuantumState e1 = finder1.findEigenvalue(nOfDesidedNodes);
-            QuantumState e2 = finder2.findEigenvalue(nOfDesidedNodes);
-            QuantumState e3 = finder3.findEigenvalue(nOfDesidedNodes);
-            QuantumState e4 = finder4.findEigenvalue(nOfDesidedNodes);
-
-            double exact = 0.5 + nOfDesidedNodes;
-            double err1 = exact - e1.energy;
-            double err1p = exact - e1.energy - e1.perturbativeCorrectionToEnergy;
-            double err2 = exact - e2.energy;
-            double err2p = exact - e2.energy - e2.perturbativeCorrectionToEnergy;
-            double err3 = exact - e3.energy;
-            double err4 = exact - e4.energy;
-            System.out.println(padInt(nOfPoints) + " " + padFloat(err1) + " " + padFloat(err1p)
-                    + " " + padFloat(err2) + " " + padFloat(err2p)
-                    + " " + padFloat(err3)
-                    + " " + padFloat(err4)
-            );
+            System.out.print(padInt(nOfPoints) + " ");
+            for (Double error : energies) {
+                System.out.print(padFloat(error) + " ");
+            }
+            System.out.println();
         }
 
     }
