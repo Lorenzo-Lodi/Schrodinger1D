@@ -2,17 +2,14 @@ package schrodinger.integrator;
 
 import schrodinger.integrator.expfitted.ExponentiallyFitted;
 import schrodinger.integrator.expfitted.Numerov;
-import schrodinger.integrator.expfitted.RaptisAllison;
-import schrodinger.integrator.expfitted.Vignoli;
+import schrodinger.integrator.expfitted.EfnFixedBeta;
 import schrodinger.integrator.predcorr.PredictorCorrector6;
 import schrodinger.integrator.predcorr.PredictorCorrector8NumerovIter1;
 import schrodinger.integrator.predcorr.PredictorCorrector8NumerovIter2;
 import schrodinger.integrator.stormer.Stormer5;
 import schrodinger.integrator.stormer.Stormer6;
 import schrodinger.integrator.stormer.Stormer8;
-import schrodinger.pt_correction.NumerovPTCorrection;
 import schrodinger.pt_correction.PTCorrection;
-import schrodinger.pt_correction.TaylorThreePointsPTCorrection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +25,7 @@ public class IntegratorFactory {
     }
 
     public static Integrator getVignoli() {
-        return new Vignoli();
-    }
-
-    public static Integrator getRaptisAllison() {
-        return new RaptisAllison();
+        return new EfnFixedBeta();
     }
 
     public static Integrator getExponentiallyFitted() {
@@ -68,7 +61,6 @@ public class IntegratorFactory {
         list.add(getTaylorThreePoints());
         list.add(getNumerov());
         list.add(getVignoli());
-        list.add(getRaptisAllison());
         list.add(getExponentiallyFitted());
         list.add(getStormer5());
         list.add(getStormer6());

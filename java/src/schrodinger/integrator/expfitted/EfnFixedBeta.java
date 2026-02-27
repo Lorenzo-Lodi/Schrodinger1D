@@ -1,6 +1,7 @@
 package schrodinger.integrator.expfitted;
 
-public class Vignoli extends ExponentiallyFittedAbstract {
+// Exponentially-Fitted Numerov Method with Fixed β
+public class EfnFixedBeta extends ExponentiallyFittedAbstract {
 
     public double getBeta(double Z) {
         return 1.0 / 12.0;

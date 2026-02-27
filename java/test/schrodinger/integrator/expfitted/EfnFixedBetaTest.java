@@ -11,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests the convergence of the integrator by comparing numerical solutions
  * with the exact analytical solution for a harmonic oscillator potential.
  */
-public class VignoliTest extends AbstractIntegratorTest {
+public class EfnFixedBetaTest extends AbstractIntegratorTest {
 
     @Override
     protected Integrator getIntegrator() {
-        return new Vignoli();
+        return new EfnFixedBeta();
     }
 
     @Test
