@@ -19,7 +19,6 @@ public class ExponentiallyFitted extends ExponentiallyFittedAbstract {
 
         if (Z > 0) {
             c = Math.sin(sqrtModZ / 2.0);
-
         } else {
             c = Math.sinh(sqrtModZ / 2.0);
         }
