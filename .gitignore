@@ -5,3 +5,4 @@ java/classes/
 java/.claude
 *.iml
 *.class
+java/common.log

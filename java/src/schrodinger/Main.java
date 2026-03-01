@@ -12,23 +12,26 @@ import schrodinger.solver.ShootingSolver;
 public class Main {
 
     public static void main(String[] args) {
+        OutputManager.initCommon("common.log");
 
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
         Integrator integrator = IntegratorFactory.getEfnFixedBeta();
         double mass = 2.0d;
         int nOfDesiredNodes = 10;
 
-        System.out.println("   i nPoints       1/Ystep          Lower               Upper" + "               Energy"
-                + "          Energy + Pert. " + "     n bisec");
+        OutputManager.write(
+                "   i nPoints       1/Ystep          Lower               Upper" + "               Energy"
+                        + "          Energy + Pert. " + "     n bisec");
         for (int i = 0; i < 20; i++) {
             int nOfPoints = 50 + 50 * i;
+
             Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
             QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
 
             int floatDecimals = 16;
-            System.out.println(padInt(i, 4) + padInt(grid.getNumberOfPoints(), 6)
+            OutputManager.write((padInt(i, 4) + padInt(grid.getNumberOfPoints(), 6)
                     + padFloat(1.0 / grid.getStepSizeYCoordinate(), 3, 14)
                     + padFloat(ek.lowerBound, floatDecimals, floatDecimals + 4)
                     + padFloat(ek.upperBound, floatDecimals, floatDecimals + 4)
@@ -37,7 +40,7 @@ public class Main {
                     + padInt(ek.convergenceInfo.get(0).iterations, 6)
                     + padInt(ek.convergenceInfo.get(1).iterations, 6)
                     + padInt(ek.convergenceInfo.get(2).iterations, 6)
-            );
+            ));
         }
 
     }
