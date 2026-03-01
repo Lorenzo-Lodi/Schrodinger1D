@@ -25,7 +25,7 @@ public class ConvergenceTest {
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
         int nOfDesidedNodes = 15;
         List<Integrator> integrators = IntegratorFactory.getAll();
-        integrators = integrators.stream().filter((x) -> x.minHistoryLength() <= 2).toList();
+        integrators = integrators.stream().filter((x) -> x.minHistoryLength() <= 2).collect(Collectors.toList());
 
         for (Integrator integrator : integrators) {
             System.out.print(integrator.getClass().getSimpleName() + " ");

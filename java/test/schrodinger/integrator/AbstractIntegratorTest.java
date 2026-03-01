@@ -515,24 +515,22 @@ public abstract class AbstractIntegratorTest {
 
     @Test
     public void time_benchmark() {
-        SplittableRandom sr = new SplittableRandom(123456789);
-
         int npoints = 1000000;
 
         double[] psi = new double[npoints];
         for (int k = 0; k < 15; k++) {
-            psi[k] = sr.nextDouble() - 0.5;
+            psi[k] = Math.cos(k);
         }
 
         Integrator integrator = getIntegrator();
-        IntToDoubleFunction q = i -> 1e-3 * (0.1111 + 0.2222 * i + 0.03333 / (npoints * npoints) * i * i);
+        IntToDoubleFunction q = i -> 1e-3 * (0.1111 + 0.2222 * i / npoints + 0.03333 / (npoints * npoints) * i * i);
         long t0 = System.nanoTime();
         for (int n = 14; n < npoints - 1; n++) {
             psi[n + 1] = integrator.propagate(psi, n, 0.123, q, Integrator.Direction.FORWARD);
         }
         long elapsedNanos = System.nanoTime() - t0;
         double timePerPoint = ((double) elapsedNanos) / (npoints);
-        String msg = String.format("Time taken for integrating %d points is %10.3f ns / point for %s",npoints, timePerPoint, integrator.getClass().getSimpleName());
+        String msg = String.format("Time taken for integrating %d points is %10.3f ns / point for %s", npoints, timePerPoint, integrator.getClass().getSimpleName());
         System.out.println(msg);
 
     }
