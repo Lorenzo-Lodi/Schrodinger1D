@@ -20,27 +20,35 @@ public class DissociationTest {
 
     @Test
     void test001() {
-        double wellDepthInverseCm = 3761;
+        double wellDepthInverseCm = 4050;
         double wellDepthHartree = wellDepthInverseCm / HARTREE_TO_INVERSE_CM;
         double rMinAng = 1.;
         double rMinBohr = rMinAng / BOHR_TO_ANG;
         PhysicalPotential potential = new PhysicalPotentialLennardJones(rMinBohr, wellDepthHartree, 6);
-        Integrator integrator = IntegratorFactory.getEfnFixedBeta();
+        Integrator integrator = IntegratorFactory.getExponentiallyFitted();
         double mass = 16.85762920 * UMA_TO_ELECTRON_MASS;
-        int nOfDesiredNodes = 14;
-        int nOfPoints = 5000;
-        Grid grid = GridFactory.generateUniformGrid(1.2d, 15., nOfPoints);
+        int nOfPoints = 4000; // Adjusted so that the 14th state is weakly bound, needing an upper limit of around 50 or so
+        Grid grid = GridFactory.generateUniformGrid(1.2d, 45., nOfPoints);
+
+        // PROBLEMS:
+        // 1. Often the answer is a NaN
+        // 2. Often with BISECTION_THEN_REGULA_FALSI we get java.lang.IllegalArgumentException: The function values at the bounds must have opposite signs.
 
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-        for (nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
-            QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
-            System.out.println("Eigenvalue: " + nOfDesiredNodes + " " + (ek.energy * HARTREE_TO_INVERSE_CM - 3761.));
+        for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
+            QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_ONLY);
+            System.out.println("Eigenvalue: " + nOfDesiredNodes + " " + (ek.energy * HARTREE_TO_INVERSE_CM - wellDepthInverseCm));
+
+//            if (nOfDesiredNodes == 14) {
+//                for (int i = 0; i < nOfPoints; i++) {
+//                    double r = grid.getRValue(i);
+////                    System.out.println(i + " " + r + " " + potential.value(r) * 219474.6313708 + " " + ek.psi[i]);
+//                    System.out.println( ek.psi[i]);
+//                }
+//            }
         }
-//        for (int i = 0; i < nOfPoints; i++) {
-//            double r = grid.getRValue(i);
-//            System.out.println(i + " " + r + " " + potential.value(r) * 219474.6313708 + " " + ek.psi[i]);
-//        }
+
 
     }
 }
