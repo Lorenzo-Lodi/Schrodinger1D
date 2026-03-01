@@ -25,7 +25,7 @@ public class DissociationTest {
         double rMinAng = 1.;
         double rMinBohr = rMinAng / BOHR_TO_ANG;
         PhysicalPotential potential = new PhysicalPotentialLennardJones(rMinBohr, wellDepthHartree, 6);
-        Integrator integrator = IntegratorFactory.getVignoli();
+        Integrator integrator = IntegratorFactory.getEfnFixedBeta();
         double mass = 16.85762920 * UMA_TO_ELECTRON_MASS;
         int nOfDesiredNodes = 14;
         int nOfPoints = 5000;
@@ -34,7 +34,7 @@ public class DissociationTest {
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
         for (nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
-            QuantumState ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
+            QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
             System.out.println("Eigenvalue: " + nOfDesiredNodes + " " + (ek.energy * HARTREE_TO_INVERSE_CM - 3761.));
         }
 //        for (int i = 0; i < nOfPoints; i++) {

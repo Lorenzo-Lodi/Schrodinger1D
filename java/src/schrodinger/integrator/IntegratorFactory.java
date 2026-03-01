@@ -24,7 +24,7 @@ public class IntegratorFactory {
         return new Numerov();
     }
 
-    public static Integrator getVignoli() {
+    public static Integrator getEfnFixedBeta() {
         return new EfnFixedBeta();
     }
 
@@ -60,7 +60,7 @@ public class IntegratorFactory {
         List<Integrator> list = new ArrayList<>();
         list.add(getTaylorThreePoints());
         list.add(getNumerov());
-        list.add(getVignoli());
+        list.add(getEfnFixedBeta());
         list.add(getExponentiallyFitted());
         list.add(getStormer5());
         list.add(getStormer6());

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import schrodinger.grid.Grid;
 import schrodinger.potential.SchrodingerSystem;
 
-class QuantumStateTest {
+class QuantumLevelTest {
     private static final double SMALL_EPS = 1e-15;
     private static final double LARGE_EPS = 8e-4;
 
@@ -16,7 +16,7 @@ class QuantumStateTest {
     void normalizePsiTrapezoidalRuleConstantIntegrand() {
         Grid grid = GridFactory.generateUniformGrid(0, 1, 50);
         SchrodingerSystem system = new SchrodingerSystem(null, 1, grid);
-        QuantumState level = new QuantumState(system);
+        QuantumLevel level = new QuantumLevel(system);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
             level.psi[i] = 1;
         }
@@ -28,7 +28,7 @@ class QuantumStateTest {
     void normalizePsiTrapezoidalRuleLinearIntegrand() {
         Grid grid = GridFactory.generateUniformGrid(0, 1, 50);
         SchrodingerSystem system = new SchrodingerSystem(null, 1, grid);
-        QuantumState level = new QuantumState(system);
+        QuantumLevel level = new QuantumLevel(system);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
             level.psi[i] = grid.getRValue(i);
         }
@@ -40,7 +40,7 @@ class QuantumStateTest {
     void normalizePsiTrapezoidalRuleQuadraticIntegrand() {
         Grid grid = GridFactory.generateUniformGrid(0, 1, 50);
         SchrodingerSystem system = new SchrodingerSystem(null, 1, grid);
-        QuantumState level = new QuantumState(system);
+        QuantumLevel level = new QuantumLevel(system);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
             level.psi[i] = Math.pow(grid.getRValue(i), 2);
         }
@@ -52,7 +52,7 @@ class QuantumStateTest {
     void normalizePsiTrapezoidalRuleCubicIntegrand() {
         Grid grid = GridFactory.generateUniformGrid(0, 1, 50);
         SchrodingerSystem system = new SchrodingerSystem(null, 1, grid);
-        QuantumState level = new QuantumState(system);
+        QuantumLevel level = new QuantumLevel(system);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
             level.psi[i] = Math.pow(grid.getRValue(i), 3);
         }
@@ -64,7 +64,7 @@ class QuantumStateTest {
     void normalizePsiTrapezoidalRuleQuarticIntegrand() {
         Grid grid = GridFactory.generateUniformGrid(0, 1, 50);
         SchrodingerSystem system = new SchrodingerSystem(null, 1, grid);
-        QuantumState level = new QuantumState(system);
+        QuantumLevel level = new QuantumLevel(system);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
             level.psi[i] = Math.pow(grid.getRValue(i), 4);
         }

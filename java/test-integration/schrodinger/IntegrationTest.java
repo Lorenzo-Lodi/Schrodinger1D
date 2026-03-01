@@ -28,7 +28,7 @@ public class IntegrationTest {
         Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-        QuantumState ek = finder.findEigenvalue(nOfDesiredNodes);
+        QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
         double refEnergy = 0.4997726295700777;
         assertEquals(refEnergy, ek.energy, 1e-12);
         assertTrue(ek.nodesUpper > refEnergy);
@@ -50,7 +50,7 @@ public class IntegrationTest {
         Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-        QuantumState ek = finder.findEigenvalue(nOfDesiredNodes);
+        QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
         double refEnergy = 10.44953025724728;
         assertEquals(refEnergy, ek.energy, 1e-12);
         assertTrue(Math.abs(ek.energy - refEnergy) < 1e-12);
@@ -74,7 +74,7 @@ public class IntegrationTest {
         Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-        QuantumState ek = finder.findEigenvalue(nOfDesiredNodes);
+        QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
         double refEnergy = 0.49999979318999277;
         assertEquals(refEnergy, ek.energy, 1e-12);
         assertTrue(ek.nodesUpper > refEnergy);
@@ -96,7 +96,7 @@ public class IntegrationTest {
         Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-        QuantumState ek = finder.findEigenvalue(nOfDesiredNodes);
+        QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
         double refEnergy = 10.499675728015717;
         assertEquals(refEnergy, ek.energy, 1e-12);
         assertTrue(Math.abs(ek.energy - refEnergy) < 1e-12);
@@ -112,14 +112,14 @@ public class IntegrationTest {
     @Test
     void test005() {
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
-        Integrator integrator = IntegratorFactory.getVignoli();
+        Integrator integrator = IntegratorFactory.getEfnFixedBeta();
         double mass = 2.0d;
         int nOfDesiredNodes = 0;
         int nOfPoints = 200;
         Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-        QuantumState ek = finder.findEigenvalue(nOfDesiredNodes);
+        QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
         double refEnergy = 0.4999997794980161;
         assertEquals(refEnergy, ek.energy, 1e-12);
         assertTrue(ek.nodesUpper > refEnergy);
@@ -132,14 +132,14 @@ public class IntegrationTest {
     @Test
     void test006() {
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
-        Integrator integrator = IntegratorFactory.getVignoli();
+        Integrator integrator = IntegratorFactory.getEfnFixedBeta();
         double mass = 2.0d;
         int nOfDesiredNodes = 10;
         int nOfPoints = 200;
         Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-        QuantumState ek = finder.findEigenvalue(nOfDesiredNodes);
+        QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
         double refEnergy = 10.499995315122833;
         assertEquals(refEnergy, ek.energy, 1e-12);
         assertTrue(Math.abs(ek.energy - refEnergy) < 1e-12);
@@ -160,7 +160,7 @@ public class IntegrationTest {
         Grid grid = GridFactory.generateLogarithmicGrid(14.0d, 26.0d, nOfPoints, 20.);
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-        QuantumState ek = finder.findEigenvalue(nOfDesiredNodes);
+        QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
         double refEnergy = 10.499663998737587;
         assertEquals(refEnergy, ek.energy, 1e-12);
         assertTrue(Math.abs(ek.energy - refEnergy) < 1e-12);
@@ -183,7 +183,7 @@ public class IntegrationTest {
         Grid grid = GridFactory.generateSqrtGrid(14.0d, 26.0d, nOfPoints, 20.);
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-        QuantumState ek = finder.findEigenvalue(nOfDesiredNodes);
+        QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
         double refEnergy = 10.499649544521517;
         assertEquals(refEnergy, ek.energy, 1e-12);
         assertTrue(Math.abs(ek.energy - refEnergy) < 1e-12);
@@ -206,7 +206,7 @@ public class IntegrationTest {
         Grid grid = GridFactory.generateSurkusGrid(14.0d, 26.0d, nOfPoints, 20., 1.1);
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-        QuantumState ek = finder.findEigenvalue(nOfDesiredNodes);
+        QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
         double refEnergy = 10.499638433533447;
         assertEquals(refEnergy, ek.energy, 1e-12);
         assertTrue(Math.abs(ek.energy - refEnergy) < 1e-12);

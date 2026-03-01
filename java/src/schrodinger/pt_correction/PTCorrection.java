@@ -1,6 +1,6 @@
 package schrodinger.pt_correction;
 
-import schrodinger.QuantumState;
+import schrodinger.QuantumLevel;
 
 /**
  * Interface for computing perturbative corrections to the energy.
@@ -13,5 +13,5 @@ public interface PTCorrection {
      * 
      * @param level The quantum state for which to compute the correction
      */
-    void compute(QuantumState level);
+    void compute(QuantumLevel level);
 }

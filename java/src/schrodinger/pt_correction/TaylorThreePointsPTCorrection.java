@@ -1,6 +1,6 @@
 package schrodinger.pt_correction;
 
-import schrodinger.QuantumState;
+import schrodinger.QuantumLevel;
 
 /**
  * Perturbative correction for the Taylor Three Points integration method.
@@ -8,7 +8,7 @@ import schrodinger.QuantumState;
 public class TaylorThreePointsPTCorrection implements PTCorrection {
 
     @Override
-    public void compute(QuantumState level) {
+    public void compute(QuantumLevel level) {
         double result = 0;
         for (int i = 0; i < level.getGrid().getNumberOfPoints(); i++) {
             result += Math.pow(level.QTildeAtGridPoint(i) * level.psi[i], 2);

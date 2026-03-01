@@ -1,6 +1,6 @@
 package schrodinger.pt_correction;
 
-import schrodinger.QuantumState;
+import schrodinger.QuantumLevel;
 
 /**
  * Perturbative correction for the Numerov integration method.
@@ -8,7 +8,7 @@ import schrodinger.QuantumState;
 public class NumerovPTCorrection implements PTCorrection {
 
     @Override
-    public void compute(QuantumState level) {
+    public void compute(QuantumLevel level) {
         double result = 0;
         for (int i = 1; i < level.getGrid().getNumberOfPoints() - 1; i++) {
             result += Math.pow(level.QTildeAtGridPoint(i + 1) * level.psi[i + 1] - level.QTildeAtGridPoint(i - 1) * level.psi[i - 1], 2);

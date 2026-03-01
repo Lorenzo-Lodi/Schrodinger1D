@@ -1,6 +1,6 @@
 package schrodinger.solver;
 
-import schrodinger.QuantumState;
+import schrodinger.QuantumLevel;
 import schrodinger.pt_correction.PTCorrection;
 import schrodinger.grid.Grid;
 import schrodinger.integrator.Integrator;
@@ -33,8 +33,8 @@ public class ShootingSolver {
      * Locates the energy interval [lowerBound, upperBound] containing the
      * state with 'nOfDesiredNodes' nodes.
      */
-    private QuantumState findInitialEnergyBracket(int nOfDesiredNodes) {
-        QuantumState level = new QuantumState(system);
+    private QuantumLevel findInitialEnergyBracket(int nOfDesiredNodes) {
+        QuantumLevel level = new QuantumLevel(system);
 
         double energyScale = estimateEnergyScaleAndLowerBound(level);
 
@@ -61,7 +61,7 @@ public class ShootingSolver {
         throw new RuntimeException("Failed to bracket energy level.");
     }
 
-    private Double estimateEnergyScaleAndLowerBound(QuantumState level) {
+    private Double estimateEnergyScaleAndLowerBound(QuantumLevel level) {
         Grid grid = system.getGrid();
 
         // 1. Scan the *Effective Potential* U_tilde(y) for the minimum
@@ -114,9 +114,9 @@ public class ShootingSolver {
 
     }
 
-    private QuantumState findEigenvalueByBisection(int nOfDesiredNodes) {
+    private QuantumLevel findEigenvalueByBisection(int nOfDesiredNodes) {
 
-        QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
+        QuantumLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
         refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR, 0);
         level.normalizePsi();
         if (correction != null) {
@@ -126,11 +126,11 @@ public class ShootingSolver {
         return level;
     }
 
-    private void refineByBisection(QuantumState level, int nOfDesiredNodes, double maxAbsError, int minBisections) {
-        QuantumState.ConvergenceInfo info1 = new QuantumState.ConvergenceInfo();
+    private void refineByBisection(QuantumLevel level, int nOfDesiredNodes, double maxAbsError, int minBisections) {
+        QuantumLevel.ConvergenceInfo info1 = new QuantumLevel.ConvergenceInfo();
         info1.convergengeStage = "Bisection (to strick bracketing)";
         level.convergenceInfo.add(info1);
-        QuantumState.ConvergenceInfo info2 = new QuantumState.ConvergenceInfo();
+        QuantumLevel.ConvergenceInfo info2 = new QuantumLevel.ConvergenceInfo();
         info2.convergengeStage = "Bisection (after strict bracketing)";
         info2.iterations = 0;
         level.convergenceInfo.add(info2);
@@ -160,11 +160,11 @@ public class ShootingSolver {
         }
     }
 
-    public QuantumState findEigenvalue(int nOfDesiredNodes) {
+    public QuantumLevel findEigenvalue(int nOfDesiredNodes) {
         return findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
     }
 
-    public QuantumState findEigenvalue(int nOfDesiredNodes, RefinementStrategy refinementStrategy) {
+    public QuantumLevel findEigenvalue(int nOfDesiredNodes, RefinementStrategy refinementStrategy) {
         this.strategy = refinementStrategy;
         switch (strategy) {
             case BISECTION_ONLY:
@@ -176,8 +176,8 @@ public class ShootingSolver {
         return null;
     }
 
-    private QuantumState findEigenvalueByHybridMethod(int nOfDesiredNodes) {
-        QuantumState level = this.findInitialEnergyBracket(nOfDesiredNodes);
+    private QuantumLevel findEigenvalueByHybridMethod(int nOfDesiredNodes) {
+        QuantumLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
         refineByBisection(level, nOfDesiredNodes, 1e-2, 3);
         refineByBidirectionalMatching(level);
         level.normalizePsi();
@@ -187,8 +187,8 @@ public class ShootingSolver {
         return level;
     }
 
-    private void refineByBidirectionalMatching(QuantumState level) {
-        QuantumState.ConvergenceInfo info = new QuantumState.ConvergenceInfo();
+    private void refineByBidirectionalMatching(QuantumLevel level) {
+        QuantumLevel.ConvergenceInfo info = new QuantumLevel.ConvergenceInfo();
         info.convergengeStage = "Refinement by regula falsi";
         info.iterations = 0;
         level.convergenceInfo.add(info);
@@ -262,7 +262,7 @@ public class ShootingSolver {
         level.energy = x2;
     }
 
-    private double computeDerivativeMismatch(QuantumState level, int matchIndex) {
+    private double computeDerivativeMismatch(QuantumLevel level, int matchIndex) {
         double hy = system.getGrid().getStepSizeYCoordinate();
         IntToDoubleFunction qTildeFunction = level::QTildeAtGridPoint;
 
@@ -302,7 +302,7 @@ public class ShootingSolver {
     }
 
 
-    private int countNodes(QuantumState level) {
+    private int countNodes(QuantumLevel level) {
         int nPoints = system.getGrid().getNumberOfPoints();
         double hy = system.getGrid().getStepSizeYCoordinate();
         IntToDoubleFunction qTildeFunction = level::QTildeAtGridPoint;

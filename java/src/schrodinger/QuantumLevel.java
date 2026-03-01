@@ -6,7 +6,7 @@ import schrodinger.potential.SchrodingerSystem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuantumState {
+public class QuantumLevel {
     private final SchrodingerSystem system;
     public int nodesUpper = -1; // Set to "sentinel" unphysical value
     public int nodesLower = -1; // Set to "sentinel" unphysical value
@@ -18,7 +18,7 @@ public class QuantumState {
     public List<ConvergenceInfo> convergenceInfo = new ArrayList<>();
 
 
-    public QuantumState(SchrodingerSystem system) {
+    public QuantumLevel(SchrodingerSystem system) {
         this.system = system;
         this.psi = new double[system.getGrid().getNumberOfPoints()];
     }

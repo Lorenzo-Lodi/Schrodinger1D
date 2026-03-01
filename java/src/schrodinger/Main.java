@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
 
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
-        Integrator integrator = IntegratorFactory.getVignoli();
+        Integrator integrator = IntegratorFactory.getEfnFixedBeta();
         double mass = 2.0d;
         int nOfDesiredNodes = 10;
 
@@ -25,7 +25,7 @@ public class Main {
             Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
-            QuantumState ek = finder.findEigenvalue(nOfDesiredNodes);
+            QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
 
             int floatDecimals = 16;
             System.out.println(padInt(i, 4) + padInt(grid.getNumberOfPoints(), 6)

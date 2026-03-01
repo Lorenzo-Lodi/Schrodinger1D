@@ -7,7 +7,7 @@ import schrodinger.integrator.Integrator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Test class for Vignoli integrator.
+ * Test class for "Exponentially-Fitted Numerov with fixed beta" integrator.
  * Tests the convergence of the integrator by comparing numerical solutions
  * with the exact analytical solution for a harmonic oscillator potential.
  */

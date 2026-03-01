@@ -1,7 +1,7 @@
 package schrodinger.integrator;
 
 import org.junit.jupiter.api.Test;
-import schrodinger.QuantumState;
+import schrodinger.QuantumLevel;
 import schrodinger.grid.Grid;
 import schrodinger.grid.GridFactory;
 import schrodinger.potential.PhysicalPotential;
@@ -10,7 +10,6 @@ import schrodinger.potential.SchrodingerSystem;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SplittableRandom;
 import java.util.function.IntToDoubleFunction;
 
 /**
@@ -249,39 +248,39 @@ public abstract class AbstractIntegratorTest {
      * @return Convergence data containing errors at different points
      */
     protected ConvergenceData testWithPoints(PhysicalPotential potential, Integrator integrator, int nOfPoints, int quantumNumber) {
-        // Get state-dependent grid boundaries
+        // Get level-dependent grid boundaries
         double[] gridBounds = getGridBoundaries(quantumNumber);
         double rMin = gridBounds[0];
         double rMax = gridBounds[1];
 
         Grid grid = GridFactory.generateUniformGrid(rMin, rMax, nOfPoints);
         SchrodingerSystem system = new SchrodingerSystem(potential, 2., grid);
-        QuantumState state = new QuantumState(system);
+        QuantumLevel level = new QuantumLevel(system);
 
-        // Use the exact energy for the specified quantum state
+        // Use the exact energy for the specified quantum level
         HarmonicOscillatorExactSolution exactSol = HarmonicOscillatorExactSolution.excitedState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
-        state.energy = exactSol.getEnergy();
+        level.energy = exactSol.getEnergy();
 
         // Initialize with exact solution - use more points for higher quantum numbers
         int initMax = Math.max(INITIALIZATION_N_MAX, quantumNumber + 1);
         for (int n = 0; n <= initMax && n < nOfPoints; n++) {
-            state.psi[n] = exactSol.evaluate(grid.getRValue(n));
+            level.psi[n] = exactSol.evaluate(grid.getRValue(n));
         }
 
         // Propagate the wavefunction
-        double step = state.getGrid().getStepSizeYCoordinate();
+        double step = level.getGrid().getStepSizeYCoordinate();
         long t0 = System.nanoTime();
         for (int n = initMax; n < nOfPoints - 1; n++) {
-            state.psi[n + 1] = integrator.propagate(state.psi, n, step, state::QTildeAtGridPoint, Integrator.Direction.FORWARD);
+            level.psi[n + 1] = integrator.propagate(level.psi, n, step, level::QTildeAtGridPoint, Integrator.Direction.FORWARD);
         }
         long elapsedNanos = System.nanoTime() - t0;
 
         // Calculate errors at different points
         ConvergenceData data = new ConvergenceData();
         data.setElapsedNanos(elapsedNanos);
-        data.addError("10", exactSolution(grid.getRValue(nOfPoints / 10)) - state.psi[nOfPoints / 10]);
-        data.addError("4", exactSolution(grid.getRValue(nOfPoints / 4)) - state.psi[nOfPoints / 4]);
-        data.addError("2", exactSolution(grid.getRValue(nOfPoints / 2)) - state.psi[nOfPoints / 2]);
+        data.addError("10", exactSolution(grid.getRValue(nOfPoints / 10)) - level.psi[nOfPoints / 10]);
+        data.addError("4", exactSolution(grid.getRValue(nOfPoints / 4)) - level.psi[nOfPoints / 4]);
+        data.addError("2", exactSolution(grid.getRValue(nOfPoints / 2)) - level.psi[nOfPoints / 2]);
 
         return data;
     }
@@ -290,7 +289,7 @@ public abstract class AbstractIntegratorTest {
      * Initializes the quantum state with the exact solution.
      * Subclasses can override this method to handle different initialization requirements.
      */
-    protected void initializeState(QuantumState state, Grid grid) {
+    protected void initializeState(QuantumLevel state, Grid grid) {
         for (int n = 0; n <= INITIALIZATION_N_MAX; n++) {
             state.psi[n] = exactSolution(grid.getRValue(n));
         }
