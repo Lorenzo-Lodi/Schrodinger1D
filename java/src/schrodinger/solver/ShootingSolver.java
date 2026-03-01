@@ -287,6 +287,14 @@ public class ShootingSolver {
         level.psi[1] = 1e-16;
         for (int n = 1; n < matchIndex + 1; n++) {
             level.psi[n + 1] = integrator.propagate(level.psi, n, hy, qTildeFunction, Integrator.Direction.FORWARD);
+
+            // Check for potential overflow
+            if (n % 16 == 0 && Math.abs(level.psi[n + 1]) > 1e100) {
+                for (int i = 0; i <= n + 1; i++) { // Rescale computed points
+                    level.psi[i] /= 1e200;
+                }
+            }
+
         }
 
         double forwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (level.psi[matchIndex] * 2. * hy);
@@ -300,6 +308,14 @@ public class ShootingSolver {
 
         for (int n = np - 2; n > matchIndex - 1; n--) {
             level.psi[n - 1] = integrator.propagate(level.psi, n, hy, qTildeFunction, Integrator.Direction.BACKWARD);
+
+            // Check for potential overflow
+            if (n % 16 == 0 && Math.abs(level.psi[n - 1]) > 1e100) {
+                for (int i = np - 1; i >= n - 1; i--) { // Rescale computed points
+                    level.psi[i] /= 1e200;
+                }
+            }
+
         }
         double backwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (level.psi[matchIndex] * 2. * hy);
 

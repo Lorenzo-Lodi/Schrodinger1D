@@ -32,13 +32,11 @@ public class DissociationTest {
         Grid grid = GridFactory.generateUniformGrid(1.2d, 45., nOfPoints);
 
         // PROBLEMS:
-        // 1. Often the answer is a NaN
-        // 2. Often with BISECTION_THEN_REGULA_FALSI we get java.lang.IllegalArgumentException: The function values at the bounds must have opposite signs.
+        // * Often with BISECTION_THEN_REGULA_FALSI we get java.lang.IllegalArgumentException: The function values at the bounds must have opposite signs.
 
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-//        for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
-        for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 0; nOfDesiredNodes++) {
+        for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
             QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_SECANT);
             System.out.println("Eigenvalue: " + nOfDesiredNodes + " " + (ek.energy * HARTREE_TO_INVERSE_CM - wellDepthInverseCm));
 
