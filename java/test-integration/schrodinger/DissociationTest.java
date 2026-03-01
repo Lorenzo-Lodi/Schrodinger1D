@@ -20,6 +20,7 @@ public class DissociationTest {
 
     @Test
     void test001() {
+        OutputManager.initCommonOutputFile(this.getClass().getSimpleName() + ".log");
         double wellDepthInverseCm = 4050;
         double wellDepthHartree = wellDepthInverseCm / HARTREE_TO_INVERSE_CM;
         double rMinAng = 1.;
@@ -36,8 +37,9 @@ public class DissociationTest {
 
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-        for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
-            QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_ONLY);
+//        for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
+        for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 0; nOfDesiredNodes++) {
+            QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_SECANT);
             System.out.println("Eigenvalue: " + nOfDesiredNodes + " " + (ek.energy * HARTREE_TO_INVERSE_CM - wellDepthInverseCm));
 
 //            if (nOfDesiredNodes == 14) {

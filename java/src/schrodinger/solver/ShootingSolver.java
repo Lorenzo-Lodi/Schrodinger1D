@@ -1,5 +1,6 @@
 package schrodinger.solver;
 
+import schrodinger.OutputManager;
 import schrodinger.QuantumLevel;
 import schrodinger.pt_correction.PTCorrection;
 import schrodinger.grid.Grid;
@@ -49,6 +50,7 @@ public class ShootingSolver {
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = currentEnergy;
                 level.nodesUpper = nodes;
+                level.energy = 0.5 * (level.lowerBound + level.upperBound);
                 return level;
             } else {
                 level.lowerBound = currentEnergy;
@@ -158,6 +160,7 @@ public class ShootingSolver {
             }
 
         }
+        level.energy = (level.lowerBound + level.upperBound) * 0.5;
     }
 
     public QuantumLevel findEigenvalue(int nOfDesiredNodes) {
@@ -165,6 +168,7 @@ public class ShootingSolver {
     }
 
     public QuantumLevel findEigenvalue(int nOfDesiredNodes, RefinementStrategy refinementStrategy) {
+        OutputManager.write(String.format("Finding eigenvalue with %d nodes, strategy %s", nOfDesiredNodes, refinementStrategy.toString()));
         this.strategy = refinementStrategy;
         switch (strategy) {
             case BISECTION_ONLY:
@@ -178,7 +182,14 @@ public class ShootingSolver {
 
     private QuantumLevel findEigenvalueByHybridMethod(int nOfDesiredNodes) {
         QuantumLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
+        OutputManager.write(String.format("Initial LOWER energy is: %23.14f ", level.lowerBound));
+        OutputManager.write(String.format("Initial GUESS energy is: %23.14f ", level.energy));
+        OutputManager.write(String.format("Initial UPPER energy is: %23.14f ", level.upperBound));
         refineByBisection(level, nOfDesiredNodes, 1e-2, 3);
+        OutputManager.write("Initial bisection steps finished. The new brackets are:");
+        OutputManager.write(String.format("Initial LOWER energy is: %23.14f ", level.lowerBound));
+        OutputManager.write(String.format("Initial GUESS energy is: %23.14f ", level.energy));
+        OutputManager.write(String.format("Initial UPPER energy is: %23.14f ", level.upperBound));
         refineByBidirectionalMatching(level);
         level.normalizePsi();
         if (correction != null) {
@@ -189,7 +200,7 @@ public class ShootingSolver {
 
     private void refineByBidirectionalMatching(QuantumLevel level) {
         QuantumLevel.ConvergenceInfo info = new QuantumLevel.ConvergenceInfo();
-        info.convergengeStage = "Refinement by regula falsi";
+        info.convergengeStage = "Refinement by regula falsi or secant";
         info.iterations = 0;
         level.convergenceInfo.add(info);
 
@@ -203,6 +214,10 @@ public class ShootingSolver {
         level.energy = level.lowerBound;
         double diffLower = computeDerivativeMismatch(level, matchIndex);
         info.iterations++;
+
+        OutputManager.write(String.format("Energy refinement stage. iterations = %d", info.iterations));
+        OutputManager.write(String.format("Derivative mismatch for UPPER energy: %25.10f", diffUpper));
+        OutputManager.write(String.format("Derivative mismatch for LOWER energy: %25.10f", diffLower));
 
         // Regula falsi (false position) iteration
         double x0 = level.lowerBound;

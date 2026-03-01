@@ -12,7 +12,7 @@ import schrodinger.solver.ShootingSolver;
 public class Main {
 
     public static void main(String[] args) {
-        OutputManager.initCommon("common.log");
+        OutputManager.initCommonOutputFile("common.log");
 
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
         Integrator integrator = IntegratorFactory.getEfnFixedBeta();

@@ -15,8 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OutputManager {
     // Common output (static)
     private static PrintWriter commonWriter;
-    private static final DateTimeFormatter TIMESTAMP =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter TIMESTAMP = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     // Registry of all per‑level writers for shutdown cleanup
     private static final Set<LevelWriter> levelWriters =
@@ -39,7 +38,7 @@ public class OutputManager {
      *
      * @param filePath destination file (appended); if null, common output is disabled.
      */
-    public static void initCommon(String filePath) {
+    public static void initCommonOutputFile(String filePath) {
         closeCommon();
         if (filePath != null) {
             try {
