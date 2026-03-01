@@ -11,7 +11,7 @@ public class TaylorThreePointsPTCorrection implements PTCorrection {
     public void compute(QuantumState level) {
         double result = 0;
         for (int i = 0; i < level.getGrid().getNumberOfPoints(); i++) {
-            result += Math.pow(level.QTildeValueAt(i) * level.psi[i], 2);
+            result += Math.pow(level.QTildeAtGridPoint(i) * level.psi[i], 2);
         }
         double h = level.getGrid().getStepSizeYCoordinate();
         result = result * h * h * h / (24.0 * level.getMass());

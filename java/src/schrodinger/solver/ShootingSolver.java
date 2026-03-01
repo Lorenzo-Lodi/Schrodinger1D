@@ -72,7 +72,7 @@ public class ShootingSolver {
         int nPoints = grid.getNumberOfPoints();
         for (int i = 1; i < nPoints - 1; i++) {
             // Use the effective potential that includes mapping corrections
-            double val = system.UTildeValueAt(i);
+            double val = system.UTildeAtGridPoint(i);
             if (val < uMin) {
                 uMin = val;
                 minIndex = i;
@@ -88,9 +88,9 @@ public class ShootingSolver {
         if (minIndex > 0 && minIndex < nPoints - 1) {
 
             // U_tilde values at minimum and neighbors
-            double u0 = system.UTildeValueAt(minIndex);
-            double uL = system.UTildeValueAt(minIndex - 1);
-            double uR = system.UTildeValueAt(minIndex + 1);
+            double u0 = system.UTildeAtGridPoint(minIndex);
+            double uL = system.UTildeAtGridPoint(minIndex - 1);
+            double uR = system.UTildeAtGridPoint(minIndex + 1);
 
             // second derivative  d^2(U_tilde)/dy^2
             double hy = grid.getStepSizeYCoordinate();
@@ -264,7 +264,7 @@ public class ShootingSolver {
 
     private double computeDerivativeMismatch(QuantumState level, int matchIndex) {
         double hy = system.getGrid().getStepSizeYCoordinate();
-        IntToDoubleFunction qTildeFunction = level::QTildeValueAt;
+        IntToDoubleFunction qTildeFunction = level::QTildeAtGridPoint;
 
         // --- Shoot Forward
         Arrays.fill(level.psi, 0.0d); // Let us zero the wave function for clarity (not necessary).
@@ -305,7 +305,7 @@ public class ShootingSolver {
     private int countNodes(QuantumState level) {
         int nPoints = system.getGrid().getNumberOfPoints();
         double hy = system.getGrid().getStepSizeYCoordinate();
-        IntToDoubleFunction qTildeFunction = level::QTildeValueAt;
+        IntToDoubleFunction qTildeFunction = level::QTildeAtGridPoint;
 
         // --- Shoot Forward
         level.psi[0] = 0.0;
@@ -319,7 +319,7 @@ public class ShootingSolver {
             }
 
             // If we are deep in the classically-forbidden region and the wavefunction is blowing up, we can stop early
-            if (level.QTildeValueAt(n) > 2.0 * level.energy && Math.abs(level.psi[n + 1]) > PSI_MAX) {
+            if (level.QTildeAtGridPoint(n) > 2.0 * level.energy && Math.abs(level.psi[n + 1]) > PSI_MAX) {
                 break;
             }
         }
@@ -330,7 +330,7 @@ public class ShootingSolver {
         Grid grid = system.getGrid();
         // Scan from right to left until we reach the classically-allowed region
         for (int i = grid.getNumberOfPoints() - 3; i >= 2; i--) {
-            if (system.UTildeValueAt(i) <= energy) {
+            if (system.UTildeAtGridPoint(i) <= energy) {
                 return i;
             }
         }

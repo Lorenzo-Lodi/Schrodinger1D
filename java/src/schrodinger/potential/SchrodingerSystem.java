@@ -27,8 +27,8 @@ public class SchrodingerSystem {
         return u - factor / (2.d * mass);
     }
 
-    public double UTildeValueAt(int i) {
-        double y = grid.getYValue(i);
+    public double UTildeAtGridPoint(double i) {
+        double y = grid.getYValue((int) i);
         return UTilde(y);
     }
 

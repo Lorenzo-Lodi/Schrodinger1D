@@ -272,7 +272,7 @@ public abstract class AbstractIntegratorTest {
         double step = state.getGrid().getStepSizeYCoordinate();
         long t0 = System.nanoTime();
         for (int n = initMax; n < nOfPoints - 1; n++) {
-            state.psi[n + 1] = integrator.propagate(state.psi, n, step, state::QTildeValueAt, Integrator.Direction.FORWARD);
+            state.psi[n + 1] = integrator.propagate(state.psi, n, step, state::QTildeAtGridPoint, Integrator.Direction.FORWARD);
         }
         long elapsedNanos = System.nanoTime() - t0;
 
