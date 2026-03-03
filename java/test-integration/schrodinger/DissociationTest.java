@@ -29,7 +29,7 @@ public class DissociationTest {
         Integrator integrator = IntegratorFactory.getExponentiallyFitted();
         double mass = 16.85762920 * UMA_TO_ELECTRON_MASS;
         int nOfPoints = 4000; // Adjusted so that the 14th state is weakly bound, needing an upper limit of around 50 or so
-        Grid grid = GridFactory.generateUniformGrid(1.2d, 45., nOfPoints);
+        Grid grid = GridFactory.generateSqrtGrid(1.2d, 45., nOfPoints,5);
 
         // PROBLEMS:
         // * Often with BISECTION_THEN_REGULA_FALSI we get java.lang.IllegalArgumentException: The function values at the bounds must have opposite signs.

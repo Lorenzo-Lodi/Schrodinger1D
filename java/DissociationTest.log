@@ -1,165 +1,165 @@
-2026-03-01 17:15:02.401 Finding eigenvalue with 0 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.412 Initial LOWER energy is:        0.00000001632284 
-2026-03-01 17:15:02.412 Initial GUESS energy is:        0.00173783583042 
-2026-03-01 17:15:02.412 Initial UPPER energy is:        0.00347565533799 
-2026-03-01 17:15:02.422 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.422 Initial LOWER energy is:        0.00130338095352 
-2026-03-01 17:15:02.423 Initial GUESS energy is:        0.00152060839197 
-2026-03-01 17:15:02.423 Initial UPPER energy is:        0.00173783583042 
-2026-03-01 17:15:02.428 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.428 Derivative mismatch for UPPER energy:             -0.9350376035
-2026-03-01 17:15:02.428 Derivative mismatch for LOWER energy:              6.2681282847
-2026-03-01 17:15:02.440 Finding eigenvalue with 1 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.440 Initial LOWER energy is:        0.00347565533799 
-2026-03-01 17:15:02.440 Initial GUESS energy is:        0.00695129435315 
-2026-03-01 17:15:02.440 Initial UPPER energy is:        0.01042693336831 
-2026-03-01 17:15:02.440 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.440 Initial LOWER energy is:        0.00434456509178 
-2026-03-01 17:15:02.440 Initial GUESS energy is:        0.00477901996868 
-2026-03-01 17:15:02.440 Initial UPPER energy is:        0.00521347484557 
-2026-03-01 17:15:02.440 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.440 Derivative mismatch for UPPER energy:            -27.3746318251
-2026-03-01 17:15:02.440 Derivative mismatch for LOWER energy:              8.5299818852
-2026-03-01 17:15:02.449 Finding eigenvalue with 2 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.449 Initial LOWER energy is:        0.00347565533799 
-2026-03-01 17:15:02.449 Initial GUESS energy is:        0.00695129435315 
-2026-03-01 17:15:02.449 Initial UPPER energy is:        0.01042693336831 
-2026-03-01 17:15:02.456 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.456 Initial LOWER energy is:        0.00738574923004 
-2026-03-01 17:15:02.456 Initial GUESS energy is:        0.00760297666849 
-2026-03-01 17:15:02.456 Initial UPPER energy is:        0.00782020410694 
-2026-03-01 17:15:02.456 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.456 Derivative mismatch for UPPER energy:            -39.3739477374
-2026-03-01 17:15:02.456 Derivative mismatch for LOWER energy:              2.4673578119
-2026-03-01 17:15:02.459 Finding eigenvalue with 3 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.462 Initial LOWER energy is:        0.00347565533799 
-2026-03-01 17:15:02.462 Initial GUESS energy is:        0.00695129435315 
-2026-03-01 17:15:02.462 Initial UPPER energy is:        0.01042693336831 
-2026-03-01 17:15:02.464 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.464 Initial LOWER energy is:        0.00955802361452 
-2026-03-01 17:15:02.464 Initial GUESS energy is:        0.00977525105296 
-2026-03-01 17:15:02.464 Initial UPPER energy is:        0.00999247849141 
-2026-03-01 17:15:02.464 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.464 Derivative mismatch for UPPER energy:            -10.4727190560
-2026-03-01 17:15:02.464 Derivative mismatch for LOWER energy:              5.8768336210
-2026-03-01 17:15:02.470 Finding eigenvalue with 4 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.470 Initial LOWER energy is:        0.01042693336831 
-2026-03-01 17:15:02.470 Initial GUESS energy is:        0.01737821139862 
-2026-03-01 17:15:02.470 Initial UPPER energy is:        0.02432948942893 
-2026-03-01 17:15:02.474 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.474 Initial LOWER energy is:        0.01173029799899 
-2026-03-01 17:15:02.474 Initial GUESS energy is:        0.01194752543744 
-2026-03-01 17:15:02.474 Initial UPPER energy is:        0.01216475287588 
-2026-03-01 17:15:02.474 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.474 Derivative mismatch for UPPER energy:           7577.0086759480
-2026-03-01 17:15:02.474 Derivative mismatch for LOWER energy:              1.5766715450
-2026-03-01 17:15:02.474 Finding eigenvalue with 5 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.480 Initial LOWER energy is:        0.01042693336831 
-2026-03-01 17:15:02.480 Initial GUESS energy is:        0.01737821139862 
-2026-03-01 17:15:02.480 Initial UPPER energy is:        0.02432948942893 
-2026-03-01 17:15:02.483 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.483 Initial LOWER energy is:        0.01303366262967 
-2026-03-01 17:15:02.483 Initial GUESS energy is:        0.01325089006812 
-2026-03-01 17:15:02.483 Initial UPPER energy is:        0.01346811750657 
-2026-03-01 17:15:02.483 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.485 Derivative mismatch for UPPER energy:             -1.2046945849
-2026-03-01 17:15:02.485 Derivative mismatch for LOWER energy:              8.9701233549
-2026-03-01 17:15:02.488 Finding eigenvalue with 6 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.490 Initial LOWER energy is:        0.01042693336831 
-2026-03-01 17:15:02.490 Initial GUESS energy is:        0.01737821139862 
-2026-03-01 17:15:02.490 Initial UPPER energy is:        0.02432948942893 
-2026-03-01 17:15:02.492 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.492 Initial LOWER energy is:        0.01477148213725 
-2026-03-01 17:15:02.492 Initial GUESS energy is:        0.01498870957570 
-2026-03-01 17:15:02.492 Initial UPPER energy is:        0.01520593701414 
-2026-03-01 17:15:02.494 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.494 Derivative mismatch for UPPER energy:             21.7926860640
-2026-03-01 17:15:02.494 Derivative mismatch for LOWER energy:              2.0224439051
-2026-03-01 17:15:02.496 Finding eigenvalue with 7 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.498 Initial LOWER energy is:        0.01042693336831 
-2026-03-01 17:15:02.498 Initial GUESS energy is:        0.01737821139862 
-2026-03-01 17:15:02.498 Initial UPPER energy is:        0.02432948942893 
-2026-03-01 17:15:02.501 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.501 Initial LOWER energy is:        0.01585761932949 
-2026-03-01 17:15:02.501 Initial GUESS energy is:        0.01596623304871 
-2026-03-01 17:15:02.501 Initial UPPER energy is:        0.01607484676793 
-2026-03-01 17:15:02.501 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.501 Derivative mismatch for UPPER energy:            -44.3776593606
-2026-03-01 17:15:02.501 Derivative mismatch for LOWER energy:              2.5438549124
-2026-03-01 17:15:02.505 Finding eigenvalue with 8 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.505 Initial LOWER energy is:        0.01042693336831 
-2026-03-01 17:15:02.505 Initial GUESS energy is:        0.01737821139862 
-2026-03-01 17:15:02.505 Initial UPPER energy is:        0.02432948942893 
-2026-03-01 17:15:02.512 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.512 Initial LOWER energy is:        0.01672652908328 
-2026-03-01 17:15:02.512 Initial GUESS energy is:        0.01683514280250 
-2026-03-01 17:15:02.512 Initial UPPER energy is:        0.01694375652172 
-2026-03-01 17:15:02.512 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.512 Derivative mismatch for UPPER energy:             71.8632911828
-2026-03-01 17:15:02.512 Derivative mismatch for LOWER energy:              2.2982992484
-2026-03-01 17:15:02.512 Finding eigenvalue with 9 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.517 Initial LOWER energy is:        0.01042693336831 
-2026-03-01 17:15:02.517 Initial GUESS energy is:        0.01737821139862 
-2026-03-01 17:15:02.517 Initial UPPER energy is:        0.02432948942893 
-2026-03-01 17:15:02.519 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.519 Initial LOWER energy is:        0.01737821139862 
-2026-03-01 17:15:02.519 Initial GUESS energy is:        0.01743251825823 
-2026-03-01 17:15:02.519 Initial UPPER energy is:        0.01748682511784 
-2026-03-01 17:15:02.519 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.519 Derivative mismatch for UPPER energy:            -13.4377916096
-2026-03-01 17:15:02.519 Derivative mismatch for LOWER energy:              1.9626567066
-2026-03-01 17:15:02.523 Finding eigenvalue with 10 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.525 Initial LOWER energy is:        0.01042693336831 
-2026-03-01 17:15:02.525 Initial GUESS energy is:        0.01737821139862 
-2026-03-01 17:15:02.525 Initial UPPER energy is:        0.02432948942893 
-2026-03-01 17:15:02.529 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.529 Initial LOWER energy is:        0.01781266627551 
-2026-03-01 17:15:02.529 Initial GUESS energy is:        0.01783981970532 
-2026-03-01 17:15:02.529 Initial UPPER energy is:        0.01786697313512 
-2026-03-01 17:15:02.529 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.529 Derivative mismatch for UPPER energy:             -0.0244515865
-2026-03-01 17:15:02.529 Derivative mismatch for LOWER energy:              2.7898503809
-2026-03-01 17:15:02.530 Finding eigenvalue with 11 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.532 Initial LOWER energy is:        0.01042693336831 
-2026-03-01 17:15:02.532 Initial GUESS energy is:        0.01737821139862 
-2026-03-01 17:15:02.532 Initial UPPER energy is:        0.02432948942893 
-2026-03-01 17:15:02.534 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.534 Initial LOWER energy is:        0.01813850743318 
-2026-03-01 17:15:02.536 Initial GUESS energy is:        0.01816566086299 
-2026-03-01 17:15:02.536 Initial UPPER energy is:        0.01819281429279 
-2026-03-01 17:15:02.536 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.536 Derivative mismatch for UPPER energy:             -3.9507328182
-2026-03-01 17:15:02.536 Derivative mismatch for LOWER energy:              2.0378270045
-2026-03-01 17:15:02.538 Finding eigenvalue with 12 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.540 Initial LOWER energy is:        0.01042693336831 
-2026-03-01 17:15:02.540 Initial GUESS energy is:        0.01737821139862 
-2026-03-01 17:15:02.540 Initial UPPER energy is:        0.02432948942893 
-2026-03-01 17:15:02.542 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.542 Initial LOWER energy is:        0.01832858144182 
-2026-03-01 17:15:02.542 Initial GUESS energy is:        0.01834215815673 
-2026-03-01 17:15:02.542 Initial UPPER energy is:        0.01835573487163 
-2026-03-01 17:15:02.544 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.544 Derivative mismatch for UPPER energy:             -2.6166887735
-2026-03-01 17:15:02.544 Derivative mismatch for LOWER energy:              1.3592114000
-2026-03-01 17:15:02.546 Finding eigenvalue with 13 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.548 Initial LOWER energy is:        0.01042693336831 
-2026-03-01 17:15:02.548 Initial GUESS energy is:        0.01737821139862 
-2026-03-01 17:15:02.548 Initial UPPER energy is:        0.02432948942893 
-2026-03-01 17:15:02.550 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.552 Initial LOWER energy is:        0.01842361844614 
-2026-03-01 17:15:02.552 Initial GUESS energy is:        0.01842701262487 
-2026-03-01 17:15:02.552 Initial UPPER energy is:        0.01843040680360 
-2026-03-01 17:15:02.552 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.552 Derivative mismatch for UPPER energy:             -1.2780620822
-2026-03-01 17:15:02.552 Derivative mismatch for LOWER energy:              0.4244514665
-2026-03-01 17:15:02.554 Finding eigenvalue with 14 nodes, strategy BISECTION_THEN_SECANT
-2026-03-01 17:15:02.554 Initial LOWER energy is:        0.01042693336831 
-2026-03-01 17:15:02.554 Initial GUESS energy is:        0.01737821139862 
-2026-03-01 17:15:02.554 Initial UPPER energy is:        0.02432948942893 
-2026-03-01 17:15:02.563 Initial bisection steps finished. The new brackets are:
-2026-03-01 17:15:02.563 Initial LOWER energy is:        0.01845119614829 
-2026-03-01 17:15:02.563 Initial GUESS energy is:        0.01845140828446 
-2026-03-01 17:15:02.563 Initial UPPER energy is:        0.01845162042063 
-2026-03-01 17:15:02.563 Energy refinement stage. iterations = 2
-2026-03-01 17:15:02.564 Derivative mismatch for UPPER energy:             -0.0687343240
-2026-03-01 17:15:02.564 Derivative mismatch for LOWER energy:              0.1062762807
+2026-03-02 16:11:27.445 Finding eigenvalue with 0 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.458 Initial LOWER energy is:        0.00000056093425 
+2026-03-02 16:11:27.458 Initial GUESS energy is:        0.00202408121811 
+2026-03-02 16:11:27.458 Initial UPPER energy is:        0.00404760150198 
+2026-03-02 16:11:27.474 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.474 Initial LOWER energy is:        0.00151820114715 
+2026-03-02 16:11:27.474 Initial GUESS energy is:        0.00177114118263 
+2026-03-02 16:11:27.474 Initial UPPER energy is:        0.00202408121811 
+2026-03-02 16:11:27.490 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.490 Derivative mismatch for UPPER energy:            -15.4315173160
+2026-03-02 16:11:27.490 Derivative mismatch for LOWER energy:              4.6437699552
+2026-03-02 16:11:27.521 Finding eigenvalue with 1 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.521 Initial LOWER energy is:        0.00404760150198 
+2026-03-02 16:11:27.521 Initial GUESS energy is:        0.00809464206971 
+2026-03-02 16:11:27.521 Initial UPPER energy is:        0.01214168263744 
+2026-03-02 16:11:27.540 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.540 Initial LOWER energy is:        0.00455348157294 
+2026-03-02 16:11:27.540 Initial GUESS energy is:        0.00480642160843 
+2026-03-02 16:11:27.540 Initial UPPER energy is:        0.00505936164391 
+2026-03-02 16:11:27.540 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.540 Derivative mismatch for UPPER energy:            -18.7842918439
+2026-03-02 16:11:27.540 Derivative mismatch for LOWER energy:              6.5906898715
+2026-03-02 16:11:27.569 Finding eigenvalue with 2 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.569 Initial LOWER energy is:        0.00404760150198 
+2026-03-02 16:11:27.569 Initial GUESS energy is:        0.00809464206971 
+2026-03-02 16:11:27.569 Initial UPPER energy is:        0.01214168263744 
+2026-03-02 16:11:27.584 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.584 Initial LOWER energy is:        0.00708288192778 
+2026-03-02 16:11:27.584 Initial GUESS energy is:        0.00733582196326 
+2026-03-02 16:11:27.584 Initial UPPER energy is:        0.00758876199874 
+2026-03-02 16:11:27.584 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.584 Derivative mismatch for UPPER energy:             -5.7090501021
+2026-03-02 16:11:27.584 Derivative mismatch for LOWER energy:              9.7137026895
+2026-03-02 16:11:27.615 Finding eigenvalue with 3 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.615 Initial LOWER energy is:        0.00404760150198 
+2026-03-02 16:11:27.615 Initial GUESS energy is:        0.00809464206971 
+2026-03-02 16:11:27.615 Initial UPPER energy is:        0.01214168263744 
+2026-03-02 16:11:27.631 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.631 Initial LOWER energy is:        0.00961228228261 
+2026-03-02 16:11:27.631 Initial GUESS energy is:        0.00986522231809 
+2026-03-02 16:11:27.631 Initial UPPER energy is:        0.01011816235357 
+2026-03-02 16:11:27.631 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.631 Derivative mismatch for UPPER energy:            -49.4132341479
+2026-03-02 16:11:27.631 Derivative mismatch for LOWER energy:              6.4219071791
+2026-03-02 16:11:27.647 Finding eigenvalue with 4 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.647 Initial LOWER energy is:        0.00404760150198 
+2026-03-02 16:11:27.647 Initial GUESS energy is:        0.00809464206971 
+2026-03-02 16:11:27.647 Initial UPPER energy is:        0.01214168263744 
+2026-03-02 16:11:27.663 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.663 Initial LOWER energy is:        0.01163580256647 
+2026-03-02 16:11:27.663 Initial GUESS energy is:        0.01188874260195 
+2026-03-02 16:11:27.663 Initial UPPER energy is:        0.01214168263744 
+2026-03-02 16:11:27.663 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.663 Derivative mismatch for UPPER energy:          48379.5587710074
+2026-03-02 16:11:27.663 Derivative mismatch for LOWER energy:              5.8029910275
+2026-03-02 16:11:27.685 Finding eigenvalue with 5 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.694 Initial LOWER energy is:        0.01214168263744 
+2026-03-02 16:11:27.694 Initial GUESS energy is:        0.02023576377289 
+2026-03-02 16:11:27.694 Initial UPPER energy is:        0.02832984490835 
+2026-03-02 16:11:27.694 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.694 Initial LOWER energy is:        0.01315344277937 
+2026-03-02 16:11:27.694 Initial GUESS energy is:        0.01340638281485 
+2026-03-02 16:11:27.694 Initial UPPER energy is:        0.01365932285033 
+2026-03-02 16:11:27.710 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.710 Derivative mismatch for UPPER energy:            -24.8816869529
+2026-03-02 16:11:27.710 Derivative mismatch for LOWER energy:              9.3616064008
+2026-03-02 16:11:27.725 Finding eigenvalue with 6 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.725 Initial LOWER energy is:        0.01214168263744 
+2026-03-02 16:11:27.725 Initial GUESS energy is:        0.02023576377289 
+2026-03-02 16:11:27.725 Initial UPPER energy is:        0.02832984490835 
+2026-03-02 16:11:27.741 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.741 Initial LOWER energy is:        0.01467108299227 
+2026-03-02 16:11:27.741 Initial GUESS energy is:        0.01479755301001 
+2026-03-02 16:11:27.741 Initial UPPER energy is:        0.01492402302775 
+2026-03-02 16:11:27.741 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.741 Derivative mismatch for UPPER energy:            -11.1411308634
+2026-03-02 16:11:27.741 Derivative mismatch for LOWER energy:              6.0634412711
+2026-03-02 16:11:27.756 Finding eigenvalue with 7 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.756 Initial LOWER energy is:        0.01214168263744 
+2026-03-02 16:11:27.756 Initial GUESS energy is:        0.02023576377289 
+2026-03-02 16:11:27.756 Initial UPPER energy is:        0.02832984490835 
+2026-03-02 16:11:27.772 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.772 Initial LOWER energy is:        0.01568284313420 
+2026-03-02 16:11:27.772 Initial GUESS energy is:        0.01580931315194 
+2026-03-02 16:11:27.772 Initial UPPER energy is:        0.01593578316968 
+2026-03-02 16:11:27.788 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.788 Derivative mismatch for UPPER energy:             -1.6862209827
+2026-03-02 16:11:27.788 Derivative mismatch for LOWER energy:              8.3571378003
+2026-03-02 16:11:27.788 Finding eigenvalue with 8 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.803 Initial LOWER energy is:        0.01214168263744 
+2026-03-02 16:11:27.803 Initial GUESS energy is:        0.02023576377289 
+2026-03-02 16:11:27.803 Initial UPPER energy is:        0.02832984490835 
+2026-03-02 16:11:27.803 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.803 Initial LOWER energy is:        0.01669460327613 
+2026-03-02 16:11:27.803 Initial GUESS energy is:        0.01682107329387 
+2026-03-02 16:11:27.803 Initial UPPER energy is:        0.01694754331161 
+2026-03-02 16:11:27.819 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.819 Derivative mismatch for UPPER energy:             81.6090621571
+2026-03-02 16:11:27.819 Derivative mismatch for LOWER energy:              4.6210319106
+2026-03-02 16:11:27.835 Finding eigenvalue with 9 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.841 Initial LOWER energy is:        0.01214168263744 
+2026-03-02 16:11:27.841 Initial GUESS energy is:        0.02023576377289 
+2026-03-02 16:11:27.841 Initial UPPER energy is:        0.02832984490835 
+2026-03-02 16:11:27.852 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.852 Initial LOWER energy is:        0.01732695336484 
+2026-03-02 16:11:27.852 Initial GUESS energy is:        0.01739018837371 
+2026-03-02 16:11:27.852 Initial UPPER energy is:        0.01745342338258 
+2026-03-02 16:11:27.852 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.852 Derivative mismatch for UPPER energy:             -4.9245867709
+2026-03-02 16:11:27.852 Derivative mismatch for LOWER energy:              4.9169780496
+2026-03-02 16:11:27.867 Finding eigenvalue with 10 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.882 Initial LOWER energy is:        0.01214168263744 
+2026-03-02 16:11:27.882 Initial GUESS energy is:        0.02023576377289 
+2026-03-02 16:11:27.882 Initial UPPER energy is:        0.02832984490835 
+2026-03-02 16:11:27.882 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.882 Initial LOWER energy is:        0.01783283343581 
+2026-03-02 16:11:27.882 Initial GUESS energy is:        0.01786445094024 
+2026-03-02 16:11:27.882 Initial UPPER energy is:        0.01789606844468 
+2026-03-02 16:11:27.898 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.898 Derivative mismatch for UPPER energy:             -4.3071559047
+2026-03-02 16:11:27.898 Derivative mismatch for LOWER energy:              2.8239083896
+2026-03-02 16:11:27.898 Finding eigenvalue with 11 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.898 Initial LOWER energy is:        0.01214168263744 
+2026-03-02 16:11:27.898 Initial GUESS energy is:        0.02023576377289 
+2026-03-02 16:11:27.898 Initial UPPER energy is:        0.02832984490835 
+2026-03-02 16:11:27.914 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.914 Initial LOWER energy is:        0.01814900848016 
+2026-03-02 16:11:27.914 Initial GUESS energy is:        0.01818062598459 
+2026-03-02 16:11:27.914 Initial UPPER energy is:        0.01821224348903 
+2026-03-02 16:11:27.914 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.914 Derivative mismatch for UPPER energy:            -56.6897640037
+2026-03-02 16:11:27.914 Derivative mismatch for LOWER energy:              2.1617481499
+2026-03-02 16:11:27.929 Finding eigenvalue with 12 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.929 Initial LOWER energy is:        0.01214168263744 
+2026-03-02 16:11:27.929 Initial GUESS energy is:        0.02023576377289 
+2026-03-02 16:11:27.929 Initial UPPER energy is:        0.02832984490835 
+2026-03-02 16:11:27.945 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.945 Initial LOWER energy is:        0.01833871350677 
+2026-03-02 16:11:27.945 Initial GUESS energy is:        0.01834661788288 
+2026-03-02 16:11:27.945 Initial UPPER energy is:        0.01835452225899 
+2026-03-02 16:11:27.945 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.945 Derivative mismatch for UPPER energy:             -3.7585368223
+2026-03-02 16:11:27.945 Derivative mismatch for LOWER energy:              0.6489786337
+2026-03-02 16:11:27.961 Finding eigenvalue with 13 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.961 Initial LOWER energy is:        0.01214168263744 
+2026-03-02 16:11:27.961 Initial GUESS energy is:        0.02023576377289 
+2026-03-02 16:11:27.961 Initial UPPER energy is:        0.02832984490835 
+2026-03-02 16:11:27.976 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:27.976 Initial LOWER energy is:        0.01842566164397 
+2026-03-02 16:11:27.976 Initial GUESS energy is:        0.01842961383202 
+2026-03-02 16:11:27.976 Initial UPPER energy is:        0.01843356602008 
+2026-03-02 16:11:27.976 Energy refinement stage. iterations = 2
+2026-03-02 16:11:27.976 Derivative mismatch for UPPER energy:             -8.5992642366
+2026-03-02 16:11:27.976 Derivative mismatch for LOWER energy:              0.0993463535
+2026-03-02 16:11:27.992 Finding eigenvalue with 14 nodes, strategy BISECTION_THEN_SECANT
+2026-03-02 16:11:27.992 Initial LOWER energy is:        0.01214168263744 
+2026-03-02 16:11:27.992 Initial GUESS energy is:        0.02023576377289 
+2026-03-02 16:11:27.992 Initial UPPER energy is:        0.02832984490835 
+2026-03-02 16:11:28.008 Initial bisection steps finished. The new brackets are:
+2026-03-02 16:11:28.008 Initial LOWER energy is:        0.01845135086632 
+2026-03-02 16:11:28.008 Initial GUESS energy is:        0.01845147437220 
+2026-03-02 16:11:28.008 Initial UPPER energy is:        0.01845159787808 
+2026-03-02 16:11:28.023 Energy refinement stage. iterations = 2
+2026-03-02 16:11:28.023 Derivative mismatch for UPPER energy:             -0.1145794653
+2026-03-02 16:11:28.023 Derivative mismatch for LOWER energy:              0.0741281584

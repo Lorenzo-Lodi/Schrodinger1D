@@ -6,3 +6,4 @@ java/.claude
 *.iml
 *.class
 java/common.log
+java/DissociationTest.log
