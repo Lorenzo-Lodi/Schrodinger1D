@@ -489,20 +489,8 @@ public abstract class AbstractIntegratorTest {
     // Subclasses implement getIntegrator() to provide specific integrator.
     private double integrateOneStep(double qFactor, Integrator.Direction direction) {
         Integrator integrator = getIntegrator();
-
-        double[] coeffs = new double[]{0.1111 * qFactor, 0.2222 * qFactor, 0.3333 * qFactor, 0.44444 * qFactor};
-        PhysicalPotential potential = new PhysicalPotentialPolynomial(0, coeffs);
-        double mass = 0.5;
         int np = 20;
-        Grid grid = GridFactory.generateUniformGrid(0, 10, np);
-        SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
-        QuantumLevel level = new QuantumLevel(system);
-        level.energy = 0;
-        level.psi = new double[np];
-        for (int k = 0; k < np; k++) {
-            level.psi[k] = Math.cos(k);
-        }
-
+        QuantumLevel level = createPreinitializedTestLevel(qFactor, np);
         return integrator.propagate(level.psi, np / 2, 0.123, level, direction);
     }
 
@@ -520,26 +508,36 @@ public abstract class AbstractIntegratorTest {
         return integrateOneStep(2.e-5, direction);
     }
 
-    //    @Test
+    @Test
     public void time_benchmark() {
         int npoints = 1000000;
 
-        double[] psi = new double[npoints];
-        for (int k = 0; k < 15; k++) {
-            psi[k] = Math.cos(k);
-        }
-
         Integrator integrator = getIntegrator();
-        IntToDoubleFunction q = i -> 1e-3 * (0.1111 + 0.2222 * i / npoints + 0.03333 / (npoints * npoints) * i * i);
+        QuantumLevel level = createPreinitializedTestLevel(1e-3, npoints);
         long t0 = System.nanoTime();
         for (int n = 14; n < npoints - 1; n++) {
-            psi[n + 1] = integrator.propagate(psi, n, 0.123, null, Integrator.Direction.FORWARD);
+            level.psi[n + 1] = integrator.propagate(level.psi, n, 0.123, level, Integrator.Direction.FORWARD);
         }
         long elapsedNanos = System.nanoTime() - t0;
         double timePerPoint = ((double) elapsedNanos) / (npoints);
         String msg = String.format("Time taken for integrating %d points is %10.3f ns / point for %s", npoints, timePerPoint, integrator.getClass().getSimpleName());
         System.out.println(msg);
 
+    }
+
+    private static QuantumLevel createPreinitializedTestLevel(double qFactor, int npoints) {
+        double[] coeffs = new double[]{0.1111 * qFactor, 0.2222 * qFactor, 0.3333 * qFactor, 0.44444 * qFactor};
+        PhysicalPotential potential = new PhysicalPotentialPolynomial(0, coeffs);
+        double mass = 0.5;
+        Grid grid = GridFactory.generateUniformGrid(0, 10, npoints);
+        SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
+        QuantumLevel level = new QuantumLevel(system);
+        level.energy = 0;
+        level.psi = new double[npoints];
+        for (int k = 0; k < npoints; k++) {
+            level.psi[k] = Math.cos(k);
+        }
+        return level;
     }
 
 }
