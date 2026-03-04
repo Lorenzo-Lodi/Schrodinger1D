@@ -2,7 +2,7 @@ package schrodinger.integrator.predcorr;
 
 import schrodinger.integrator.Integrator;
 
-import java.util.function.IntToDoubleFunction;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * Predictor-Corrector Störmer method of order 8 for integrating Schrödinger equation.
@@ -43,7 +43,7 @@ public abstract class PredictorCorrector8Abstract extends PredictorCorrectorBase
     }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Integrator.Direction direction) {
+    public double propagate(double[] psi, int n, double step, DoubleUnaryOperator qTilde, Integrator.Direction direction) {
         final double h = step;
         final double h2 = h * h;
         final int d = direction.getValue();

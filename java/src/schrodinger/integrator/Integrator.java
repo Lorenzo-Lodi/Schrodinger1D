@@ -1,6 +1,6 @@
 package schrodinger.integrator;
 
-import java.util.function.IntToDoubleFunction;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * Interface for numerical integration methods used to propagate the wavefunction.
@@ -17,7 +17,7 @@ public interface Integrator {
      * @param direction The integration direction (FORWARD or BACKWARD)
      * @return The value of the wavefunction at the next point (n+1 or n-1)
      */
-    double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction);
+    double propagate(double[] psi, int n, double step, DoubleUnaryOperator qTilde, Direction direction);
 
     /**
      * Returns the minimum number of previously-computed psi values this integrator

@@ -10,7 +10,7 @@ import schrodinger.potential.SchrodingerSystem;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.IntToDoubleFunction;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * Abstract base class for integrator tests.
@@ -494,7 +494,7 @@ public abstract class AbstractIntegratorTest {
         }
 
         Integrator integrator = getIntegrator();
-        IntToDoubleFunction q = i -> qFactor * (0.1111 + 0.2222 * i + 0.3333 * i * i + 0.44444 * i * i * i);
+        DoubleUnaryOperator q = i -> qFactor * (0.1111 + 0.2222 * i + 0.3333 * i * i + 0.44444 * i * i * i);
         return integrator.propagate(psi, arraySize / 2, 0.123, q, direction);
     }
 
@@ -522,7 +522,7 @@ public abstract class AbstractIntegratorTest {
         }
 
         Integrator integrator = getIntegrator();
-        IntToDoubleFunction q = i -> 1e-3 * (0.1111 + 0.2222 * i / npoints + 0.03333 / (npoints * npoints) * i * i);
+        DoubleUnaryOperator q = i -> 1e-3 * (0.1111 + 0.2222 * i / npoints + 0.03333 / (npoints * npoints) * i * i);
         long t0 = System.nanoTime();
         for (int n = 14; n < npoints - 1; n++) {
             psi[n + 1] = integrator.propagate(psi, n, 0.123, q, Integrator.Direction.FORWARD);

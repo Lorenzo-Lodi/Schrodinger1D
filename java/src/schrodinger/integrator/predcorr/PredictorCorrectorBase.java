@@ -2,7 +2,7 @@ package schrodinger.integrator.predcorr;
 
 import schrodinger.integrator.Integrator;
 
-import java.util.function.IntToDoubleFunction;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * Abstract base class for predictor-corrector integrators.
@@ -36,7 +36,7 @@ public abstract class PredictorCorrectorBase implements Integrator {
      * @return array of length {@code steps} where result[i] = predicted psi at n+(i+1)*d
      */
     protected double[] predictAhead(double[] psi, int n, int steps,
-                                    double step, IntToDoubleFunction qFn, Direction dir) {
+                                    double step, DoubleUnaryOperator qFn, Direction dir) {
         return predictAheadImpl(psi[n], psi, n, steps, step, qFn, dir);
     }
 
@@ -56,12 +56,12 @@ public abstract class PredictorCorrectorBase implements Integrator {
      */
     protected double[] predictAhead(double psiAtN, double[] psi,
                                     int n, int steps,
-                                    double step, IntToDoubleFunction qFn, Direction dir) {
+                                    double step, DoubleUnaryOperator qFn, Direction dir) {
         return predictAheadImpl(psiAtN, psi, n, steps, step, qFn, dir);
     }
 
     private double[] predictAheadImpl(double psiAtN, double[] psi, int n, int steps,
-                                      double step, IntToDoubleFunction qFn, Direction dir) {
+                                      double step, DoubleUnaryOperator qFn, Direction dir) {
         int d   = dir.getValue();
         int k   = predictor.minHistoryLength();
         int nib = (d == 1) ? k - 1 : 1;        // n_in_buf
@@ -79,7 +79,7 @@ public abstract class PredictorCorrectorBase implements Integrator {
                     : ((g >= n) ? psi[g] : result[n - g - 1]);
             }
             final int fb = baseIdx, fn = nib;
-            IntToDoubleFunction adjQFn = idx -> qFn.applyAsDouble(fb - fn + idx);
+            DoubleUnaryOperator adjQFn = idx -> qFn.applyAsDouble(fb - fn + idx);
             result[i] = predictor.propagate(buf, nib, step, adjQFn, dir);
         }
         return result;

@@ -2,7 +2,7 @@ package schrodinger.integrator.expfitted;
 
 import schrodinger.integrator.Integrator;
 
-import java.util.function.IntToDoubleFunction;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * Numerov's method for integrating the Schrödinger equation.
@@ -17,7 +17,7 @@ public class Numerov implements Integrator {
     public int globalConvergenceOrder() { return 4; }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
+    public double propagate(double[] psi, int n, double step, DoubleUnaryOperator qTilde, Direction direction) {
         double h2 = step * step;
         return (psi[n] * (2.0d - 5. * h2 * qTilde.applyAsDouble(n) / 6.) -
                 (1. + h2 * qTilde.applyAsDouble(n - direction.getValue()) / 12.)

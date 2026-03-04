@@ -2,7 +2,7 @@ package schrodinger.integrator.stormer;
 
 import schrodinger.integrator.Integrator;
 
-import java.util.function.IntToDoubleFunction;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * Extended Störmer method of order 5 for integrating the Schrödinger equation.
@@ -23,7 +23,7 @@ public class Stormer5 implements Integrator {
     public int globalConvergenceOrder() { return 5; }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
+    public double propagate(double[] psi, int n, double step, DoubleUnaryOperator qTilde, Direction direction) {
         double h = step;
         double h2 = h * h;
         int d = direction.getValue();

@@ -8,7 +8,7 @@ import schrodinger.integrator.Integrator;
 import schrodinger.potential.SchrodingerSystem;
 
 import java.util.Arrays;
-import java.util.function.IntToDoubleFunction;
+import java.util.function.DoubleUnaryOperator;
 
 public class ShootingSolver {
     private static final double TARGET_ABSOLUTE_ERROR = 1e-13;
@@ -279,7 +279,7 @@ public class ShootingSolver {
 
     private double computeDerivativeMismatch(QuantumLevel level, int matchIndex) {
         double hy = system.getGrid().getStepSizeYCoordinate();
-        IntToDoubleFunction qTildeFunction = level::QTildeAtGridPoint;
+        DoubleUnaryOperator qTildeFunction = level::QTildeAtGridPoint;
 
         // --- Shoot Forward
         Arrays.fill(level.psi, 0.0d); // Let us zero the wave function for clarity (not necessary).
@@ -336,7 +336,7 @@ public class ShootingSolver {
     private int countNodes(QuantumLevel level) {
         int nPoints = system.getGrid().getNumberOfPoints();
         double hy = system.getGrid().getStepSizeYCoordinate();
-        IntToDoubleFunction qTildeFunction = level::QTildeAtGridPoint;
+        DoubleUnaryOperator qTildeFunction = level::QTildeAtGridPoint;
 
         // --- Shoot Forward
         level.psi[0] = 0.0;

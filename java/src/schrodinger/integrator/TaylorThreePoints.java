@@ -1,6 +1,6 @@
 package schrodinger.integrator;
 
-import java.util.function.IntToDoubleFunction;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * Three-point Taylor expansion method for integrating the Schrödinger equation.
@@ -15,7 +15,7 @@ public class TaylorThreePoints implements Integrator {
     public int globalConvergenceOrder() { return 2; }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
+    public double propagate(double[] psi, int n, double step, DoubleUnaryOperator qTilde, Direction direction) {
         return psi[n] * (2.0d - step * step * qTilde.applyAsDouble(n)) - psi[n - direction.getValue()];
     }
 

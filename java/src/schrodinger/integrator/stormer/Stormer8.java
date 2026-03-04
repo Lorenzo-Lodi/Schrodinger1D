@@ -2,7 +2,7 @@ package schrodinger.integrator.stormer;
 
 import schrodinger.integrator.Integrator;
 
-import java.util.function.IntToDoubleFunction;
+import java.util.function.DoubleUnaryOperator;
 
 public class Stormer8 implements Integrator {
 
@@ -17,7 +17,7 @@ public class Stormer8 implements Integrator {
     }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
+    public double propagate(double[] psi, int n, double step, DoubleUnaryOperator qTilde, Direction direction) {
         double h2 = step * step;
         int d = direction.getValue();
 
