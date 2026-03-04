@@ -41,7 +41,7 @@ public class Grid {
      * @param i Index going from 0 to numberOfPoints-1
      * @return Value of the i-th grid point
      */
-    public double getYValue(int i) {
+    public double getYValue(double i) {
         return yMin + getStepSizeYCoordinate() * i;
     }
 

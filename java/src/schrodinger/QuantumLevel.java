@@ -39,7 +39,7 @@ public class QuantumLevel {
     }
 
     public double QTildeAtGridPoint(double i) {
-        double y = getGrid().getYValue((int) i);
+        double y = getGrid().getYValue(i);
 //        return QTilde(y);
         // The form below is more useful to implement future pre-computation;
         // Pre-computation of UTildeValueAt is straightforward.
