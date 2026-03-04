@@ -21,37 +21,37 @@ public class EfnFixedBetaTest extends AbstractIntegratorTest {
     @Test
     public void integrateForwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.FORWARD);
-        assertEquals(2.081570296966459, val, 1e-14);
+        assertEquals(-1.8533251800303803, val, 1e-14);
     }
 
     @Test
     public void integrateBackwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.BACKWARD);
-        assertEquals(1.6758023010055854, val, 1e-14);
+        assertEquals(-2.660700364465826, val, 1e-14);
     }
 
     @Test
     public void integrateForwardNegativeQTest() {
         double val = integrateOneStepNegativeQ(Integrator.Direction.FORWARD);
-        assertEquals(-22.088386420352787, val, 1e-14);
+        assertEquals(0.079077394128788, val, 1e-14);
     }
 
     @Test
     public void integrateBackwardNegativeQTest() {
         double val = integrateOneStepNegativeQ(Integrator.Direction.BACKWARD);
-        assertEquals(-8.88050151774844, val, 1e-14);
+        assertEquals(-0.8327036320874156, val, 1e-14);
     }
 
     @Test
     public void integrateForwardSmallZTest() {
         double val = integrateOneStepSmallZ(Integrator.Direction.FORWARD);
-        assertEquals(-0.7668908395120492, val, 1e-14);
+        assertEquals(-0.7670319246107025, val, 1e-14);
     }
 
     @Test
     public void integrateBackwardSmallZTest() {
         double val = integrateOneStepSmallZ(Integrator.Direction.BACKWARD);
-        assertEquals(-1.6824522708379095, val, 1e-14);
+        assertEquals(-1.6825870493066613, val, 1e-14);
     }
 
 }

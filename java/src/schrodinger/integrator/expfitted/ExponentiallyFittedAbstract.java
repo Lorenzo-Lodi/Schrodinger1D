@@ -1,5 +1,6 @@
 package schrodinger.integrator.expfitted;
 
+import schrodinger.QuantumLevel;
 import schrodinger.integrator.Integrator;
 
 import java.util.function.IntToDoubleFunction;
@@ -10,7 +11,7 @@ import java.util.function.IntToDoubleFunction;
 public abstract class ExponentiallyFittedAbstract implements Integrator {
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
+    public double propagate(double[] psi, int n, double step, QuantumLevel level, Direction direction) {
         double h = step;
         double h2 = h * h;
 
@@ -21,9 +22,9 @@ public abstract class ExponentiallyFittedAbstract implements Integrator {
 
         // 2. Calculate Z = h^2 * Q for each point
         // Positive Q -> Oscillatory. Negative Q -> Exponential.
-        double Z_prev = h2 * qTilde.applyAsDouble(prev);
-        double Z_curr = h2 * qTilde.applyAsDouble(curr);
-        double Z_next = h2 * qTilde.applyAsDouble(next);
+        double Z_prev = h2 * level.QTildeAtGridPoint(prev);
+        double Z_curr = h2 * level.QTildeAtGridPoint(curr);
+        double Z_next = h2 * level.QTildeAtGridPoint(next);
 
         // 3. Calculate EF coefficients dynamically
         double beta_prev = getBeta(Z_prev);
@@ -39,10 +40,14 @@ public abstract class ExponentiallyFittedAbstract implements Integrator {
     }
 
     @Override
-    public int minHistoryLength() { return 2; }
+    public int minHistoryLength() {
+        return 2;
+    }
 
     @Override
-    public int globalConvergenceOrder() { return 4; }
+    public int globalConvergenceOrder() {
+        return 4;
+    }
 
     /**
      * Returns the beta coefficient for exponentially fitted method given Z = h^2 * Q.

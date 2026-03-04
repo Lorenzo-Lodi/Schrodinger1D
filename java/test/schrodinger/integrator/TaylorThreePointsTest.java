@@ -19,13 +19,13 @@ public class TaylorThreePointsTest extends AbstractIntegratorTest {
     @Test
     public void integrateForwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.FORWARD);
-        assertEquals(5.32756630584979, val, 1e-14);
+        assertEquals(-1.7230199750400765, val, 1e-14);
     }
 
     @Test
     public void integrateBackwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.BACKWARD);
-        assertEquals(4.4120103459770625, val, 1e-14);
+        assertEquals(-2.6385759349128044, val, 1e-14);
     }
 
 }

@@ -1,5 +1,6 @@
 package schrodinger.integrator.predcorr;
 
+import schrodinger.QuantumLevel;
 import schrodinger.integrator.Integrator;
 import schrodinger.integrator.expfitted.Numerov;
 
@@ -34,7 +35,7 @@ public class PredictorCorrector6 extends PredictorCorrectorBase {
     public int globalConvergenceOrder() { return 6; }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Integrator.Direction direction) {
+    public double propagate(double[] psi, int n, double step, QuantumLevel level, Integrator.Direction direction) {
         double h = step;
         double h2 = h * h;
         int d = direction.getValue();
@@ -45,14 +46,14 @@ public class PredictorCorrector6 extends PredictorCorrectorBase {
         int n1 = n - d;        // n-1
         int n2 = n - 2 * d;   // n-2
 
-        double Q_n2  = qTilde.applyAsDouble(n2);
-        double Q_n1  = qTilde.applyAsDouble(n1);
-        double Q_n0  = qTilde.applyAsDouble(n0);
-        double Q_nP1 = qTilde.applyAsDouble(nP1);
-        double Q_nP2 = qTilde.applyAsDouble(nP2);
+        double Q_n2  = level.QTildeAtGridPoint(n2);
+        double Q_n1  = level.QTildeAtGridPoint(n1);
+        double Q_n0  = level.QTildeAtGridPoint(n0);
+        double Q_nP1 = level.QTildeAtGridPoint(nP1);
+        double Q_nP2 = level.QTildeAtGridPoint(nP2);
 
         // ── Predict psi[n+1] and psi[n+2] using the injected predictor ──
-        double[] pred = predictAhead(psi, n, 2, step, qTilde, direction);
+        double[] pred = predictAhead(psi, n, 2, step, level, direction);
         double psi_nP2_pred = pred[1];
 
         // ── Correct using symmetric {-2..+2} formula ──

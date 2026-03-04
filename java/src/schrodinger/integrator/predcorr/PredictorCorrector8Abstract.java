@@ -1,5 +1,6 @@
 package schrodinger.integrator.predcorr;
 
+import schrodinger.QuantumLevel;
 import schrodinger.integrator.Integrator;
 
 import java.util.function.IntToDoubleFunction;
@@ -43,7 +44,7 @@ public abstract class PredictorCorrector8Abstract extends PredictorCorrectorBase
     }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Integrator.Direction direction) {
+    public double propagate(double[] psi, int n, double step, QuantumLevel level, Integrator.Direction direction) {
         final double h = step;
         final double h2 = h * h;
         final int d = direction.getValue();
@@ -56,16 +57,16 @@ public abstract class PredictorCorrector8Abstract extends PredictorCorrectorBase
         int n2 = n - 2 * d;
         int n3 = n - 3 * d;
 
-        final double Q_n3 = qTilde.applyAsDouble(n3);
-        final double Q_n2 = qTilde.applyAsDouble(n2);
-        final double Q_n1 = qTilde.applyAsDouble(n1);
-        final double Q_n0 = qTilde.applyAsDouble(n0);
-        final double Q_nP1 = qTilde.applyAsDouble(nP1);
-        final double Q_nP2 = qTilde.applyAsDouble(nP2);
-        final double Q_nP3 = qTilde.applyAsDouble(nP3);
+        final double Q_n3 = level.QTildeAtGridPoint(n3);
+        final double Q_n2 = level.QTildeAtGridPoint(n2);
+        final double Q_n1 = level.QTildeAtGridPoint(n1);
+        final double Q_n0 = level.QTildeAtGridPoint(n0);
+        final double Q_nP1 = level.QTildeAtGridPoint(nP1);
+        final double Q_nP2 = level.QTildeAtGridPoint(nP2);
+        final double Q_nP3 = level.QTildeAtGridPoint(nP3);
 
         // ── P: Initial prediction (ψ[n+2] and ψ[n+3] are used; ψ[n+1] is discarded) ──
-        double[] pred = predictAhead(psi, n, 3, step, qTilde, direction);
+        double[] pred = predictAhead(psi, n, 3, step, level, direction);
         double psi_nP2 = pred[1];
         double psi_nP3 = pred[2];
 
@@ -82,7 +83,7 @@ public abstract class PredictorCorrector8Abstract extends PredictorCorrectorBase
 
             // E: re-predict ψ[n+2] and ψ[n+3] from corrected ψ[n+1], unless this was the last correction
             if (iter < maxIterations - 1) {
-                double[] repred = predictAhead(psi_nP1, psi, nP1, 2, step, qTilde, direction);
+                double[] repred = predictAhead(psi_nP1, psi, nP1, 2, step, level, direction);
                 psi_nP2 = repred[0];
                 psi_nP3 = repred[1];
             }

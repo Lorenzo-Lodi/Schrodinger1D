@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuantumLevel {
-    private final SchrodingerSystem system;
+    private SchrodingerSystem system;
     public int nodesUpper = -1; // Set to "sentinel" unphysical value
     public int nodesLower = -1; // Set to "sentinel" unphysical value
     public double energy;
@@ -22,6 +22,8 @@ public class QuantumLevel {
         this.system = system;
         this.psi = new double[system.getGrid().getNumberOfPoints()];
     }
+
+    protected QuantumLevel() { /* view-only subclass use */ }
 
     /**
      * Q-function Q(r) for the equation: ψ''(r) = -Q(r)ψ(r)

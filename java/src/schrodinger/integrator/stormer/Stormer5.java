@@ -1,5 +1,6 @@
 package schrodinger.integrator.stormer;
 
+import schrodinger.QuantumLevel;
 import schrodinger.integrator.Integrator;
 
 import java.util.function.IntToDoubleFunction;
@@ -23,7 +24,7 @@ public class Stormer5 implements Integrator {
     public int globalConvergenceOrder() { return 5; }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
+    public double propagate(double[] psi, int n, double step, QuantumLevel level, Direction direction) {
         double h = step;
         double h2 = h * h;
         int d = direction.getValue();
@@ -42,11 +43,11 @@ public class Stormer5 implements Integrator {
         double b_prev2 = 1.0 / 60.0;
         double b_prev3 = -1.0 / 240.0;
 
-        double Q_next = qTilde.applyAsDouble(nP);
-        double Q_curr = qTilde.applyAsDouble(n0);
-        double Q_prev = qTilde.applyAsDouble(n1);
-        double Q_prev2 = qTilde.applyAsDouble(n2);
-        double Q_prev3 = qTilde.applyAsDouble(n3);
+        double Q_next = level.QTildeAtGridPoint(nP);
+        double Q_curr = level.QTildeAtGridPoint(n0);
+        double Q_prev = level.QTildeAtGridPoint(n1);
+        double Q_prev2 = level.QTildeAtGridPoint(n2);
+        double Q_prev3 = level.QTildeAtGridPoint(n3);
 
         double rhs = 2.0 * psi[n0] - psi[n1]
                 - h2 * (b_curr * Q_curr * psi[n0]

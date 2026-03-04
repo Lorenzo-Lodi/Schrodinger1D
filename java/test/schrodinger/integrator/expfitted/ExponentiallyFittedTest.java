@@ -21,37 +21,37 @@ public class ExponentiallyFittedTest extends AbstractIntegratorTest {
     @Test
     public void integrateForwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.FORWARD);
-        assertEquals(1.80922655958763, val, 1e-14);
+        assertEquals(-1.847903644230746, val, 1e-14);
     }
 
     @Test
     public void integrateBackwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.BACKWARD);
-        assertEquals(1.8054002416708992, val, 1e-14);
+        assertEquals(-2.667660926993152, val, 1e-14);
     }
 
     @Test
     public void integrateForwardNegativeQTest() {
         double val = integrateOneStepNegativeQ(Integrator.Direction.FORWARD);
-        assertEquals(-13.568451076776498, val, 1e-14);
+        assertEquals(0.07682056686423401, val, 1e-14);
     }
 
     @Test
     public void integrateBackwardNegativeQTest() {
         double val = integrateOneStepNegativeQ(Integrator.Direction.BACKWARD);
-        assertEquals(-10.793967160597104, val, 1e-14);
+        assertEquals(-0.8346255796384843, val, 1e-14);
     }
 
     @Test
     public void integrateForwardSmallZTest() {
         double val = integrateOneStepSmallZ(Integrator.Direction.FORWARD);
-        assertEquals(-0.766890839498507, val, 1e-14);
+        assertEquals(-0.767031924610391, val, 1e-14);
     }
 
     @Test
     public void integrateBackwardSmallZTest() {
         double val = integrateOneStepSmallZ(Integrator.Direction.BACKWARD);
-        assertEquals(-1.6824522709061138, val, 1e-14);
+        assertEquals(-1.6825870493083046, val, 1e-14);
     }
 
 }

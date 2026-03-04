@@ -20,12 +20,12 @@ public class PredictorCorrector8NumerovIter2Test extends AbstractIntegratorTest 
     @Test
     public void integrateForwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.FORWARD);
-        assertEquals(1.9930000390165483, val, 1e-14);
+        assertEquals(-1.8563504317777002, val, 1e-14);
     }
 
     @Test
     public void integrateBackwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.BACKWARD);
-        assertEquals(2.0127504545299386, val, 1e-14);
+        assertEquals(-2.6719729048822267, val, 1e-14);
     }
 }

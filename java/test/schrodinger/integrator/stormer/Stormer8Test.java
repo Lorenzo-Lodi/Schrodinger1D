@@ -20,12 +20,12 @@ public class Stormer8Test extends AbstractIntegratorTest {
     @Test
     public void integrateForwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.FORWARD);
-        assertEquals(4.718050189782055, val, 1e-14);
+        assertEquals(-1.6303401199649903, val, 1e-14);
     }
 
     @Test
     public void integrateBackwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.BACKWARD);
-        assertEquals(4.444088283345244, val, 1e-14);
+        assertEquals(-2.6438203349405907, val, 1e-14);
     }
 }

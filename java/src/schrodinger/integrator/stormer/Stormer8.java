@@ -1,5 +1,6 @@
 package schrodinger.integrator.stormer;
 
+import schrodinger.QuantumLevel;
 import schrodinger.integrator.Integrator;
 
 import java.util.function.IntToDoubleFunction;
@@ -17,7 +18,7 @@ public class Stormer8 implements Integrator {
     }
 
     @Override
-    public double propagate(double[] psi, int n, double step, IntToDoubleFunction qTilde, Direction direction) {
+    public double propagate(double[] psi, int n, double step, QuantumLevel level, Direction direction) {
         double h2 = step * step;
         int d = direction.getValue();
 
@@ -31,14 +32,14 @@ public class Stormer8 implements Integrator {
         int n6 = n - 6 * d;
         int n7 = n - 7 * d;
 
-        double F0 = qTilde.applyAsDouble(n0) * psi[n0];
-        double F1 = qTilde.applyAsDouble(n1) * psi[n1];
-        double F2 = qTilde.applyAsDouble(n2) * psi[n2];
-        double F3 = qTilde.applyAsDouble(n3) * psi[n3];
-        double F4 = qTilde.applyAsDouble(n4) * psi[n4];
-        double F5 = qTilde.applyAsDouble(n5) * psi[n5];
-        double F6 = qTilde.applyAsDouble(n6) * psi[n6];
-        double F7 = qTilde.applyAsDouble(n7) * psi[n7];
+        double F0 = level.QTildeAtGridPoint(n0) * psi[n0];
+        double F1 = level.QTildeAtGridPoint(n1) * psi[n1];
+        double F2 = level.QTildeAtGridPoint(n2) * psi[n2];
+        double F3 = level.QTildeAtGridPoint(n3) * psi[n3];
+        double F4 = level.QTildeAtGridPoint(n4) * psi[n4];
+        double F5 = level.QTildeAtGridPoint(n5) * psi[n5];
+        double F6 = level.QTildeAtGridPoint(n6) * psi[n6];
+        double F7 = level.QTildeAtGridPoint(n7) * psi[n7];
 
         return 2.0 * psi[n0] - psi[n1]
                 - h2 * ((22081.0 / 15120) * F0

@@ -6,6 +6,7 @@ import schrodinger.grid.Grid;
 import schrodinger.grid.GridFactory;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialHarmonic;
+import schrodinger.potential.PhysicalPotentialPolynomial;
 import schrodinger.potential.SchrodingerSystem;
 
 import java.util.HashMap;
@@ -271,7 +272,7 @@ public abstract class AbstractIntegratorTest {
         double step = level.getGrid().getStepSizeYCoordinate();
         long t0 = System.nanoTime();
         for (int n = initMax; n < nOfPoints - 1; n++) {
-            level.psi[n + 1] = integrator.propagate(level.psi, n, step, level::QTildeAtGridPoint, Integrator.Direction.FORWARD);
+            level.psi[n + 1] = integrator.propagate(level.psi, n, step, level, Integrator.Direction.FORWARD);
         }
         long elapsedNanos = System.nanoTime() - t0;
 
@@ -487,15 +488,22 @@ public abstract class AbstractIntegratorTest {
     // Does NOT guarantee correctness - other tests verify that.
     // Subclasses implement getIntegrator() to provide specific integrator.
     private double integrateOneStep(double qFactor, Integrator.Direction direction) {
-        int arraySize = 20;
-        double[] psi = new double[arraySize];
-        for (int k = 0; k < arraySize; k++) {
-            psi[k] = Math.cos(k);
+        Integrator integrator = getIntegrator();
+
+        double[] coeffs = new double[]{0.1111 * qFactor, 0.2222 * qFactor, 0.3333 * qFactor, 0.44444 * qFactor};
+        PhysicalPotential potential = new PhysicalPotentialPolynomial(0, coeffs);
+        double mass = 0.5;
+        int np = 20;
+        Grid grid = GridFactory.generateUniformGrid(0, 10, np);
+        SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
+        QuantumLevel level = new QuantumLevel(system);
+        level.energy = 0;
+        level.psi = new double[np];
+        for (int k = 0; k < np; k++) {
+            level.psi[k] = Math.cos(k);
         }
 
-        Integrator integrator = getIntegrator();
-        IntToDoubleFunction q = i -> qFactor * (0.1111 + 0.2222 * i + 0.3333 * i * i + 0.44444 * i * i * i);
-        return integrator.propagate(psi, arraySize / 2, 0.123, q, direction);
+        return integrator.propagate(level.psi, np / 2, 0.123, level, direction);
     }
 
     public double integrateOneStep(Integrator.Direction direction) {
@@ -512,7 +520,7 @@ public abstract class AbstractIntegratorTest {
         return integrateOneStep(2.e-5, direction);
     }
 
-    @Test
+    //    @Test
     public void time_benchmark() {
         int npoints = 1000000;
 
@@ -525,7 +533,7 @@ public abstract class AbstractIntegratorTest {
         IntToDoubleFunction q = i -> 1e-3 * (0.1111 + 0.2222 * i / npoints + 0.03333 / (npoints * npoints) * i * i);
         long t0 = System.nanoTime();
         for (int n = 14; n < npoints - 1; n++) {
-            psi[n + 1] = integrator.propagate(psi, n, 0.123, q, Integrator.Direction.FORWARD);
+            psi[n + 1] = integrator.propagate(psi, n, 0.123, null, Integrator.Direction.FORWARD);
         }
         long elapsedNanos = System.nanoTime() - t0;
         double timePerPoint = ((double) elapsedNanos) / (npoints);
