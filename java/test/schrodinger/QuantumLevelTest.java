@@ -30,7 +30,7 @@ class QuantumLevelTest {
         SchrodingerSystem system = new SchrodingerSystem(null, 1, grid);
         QuantumLevel level = new QuantumLevel(system);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
-            level.psi[i] = grid.getRValue(i);
+            level.psi[i] = grid.rAtGridPoint(i);
         }
         double normalizationFactor = level.normalizePsi();
         assertEquals(1.73187048891682771453, normalizationFactor, SMALL_EPS);
@@ -42,7 +42,7 @@ class QuantumLevelTest {
         SchrodingerSystem system = new SchrodingerSystem(null, 1, grid);
         QuantumLevel level = new QuantumLevel(system);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
-            level.psi[i] = Math.pow(grid.getRValue(i), 2);
+            level.psi[i] = Math.pow(grid.rAtGridPoint(i), 2);
         }
         double normalizationFactor = level.normalizePsi();
         assertEquals(2.2352923244791710742, normalizationFactor, LARGE_EPS);
@@ -54,7 +54,7 @@ class QuantumLevelTest {
         SchrodingerSystem system = new SchrodingerSystem(null, 1, grid);
         QuantumLevel level = new QuantumLevel(system);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
-            level.psi[i] = Math.pow(grid.getRValue(i), 3);
+            level.psi[i] = Math.pow(grid.rAtGridPoint(i), 3);
         }
         double normalizationFactor = level.normalizePsi();
         assertEquals(2.6438252937568609246, normalizationFactor, SMALL_EPS);
@@ -66,7 +66,7 @@ class QuantumLevelTest {
         SchrodingerSystem system = new SchrodingerSystem(null, 1, grid);
         QuantumLevel level = new QuantumLevel(system);
         for (int i = 0; i < grid.getNumberOfPoints(); i++) {
-            level.psi[i] = Math.pow(grid.getRValue(i), 4);
+            level.psi[i] = Math.pow(grid.rAtGridPoint(i), 4);
         }
         double normalizationFactor = level.normalizePsi();
         assertEquals(2.9962596611853944811, normalizationFactor, LARGE_EPS);

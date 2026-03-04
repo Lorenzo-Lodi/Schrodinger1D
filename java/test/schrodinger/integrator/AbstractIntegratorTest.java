@@ -264,7 +264,7 @@ public abstract class AbstractIntegratorTest {
         // Initialize with exact solution - use more points for higher quantum numbers
         int initMax = Math.max(INITIALIZATION_N_MAX, quantumNumber + 1);
         for (int n = 0; n <= initMax && n < nOfPoints; n++) {
-            level.psi[n] = exactSol.evaluate(grid.getRValue(n));
+            level.psi[n] = exactSol.evaluate(grid.rAtGridPoint(n));
         }
 
         // Propagate the wavefunction
@@ -278,9 +278,9 @@ public abstract class AbstractIntegratorTest {
         // Calculate errors at different points
         ConvergenceData data = new ConvergenceData();
         data.setElapsedNanos(elapsedNanos);
-        data.addError("10", exactSolution(grid.getRValue(nOfPoints / 10)) - level.psi[nOfPoints / 10]);
-        data.addError("4", exactSolution(grid.getRValue(nOfPoints / 4)) - level.psi[nOfPoints / 4]);
-        data.addError("2", exactSolution(grid.getRValue(nOfPoints / 2)) - level.psi[nOfPoints / 2]);
+        data.addError("10", exactSolution(grid.rAtGridPoint(nOfPoints / 10)) - level.psi[nOfPoints / 10]);
+        data.addError("4", exactSolution(grid.rAtGridPoint(nOfPoints / 4)) - level.psi[nOfPoints / 4]);
+        data.addError("2", exactSolution(grid.rAtGridPoint(nOfPoints / 2)) - level.psi[nOfPoints / 2]);
 
         return data;
     }
@@ -291,7 +291,7 @@ public abstract class AbstractIntegratorTest {
      */
     protected void initializeState(QuantumLevel state, Grid grid) {
         for (int n = 0; n <= INITIALIZATION_N_MAX; n++) {
-            state.psi[n] = exactSolution(grid.getRValue(n));
+            state.psi[n] = exactSolution(grid.rAtGridPoint(n));
         }
     }
 

@@ -21,7 +21,7 @@ public class Grid {
     }
 
     public double getFirstYValue() {
-        return getYValue(0);
+        return yAtGridPoint(0);
     }
 
     public double getLastYValue() {
@@ -41,12 +41,12 @@ public class Grid {
      * @param i Index going from 0 to numberOfPoints-1
      * @return Value of the i-th grid point
      */
-    public double getYValue(double i) {
+    public double yAtGridPoint(double i) {
         return yMin + getStepSizeYCoordinate() * i;
     }
 
-    public double getRValue(int i) {
-        return r(getYValue(i));
+    public double rAtGridPoint(int i) {
+        return r(yAtGridPoint(i));
     }
 
     /**
@@ -92,7 +92,7 @@ public class Grid {
     }
 
     public double g(int i) {
-        return g(getYValue(i));
+        return g(yAtGridPoint(i));
     }
 
     @Override
@@ -102,7 +102,7 @@ public class Grid {
         for (int i = 0; i < getNumberOfPoints(); i++) {
             sb.append(String.format("%8d", i));
             sb.append("   ");
-            double y = getYValue(i);
+            double y = yAtGridPoint(i);
             double r = r(y);
             if (r >= 0.d) {
                 sb.append(" ");

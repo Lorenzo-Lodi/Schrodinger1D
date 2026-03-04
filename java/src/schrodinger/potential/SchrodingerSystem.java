@@ -28,7 +28,7 @@ public class SchrodingerSystem {
     }
 
     public double UTildeAtGridPoint(double i) {
-        double y = grid.getYValue(i);
+        double y = grid.yAtGridPoint(i);
         return UTilde(y);
     }
 
