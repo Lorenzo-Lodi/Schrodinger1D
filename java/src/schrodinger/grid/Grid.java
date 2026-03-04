@@ -91,7 +91,7 @@ public class Grid {
         return mappingStrategy.F(y);
     }
 
-    public double g(int i) {
+    public double gAtGridPoint(double i) {
         return g(yAtGridPoint(i));
     }
 

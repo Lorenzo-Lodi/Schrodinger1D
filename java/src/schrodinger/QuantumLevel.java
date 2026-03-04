@@ -39,12 +39,7 @@ public class QuantumLevel {
     }
 
     public double QTildeAtGridPoint(double i) {
-        double y = getGrid().yAtGridPoint(i);
-//        return QTilde(y);
-        // The form below is more useful to implement future pre-computation;
-        // Pre-computation of UTildeValueAt is straightforward.
-        // We probably (check!) also precompute g(y) to make it even faster; It should be enough without pre-computing the other functions.
-        double gy = getGrid().g(y);
+        double gy = getGrid().gAtGridPoint(i);
         return gy * gy * (2. * system.getMass() * (energy - system.UTildeAtGridPoint(i)));
     }
 
@@ -58,12 +53,12 @@ public class QuantumLevel {
         int maxIndex = getGrid().getNumberOfPoints() - 1;
 
         // Trapezoidal rule boundaries
-        double valStart = psi[0] * getGrid().g(0);
-        double valEnd = psi[maxIndex] * getGrid().g(maxIndex);
+        double valStart = psi[0] * getGrid().gAtGridPoint(0);
+        double valEnd = psi[maxIndex] * getGrid().gAtGridPoint(maxIndex);
         double sum = 0.5 * (valStart * valStart + valEnd * valEnd);
 
         for (int i = 1; i < maxIndex; i++) {
-            double val = psi[i] * getGrid().g(i);
+            double val = psi[i] * getGrid().gAtGridPoint(i);
             sum += val * val;
         }
 
