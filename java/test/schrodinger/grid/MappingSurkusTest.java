@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-class MappingSurkusTest {
+class MappingSurkusTest extends MappingAbstractTest {
 
     @Test
     void mappingFunctionYofR_check_is_zero_at_rref() {
@@ -81,25 +81,6 @@ class MappingSurkusTest {
     }
 
     @Test
-    void mappingFunctionGofY_check_is_first_derivative_of_R_of_Y() {
-        double rRef = 1.5;
-        double alpha = 2;
-        MappingSurkus mapping = new MappingSurkus(rRef, alpha);
-
-        double eps = 1e-6;
-        int numberOfPoints = 20;
-        double rmin = 0.1;
-        double rmax = 10;
-        double step = (rmax - rmin) / (numberOfPoints - 1);
-
-        for (int i = 0; i < numberOfPoints; i++) {
-            double y = 0.1 + step * i;
-            double der1 = (mapping.r(y + eps) - mapping.r(y - eps)) / (2.d * eps);
-            assertEquals(der1, mapping.g(y), 1e-8);
-        }
-    }
-
-    @Test
     void mappingFunctionFofY_check_selected_values() {
         double rRef = 1.5;
         double alpha = 2;
@@ -107,5 +88,14 @@ class MappingSurkusTest {
         assertEquals(1.3333333333333333d, mapping.F(-0.5), 1e-15);
         assertEquals(1.3333333333333333d, mapping.F(0.5), 1e-15);
     }
+
+    @Test
+    public void mappingFunctionGofY_check_is_first_derivative_of_R_of_Y() {
+        double rRef = 1.5;
+        double alpha = 2;
+        MappingStrategy mapping = new MappingSurkus(rRef, alpha);
+        super.mappingFunctionGofY_check_is_first_derivative_of_R_of_Y(mapping);
+    }
+
 
 }
