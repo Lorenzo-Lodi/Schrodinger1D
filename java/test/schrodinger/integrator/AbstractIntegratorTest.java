@@ -532,7 +532,8 @@ public abstract class AbstractIntegratorTest {
         String msg = String.format("Time taken for integrating %d points is %10.3f ns / point for %s", npoints, timePerPoint, integrator.getClass().getSimpleName());
         System.out.println(msg);
 
-        // Results 2026-03-05 h 16:40
+//        Results 2026-03-05 h 16:40, commit e61c3cd0d1e0c9103dc4e39340a33adb5cf5c48f
+//        Laptop i7 1355U
 //        Time taken for integrating 1000000 points is     19.651 ns / point for EfnFixedBeta
 //        Time taken for integrating 1000000 points is     36.674 ns / point for ExponentiallyFitted
 //        Time taken for integrating 1000000 points is     29.706 ns / point for Numerov
