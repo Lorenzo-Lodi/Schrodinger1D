@@ -532,6 +532,19 @@ public abstract class AbstractIntegratorTest {
         String msg = String.format("Time taken for integrating %d points is %10.3f ns / point for %s", npoints, timePerPoint, integrator.getClass().getSimpleName());
         System.out.println(msg);
 
+        // Results 2026-03-05 h 16:40
+//        Time taken for integrating 1000000 points is     19.651 ns / point for EfnFixedBeta
+//        Time taken for integrating 1000000 points is     36.674 ns / point for ExponentiallyFitted
+//        Time taken for integrating 1000000 points is     29.706 ns / point for Numerov
+//        Time taken for integrating 1000000 points is     60.352 ns / point for PredictorCorrector6
+//        Time taken for integrating 1000000 points is     76.251 ns / point for PredictorCorrector8NumerovIter1
+//        Time taken for integrating 1000000 points is    102.563 ns / point for PredictorCorrector8NumerovIter2
+//        Time taken for integrating 1000000 points is     18.324 ns / point for Stormer5
+//        Time taken for integrating 1000000 points is     14.718 ns / point for Stormer6
+//        Time taken for integrating 1000000 points is     57.302 ns / point for Stormer8
+//        Time taken for integrating 1000000 points is      9.685 ns / point for TaylorThreePoints
+
+
     }
 
 }
