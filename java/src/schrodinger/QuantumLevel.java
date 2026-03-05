@@ -40,7 +40,7 @@ public class QuantumLevel {
 
     public double QTildeAtGridPoint(double i) {
         double gy = getGrid().gAtGridPoint(i);
-        return gy * gy * (2. * system.getMass() * (energy - system.UTildeAtGridPoint(i)));
+        return gy * gy * 2. * system.getMass() * (energy - system.UTildeAtGridPoint(i));
     }
 
     // Note: because the wavefunctions are exponentially decreasing (or faster), the
