@@ -7,7 +7,11 @@ public class FractionalGridCache {
     private final int numFractions;
     private final double[] fractionalOffsets;
 
-    // Accepts any function and tabularizes it
+    // Accepts any function taking in a (continuous) grid index i and tabularizes it for i=0, ... i = numGridPoints-1
+    public FractionalGridCache(int numGridPoints, DoubleUnaryOperator function) {
+        this(numGridPoints, new double[1], function);
+    }
+
     public FractionalGridCache(int numGridPoints, double[] offsets, DoubleUnaryOperator function) {
         this.numFractions = offsets.length;
         this.fractionalOffsets = offsets;

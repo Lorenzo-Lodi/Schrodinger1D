@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FractionalGridCacheTest {
 
     @Test
-    public void fractionalGridCacheTestBasicTest() {
+    public void fractionalGridCacheTestBasicTestManualOffsets() {
         DoubleUnaryOperator function = i -> i * i + 2 * i + 3;
         int npoints = 10;
         double[] offsets = new double[1];
@@ -21,8 +21,36 @@ public class FractionalGridCacheTest {
             double val = cache.get(i);
             assertEquals(function.applyAsDouble(i), val);
         }
-
     }
+
+    @Test
+    public void fractionalGridCacheTestBasicTestNoOffsets() {
+        DoubleUnaryOperator function = i -> i * i + 2 * i + 3;
+        int npoints = 10;
+        FractionalGridCache cache = new FractionalGridCache(npoints, function);
+
+        for (int i = 0; i < npoints; i++) {
+            double val = cache.get(i);
+            assertEquals(function.applyAsDouble(i), val);
+        }
+    }
+
+    @Test
+    public void fractionalGridCacheTestBasicTestWithOffsets() {
+        DoubleUnaryOperator function = i -> i * i + 2 * i + 3;
+        int npoints = 10;
+        double[] offsets = {0., 1. / 5., 1. / 3., 1. / 20.};
+        FractionalGridCache cache = new FractionalGridCache(npoints, offsets, function);
+
+        for (int i = 0; i < npoints; i++) {
+            for (int f = 0; f < offsets.length; f++) {
+                double continuousIndex = i + offsets[f];
+                double val = cache.get(continuousIndex);
+                assertEquals(function.applyAsDouble(continuousIndex), val);
+            }
+        }
+    }
+
 
     @Test
     public void fractionalGridCacheTestPerformanceTest() {
