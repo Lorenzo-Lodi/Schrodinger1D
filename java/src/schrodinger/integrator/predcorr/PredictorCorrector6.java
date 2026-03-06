@@ -35,7 +35,10 @@ public class PredictorCorrector6 extends PredictorCorrectorBase {
     public int globalConvergenceOrder() { return 6; }
 
     @Override
-    public double propagate(double[] psi, int n, double step, DoubleUnaryOperator qTilde, Integrator.Direction direction) {
+    public double propagate(double[] psi, double[] psiPrime, int n, double step,
+                            DoubleUnaryOperator qTilde,
+                            DoubleUnaryOperator qTildePrime,
+                            DoubleUnaryOperator qTildeDoublePrime, Direction direction) {
         double h = step;
         double h2 = h * h;
         int d = direction.getValue();

@@ -11,13 +11,20 @@ import java.util.function.DoubleUnaryOperator;
 public class Numerov implements Integrator {
 
     @Override
-    public int minHistoryLength() { return 2; }
+    public int minHistoryLength() {
+        return 2;
+    }
 
     @Override
-    public int globalConvergenceOrder() { return 4; }
+    public int globalConvergenceOrder() {
+        return 4;
+    }
 
     @Override
-    public double propagate(double[] psi, int n, double step, DoubleUnaryOperator qTilde, Direction direction) {
+    public double propagate(double[] psi, double[] psiPrime, int n, double step,
+                            DoubleUnaryOperator qTilde,
+                            DoubleUnaryOperator qTildePrime,
+                            DoubleUnaryOperator qTildeDoublePrime, Direction direction) {
         double h2 = step * step;
         return (psi[n] * (2.0d - 5. * h2 * qTilde.applyAsDouble(n) / 6.) -
                 (1. + h2 * qTilde.applyAsDouble(n - direction.getValue()) / 12.)

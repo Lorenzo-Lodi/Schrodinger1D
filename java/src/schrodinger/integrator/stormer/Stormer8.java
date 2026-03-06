@@ -17,7 +17,10 @@ public class Stormer8 implements Integrator {
     }
 
     @Override
-    public double propagate(double[] psi, int n, double step, DoubleUnaryOperator qTilde, Direction direction) {
+    public double propagate(double[] psi, double[] psiPrime, int n, double step,
+                            DoubleUnaryOperator qTilde,
+                            DoubleUnaryOperator qTildePrime,
+                            DoubleUnaryOperator qTildeDoublePrime, Direction direction) {
         double h2 = step * step;
         int d = direction.getValue();
 

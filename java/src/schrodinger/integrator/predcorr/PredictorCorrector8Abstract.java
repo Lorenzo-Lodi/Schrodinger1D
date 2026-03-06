@@ -43,7 +43,10 @@ public abstract class PredictorCorrector8Abstract extends PredictorCorrectorBase
     }
 
     @Override
-    public double propagate(double[] psi, int n, double step, DoubleUnaryOperator qTilde, Integrator.Direction direction) {
+    public double propagate(double[] psi, double[] psiPrime, int n, double step,
+                            DoubleUnaryOperator qTilde,
+                            DoubleUnaryOperator qTildePrime,
+                            DoubleUnaryOperator qTildeDoublePrime, Direction direction) {
         final double h = step;
         final double h2 = h * h;
         final int d = direction.getValue();

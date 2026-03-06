@@ -286,7 +286,9 @@ public class ShootingSolver {
         level.psi[0] = 0.0;
         level.psi[1] = 1e-16;
         for (int n = 1; n < matchIndex + 1; n++) {
-            level.psi[n + 1] = integrator.propagate(level.psi, n, hy, qTildeFunction, Integrator.Direction.FORWARD);
+            level.psi[n + 1] = integrator.propagate(level.psi, level.psiPrime, n, hy, qTildeFunction,
+                    level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
+                    Integrator.Direction.FORWARD);
 
             // Check for potential overflow
             if (n % 16 == 0 && Math.abs(level.psi[n + 1]) > 1e100) {
@@ -307,7 +309,9 @@ public class ShootingSolver {
         level.psi[np - 2] = 1.e-16;
 
         for (int n = np - 2; n > matchIndex - 1; n--) {
-            level.psi[n - 1] = integrator.propagate(level.psi, n, hy, qTildeFunction, Integrator.Direction.BACKWARD);
+            level.psi[n - 1] = integrator.propagate(level.psi, level.psiPrime, n, hy,
+                    qTildeFunction, level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
+                    Integrator.Direction.BACKWARD);
 
             // Check for potential overflow
             if (n % 16 == 0 && Math.abs(level.psi[n - 1]) > 1e100) {
@@ -344,7 +348,9 @@ public class ShootingSolver {
 
         int nodes = 0;
         for (int n = 1; n < nPoints - 1; n++) {
-            level.psi[n + 1] = integrator.propagate(level.psi, n, hy, qTildeFunction, Integrator.Direction.FORWARD);
+            level.psi[n + 1] = integrator.propagate(level.psi, level.psiPrime, n, hy, qTildeFunction,
+                    level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
+                    Integrator.Direction.FORWARD);
             if (level.psi[n] * level.psi[n + 1] < 0.0) {
                 nodes++;
             }

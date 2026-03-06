@@ -62,25 +62,31 @@ public abstract class PredictorCorrectorBase implements Integrator {
 
     private double[] predictAheadImpl(double psiAtN, double[] psi, int n, int steps,
                                       double step, DoubleUnaryOperator qFn, Direction dir) {
-        int d   = dir.getValue();
-        int k   = predictor.minHistoryLength();
+        int d = dir.getValue();
+        int k = predictor.minHistoryLength();
         int nib = (d == 1) ? k - 1 : 1;        // n_in_buf
-        double[] buf    = new double[k + 1];
+        double[] buf = new double[k + 1];
         double[] result = new double[steps];
 
         for (int i = 0; i < steps; i++) {
             int baseIdx = n + i * d;
             for (int j = 0; j <= k; j++) {
                 int g = baseIdx - nib + j;
-                if (g == baseIdx + d) { buf[j] = 0.0; continue; }   // future slot
-                if (g == n)           { buf[j] = psiAtN; continue; } // override
+                if (g == baseIdx + d) {
+                    buf[j] = 0.0;
+                    continue;
+                }   // future slot
+                if (g == n) {
+                    buf[j] = psiAtN;
+                    continue;
+                } // override
                 buf[j] = (d == 1)
-                    ? ((g <= n) ? psi[g] : result[g - n - 1])
-                    : ((g >= n) ? psi[g] : result[n - g - 1]);
+                        ? ((g <= n) ? psi[g] : result[g - n - 1])
+                        : ((g >= n) ? psi[g] : result[n - g - 1]);
             }
             final int fb = baseIdx, fn = nib;
             DoubleUnaryOperator adjQFn = idx -> qFn.applyAsDouble(fb - fn + idx);
-            result[i] = predictor.propagate(buf, nib, step, adjQFn, dir);
+            result[i] = predictor.propagate(buf, null, nib, step, adjQFn, null, null, dir);
         }
         return result;
     }

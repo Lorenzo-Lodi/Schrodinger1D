@@ -9,13 +9,20 @@ import java.util.function.DoubleUnaryOperator;
 public class TaylorThreePoints implements Integrator {
 
     @Override
-    public int minHistoryLength() { return 2; }
+    public int minHistoryLength() {
+        return 2;
+    }
 
     @Override
-    public int globalConvergenceOrder() { return 2; }
+    public int globalConvergenceOrder() {
+        return 2;
+    }
 
     @Override
-    public double propagate(double[] psi, int n, double step, DoubleUnaryOperator qTilde, Direction direction) {
+    public double propagate(double[] psi, double[] psiPrime, int n, double step,
+                            DoubleUnaryOperator qTilde,
+                            DoubleUnaryOperator qTildePrime,
+                            DoubleUnaryOperator qTildeDoublePrime, Direction direction) {
         return psi[n] * (2.0d - step * step * qTilde.applyAsDouble(n)) - psi[n - direction.getValue()];
     }
 

@@ -23,7 +23,10 @@ public class Stormer5 implements Integrator {
     public int globalConvergenceOrder() { return 5; }
 
     @Override
-    public double propagate(double[] psi, int n, double step, DoubleUnaryOperator qTilde, Direction direction) {
+    public double propagate(double[] psi, double[] psiPrime, int n, double step,
+                            DoubleUnaryOperator qTilde,
+                            DoubleUnaryOperator qTildePrime,
+                            DoubleUnaryOperator qTildeDoublePrime, Direction direction) {
         double h = step;
         double h2 = h * h;
         int d = direction.getValue();

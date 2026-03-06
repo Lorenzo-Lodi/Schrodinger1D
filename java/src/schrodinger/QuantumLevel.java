@@ -14,6 +14,7 @@ public class QuantumLevel {
     public double upperBound;
     public double lowerBound;
     public double[] psi;
+    public double[] psiPrime;
     public double perturbativeCorrectionToEnergy;
     public List<ConvergenceInfo> convergenceInfo = new ArrayList<>();
 
@@ -41,6 +42,14 @@ public class QuantumLevel {
     public double QTildeAtGridPoint(double i) {
         double gy = getGrid().gAtGridPoint(i);
         return gy * gy * 2. * system.getMass() * (energy - system.UTildeAtGridPoint(i));
+    }
+
+    public double QTildePrimeAtGridPoint(double i) {
+        return 0; // TODO
+    }
+
+    public double QTildeDoublePrimeAtGridPoint(double i) {
+        return 0; // TODO
     }
 
     // Note: because the wavefunctions are exponentially decreasing (or faster), the

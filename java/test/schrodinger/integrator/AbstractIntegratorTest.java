@@ -271,7 +271,10 @@ public abstract class AbstractIntegratorTest {
         double step = level.getGrid().getStepSizeYCoordinate();
         long t0 = System.nanoTime();
         for (int n = initMax; n < nOfPoints - 1; n++) {
-            level.psi[n + 1] = integrator.propagate(level.psi, n, step, level::QTildeAtGridPoint, Integrator.Direction.FORWARD);
+            level.psi[n + 1] = integrator.propagate(level.psi, level.psiPrime, n, step,
+                    level::QTildeAtGridPoint,
+                    level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
+                    Integrator.Direction.FORWARD);
         }
         long elapsedNanos = System.nanoTime() - t0;
 
@@ -489,13 +492,17 @@ public abstract class AbstractIntegratorTest {
     private double integrateOneStep(double qFactor, Integrator.Direction direction) {
         int arraySize = 20;
         double[] psi = new double[arraySize];
+        double[] psiPrime = new double[arraySize];
         for (int k = 0; k < arraySize; k++) {
             psi[k] = Math.cos(k);
+            psiPrime[k] = -Math.sin(k);
         }
 
         Integrator integrator = getIntegrator();
         DoubleUnaryOperator q = i -> qFactor * (0.1111 + 0.2222 * i + 0.3333 * i * i + 0.44444 * i * i * i);
-        return integrator.propagate(psi, arraySize / 2, 0.123, q, direction);
+        DoubleUnaryOperator q1 = i -> qFactor * (0.2222 + 2 * 0.3333 * i + 3. * 0.44444 * i * i);
+        DoubleUnaryOperator q2 = i -> qFactor * (2 * 0.3333 + 3. * 2. * 0.44444 * i);
+        return integrator.propagate(psi, psiPrime, arraySize / 2, 0.123, q, q1, q2, direction);
     }
 
     public double integrateOneStep(Integrator.Direction direction) {
@@ -517,15 +524,19 @@ public abstract class AbstractIntegratorTest {
         int npoints = 1000000;
 
         double[] psi = new double[npoints];
+        double[] psiPrime = new double[npoints];
         for (int k = 0; k < 15; k++) {
             psi[k] = Math.cos(k);
+            psiPrime[k] = -Math.sin(k);
         }
 
         Integrator integrator = getIntegrator();
         DoubleUnaryOperator q = i -> 1e-3 * (0.1111 + 0.2222 * i / npoints + 0.03333 / (npoints * npoints) * i * i);
+        DoubleUnaryOperator q1 = i -> 1e-3 * (0.2222 / npoints + 2 * 0.3333 * i / (npoints * npoints));
+        DoubleUnaryOperator q2 = i -> 1e-3 * (2 * 0.3333 / (npoints * npoints));
         long t0 = System.nanoTime();
         for (int n = 14; n < npoints - 1; n++) {
-            psi[n + 1] = integrator.propagate(psi, n, 0.123, q, Integrator.Direction.FORWARD);
+            psi[n + 1] = integrator.propagate(psi, psiPrime, n, 0.123, q, q1, q2, Integrator.Direction.FORWARD);
         }
         long elapsedNanos = System.nanoTime() - t0;
         double timePerPoint = ((double) elapsedNanos) / (npoints);
