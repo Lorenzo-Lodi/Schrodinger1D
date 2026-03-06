@@ -45,11 +45,14 @@ public class QuantumLevel {
     }
 
     public double QTildePrimeAtGridPoint(double i) {
-        return 0; // TODO
+        double eps = 1e-7;  // TODO
+        double der = (QTildeAtGridPoint(i + eps) - QTildeAtGridPoint(i - eps)) / (2. * eps);
+        return der;
     }
 
     public double QTildeDoublePrimeAtGridPoint(double i) {
-        return 0; // TODO
+        double eps = 1e-6;  // TODO
+        return (QTildeAtGridPoint(i + eps) + QTildeAtGridPoint(i - eps) - 2. * QTildeAtGridPoint(i)) / (eps * eps);
     }
 
     // Note: because the wavefunctions are exponentially decreasing (or faster), the
