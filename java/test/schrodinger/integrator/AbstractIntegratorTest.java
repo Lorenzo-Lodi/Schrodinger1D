@@ -601,4 +601,35 @@ public abstract class AbstractIntegratorTest {
 
     }
 
+    @Test
+    public void propagate_forward_exp_minus_x() {
+        Integrator integrator = getIntegrator();
+
+        // NB don't use too many points because some methods have fairly bad roundoff error which distorts the convergence patterns
+        for (int np = 10; np <= 20; np++) {
+            double xmin = 0.;
+            double xmax = 1.;
+            double[] psi = new double[np];
+            double[] psiPrime = new double[np];
+            double step = (xmax - xmin) / (np - 1);
+
+            for (int i = 0; i < integrator.minHistoryLength(); i++) {
+                double x = xmin + i * step;
+                psi[i] = Math.exp(-x);
+                psiPrime[i] = -Math.exp(-x);
+            }
+
+            for (int n = integrator.minHistoryLength() - 1; n < np - 1; n++) {
+                psi[n + 1] = integrator.propagate(psi, psiPrime, n, step,
+                        i -> -1., i -> 0., i -> 0.,
+                        Integrator.Direction.FORWARD);
+            }
+
+            double error = Math.exp(-1.) - psi[np - 1];
+            System.out.println(np + " " + error);
+        }
+
+    }
+
+
 }
