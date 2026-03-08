@@ -20,6 +20,12 @@ public class SchrodingerSystem {
         return physicalPotential.value(r);
     }
 
+    public double UAtGridPoint(double i) {
+        double y = grid.yAtGridPoint(i);
+        double r = grid.r(y);
+        return physicalPotential.value(r);
+    }
+
     private double UTilde(double y) {
         double u = physicalPotential.value(grid.r(y));
         double gy = grid.g(y);
