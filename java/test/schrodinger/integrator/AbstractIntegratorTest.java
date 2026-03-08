@@ -8,6 +8,7 @@ import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.SchrodingerSystem;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleUnaryOperator;
@@ -626,6 +627,40 @@ public abstract class AbstractIntegratorTest {
             }
 
             double error = Math.exp(-1.) - psi[np - 1];
+            System.out.println(np + " " + error);
+        }
+
+    }
+
+    @Test
+    public void propagate_forward_exp_to_cos_x() {
+        Integrator integrator = getIntegrator();
+
+        for (int np = 10; np <= 20; np++) {
+            double xmin = 0.;
+            double xmax = 1.;
+            double[] psi = new double[np];
+            double[] psiPrime = new double[np];
+            double step = (xmax - xmin) / (np - 1);
+
+            for (int i = 0; i < integrator.minHistoryLength(); i++) {
+                double x = xmin + i * step;
+                psi[i] = Math.exp(Math.cos(x));
+                psiPrime[i] = -Math.sin(x) * Math.exp(Math.cos(x));
+            }
+            DoubleUnaryOperator qTilde = i -> Math.cos(xmin + i * step) - Math.pow(Math.sin(xmin + i * step), 2);
+            DoubleUnaryOperator qTildePrime = i -> -Math.sin(xmin + i * step) - 2. * Math.cos(xmin + i * step) * Math.sin(xmin + i * step);
+            DoubleUnaryOperator qTildeDoublePrime = i -> -Math.cos(xmin + i * step)
+                    - 2. * Math.pow(Math.cos(xmin + i * step), 2)
+                    + 2. * Math.pow(Math.sin(xmin + i * step), 2);
+
+            for (int n = integrator.minHistoryLength() - 1; n < np - 1; n++) {
+                psi[n + 1] = integrator.propagate(psi, psiPrime, n, step,
+                        qTilde, qTildePrime, qTildeDoublePrime,
+                        Integrator.Direction.FORWARD);
+            }
+
+            double error = Math.exp(Math.cos(1.)) - psi[np - 1];
             System.out.println(np + " " + error);
         }
 
