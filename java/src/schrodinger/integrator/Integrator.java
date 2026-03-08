@@ -18,12 +18,10 @@ public interface Integrator {
      * @return The value of the wavefunction at the next point (n+1 or n-1)
      */
 
-    default double propagate(double[] psi, double[] psiPrime, int n, double step,
-                             DoubleUnaryOperator qTilde,
-                             DoubleUnaryOperator qTildePrime,
-                             DoubleUnaryOperator qTildeDoublePrime, Direction direction) {
-        throw new UnsupportedOperationException("This integrator does not support this operation.");
-    }
+    double propagate(double[] psi, double[] psiPrime, int n, double step,
+                     DoubleUnaryOperator qTilde,
+                     DoubleUnaryOperator qTildePrime,
+                     DoubleUnaryOperator qTildeDoublePrime, Direction direction);
 
     /**
      * Returns the minimum number of previously-computed psi values this integrator
