@@ -17,35 +17,40 @@ import java.util.function.DoubleUnaryOperator;
 public class Stormer6 implements Integrator {
 
     @Override
-    public int minHistoryLength() { return 5; }
+    public int minHistoryLength() {
+        return 5;
+    }
 
     @Override
-    public int globalConvergenceOrder() { return 6; }
+    public int globalConvergenceOrder() {
+        return 6;
+    }
+
+    // ── order 6, LTE = O(h^8) ─────────────────────────────────────
+    // β: {+1: 3/40,  0: 209/240,  -1: 1/60,  -2: 7/120,  -3: -1/40,  -4: 1/240}
+    private final static double b_next = 3.0 / 40.0;
+    private final static double b_curr = 209.0 / 240.0;
+    private final static double b_prev = 1.0 / 60.0;
+    private final static double b_prev2 = 7.0 / 120.0;
+    private final static double b_prev3 = -1.0 / 40.0;
+    private final static double b_prev4 = 1.0 / 240.0;
+
 
     @Override
     public double propagate(double[] psi, double[] psiPrime, int n, double step,
                             DoubleUnaryOperator qTilde,
                             DoubleUnaryOperator qTildePrime,
                             DoubleUnaryOperator qTildeDoublePrime, Direction direction) {
-        double h = step;
-        double h2 = h * h;
+        double h2 = step * step;
         int d = direction.getValue();
 
         int nP = n + d;        // n+1
-        int n0 = n;              // current
+        int n0 = n;            // current
         int n1 = n - d;        // n-1
-        int n2 = n - 2 * d;        // n-2
-        int n3 = n - 3 * d;        // n-3
-        int n4 = n - 4 * d;        // n-4
+        int n2 = n - 2 * d;    // n-2
+        int n3 = n - 3 * d;    // n-3
+        int n4 = n - 4 * d;    // n-4
 
-        // ── order 6, LTE = O(h^8) ─────────────────────────────────────
-        // β: {+1: 3/40,  0: 209/240,  -1: 1/60,  -2: 7/120,  -3: -1/40,  -4: 1/240}
-        double b_next = 3.0 / 40.0;
-        double b_curr = 209.0 / 240.0;
-        double b_prev = 1.0 / 60.0;
-        double b_prev2 = 7.0 / 120.0;
-        double b_prev3 = -1.0 / 40.0;
-        double b_prev4 = 1.0 / 240.0;
 
         double Q_next = qTilde.applyAsDouble(nP);
         double Q_curr = qTilde.applyAsDouble(n0);

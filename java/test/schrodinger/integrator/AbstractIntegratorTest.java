@@ -635,10 +635,11 @@ public abstract class AbstractIntegratorTest {
     @Test
     public void propagate_forward_exp_to_cos_x() {
         Integrator integrator = getIntegrator();
+        System.out.println(integrator.getClass().getSimpleName());
 
-        for (int np = 10; np <= 20; np++) {
+        for (int np = 100; np <= 2000; np += 100) {
             double xmin = 0.;
-            double xmax = 1.;
+            double xmax = 4. * Math.PI;
             double[] psi = new double[np];
             double[] psiPrime = new double[np];
             double step = (xmax - xmin) / (np - 1);
@@ -660,7 +661,7 @@ public abstract class AbstractIntegratorTest {
                         Integrator.Direction.FORWARD);
             }
 
-            double error = Math.exp(Math.cos(1.)) - psi[np - 1];
+            double error = Math.exp(Math.cos(xmax)) - psi[np - 1];
             System.out.println(np + " " + error);
         }
 

@@ -17,10 +17,23 @@ import java.util.function.DoubleUnaryOperator;
 public class Stormer5 implements Integrator {
 
     @Override
-    public int minHistoryLength() { return 4; }
+    public int minHistoryLength() {
+        return 4;
+    }
 
     @Override
-    public int globalConvergenceOrder() { return 5; }
+    public int globalConvergenceOrder() {
+        return 5;
+    }
+
+
+    // ── order 5, LTE = O(h^7) ──────────────────────────────────────
+    // β: {+1: 19/240,  0: 17/20,  -1: 7/120,  -2: 1/60,  -3: -1/240}
+    private final static double b_next = 19.0 / 240.0;
+    private final static double b_curr = 17.0 / 20.0;
+    private final static double b_prev = 7.0 / 120.0;
+    private final static double b_prev2 = 1.0 / 60.0;
+    private final static double b_prev3 = -1.0 / 240.0;
 
     @Override
     public double propagate(double[] psi, double[] psiPrime, int n, double step,
@@ -36,14 +49,6 @@ public class Stormer5 implements Integrator {
         int n1 = n - d;        // n-1
         int n2 = n - 2 * d;    // n-2
         int n3 = n - 3 * d;    // n-3
-
-        // ── order 5, LTE = O(h^7) ──────────────────────────────────────
-        // β: {+1: 19/240,  0: 17/20,  -1: 7/120,  -2: 1/60,  -3: -1/240}
-        double b_next = 19.0 / 240.0;
-        double b_curr = 17.0 / 20.0;
-        double b_prev = 7.0 / 120.0;
-        double b_prev2 = 1.0 / 60.0;
-        double b_prev3 = -1.0 / 240.0;
 
         double Q_next = qTilde.applyAsDouble(nP);
         double Q_curr = qTilde.applyAsDouble(n0);
