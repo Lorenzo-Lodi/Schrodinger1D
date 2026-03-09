@@ -24,7 +24,6 @@ public class Stormer8 implements Integrator {
         double h2 = step * step;
         int d = direction.getValue();
 
-        // Indices of the 8 past points
         int n0 = n;
         int n1 = n - d;
         int n2 = n - 2 * d;

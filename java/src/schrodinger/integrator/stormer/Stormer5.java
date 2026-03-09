@@ -40,8 +40,7 @@ public class Stormer5 implements Integrator {
                             DoubleUnaryOperator qTilde,
                             DoubleUnaryOperator qTildePrime,
                             DoubleUnaryOperator qTildeDoublePrime, Direction direction) {
-        double h = step;
-        double h2 = h * h;
+        double h2 = step * step;
         int d = direction.getValue();
 
         int nP = n + d;        // n+1   (implicit)
