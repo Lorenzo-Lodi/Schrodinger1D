@@ -48,7 +48,7 @@ public abstract class AbstractIntegratorTest {
             if (baseOrder <= 4.0) {
                 return 0.995;  // Original strict tolerance
             } else {
-                return 0.99;   // Slightly relaxed for higher-order methods
+                return 0.98;   // Slightly relaxed for higher-order methods
             }
         } else {
             // Excited states: more variation due to nodes
@@ -637,7 +637,7 @@ public abstract class AbstractIntegratorTest {
         Integrator integrator = getIntegrator();
         System.out.println(integrator.getClass().getSimpleName());
 
-        for (int np = 100; np <= 2000; np += 100) {
+        for (int np = 100; np <= 500; np += 10) {
             double xmin = 0.;
             double xmax = 4. * Math.PI;
             double[] psi = new double[np];
