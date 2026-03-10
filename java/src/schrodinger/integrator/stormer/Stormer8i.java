@@ -8,7 +8,7 @@ public class Stormer8i implements Integrator {
 
     @Override
     public int minHistoryLength() {
-        return 7; // Only needs 7 past points since it uses the (n+1) point
+        return 7;
     }
 
     @Override

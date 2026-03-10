@@ -268,6 +268,8 @@ public abstract class AbstractIntegratorTest {
             level.psi[n] = exactSol.evaluate(grid.rAtGridPoint(n));
         }
 
+        level.psiPrime = new double[nOfPoints]; // Initialize this for RKN methods
+
         // Propagate the wavefunction
         double step = level.getGrid().getStepSizeYCoordinate();
         long t0 = System.nanoTime();
