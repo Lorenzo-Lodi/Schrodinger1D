@@ -26,7 +26,7 @@ public class Stormer8 implements Integrator {
     private final static double b_prev7 = 275.0 / 4032;
 
     @Override
-    public double propagate(double[] psi, double[] psiPrime, int n, double step,
+    public double propagate(double[] psi, double[] currentPsiPrime, int n, double step,
                             DoubleUnaryOperator qTilde,
                             DoubleUnaryOperator qTildePrime,
                             DoubleUnaryOperator qTildeDoublePrime, Direction direction) {

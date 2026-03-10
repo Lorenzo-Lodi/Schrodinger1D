@@ -8,7 +8,6 @@ import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.SchrodingerSystem;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleUnaryOperator;
@@ -268,13 +267,13 @@ public abstract class AbstractIntegratorTest {
             level.psi[n] = exactSol.evaluate(grid.rAtGridPoint(n));
         }
 
-        level.psiPrime = new double[nOfPoints]; // Initialize this for RKN methods
+        level.currentPsiPrime = new double[nOfPoints]; // Initialize this for RKN methods
 
         // Propagate the wavefunction
         double step = level.getGrid().getStepSizeYCoordinate();
         long t0 = System.nanoTime();
         for (int n = initMax; n < nOfPoints - 1; n++) {
-            level.psi[n + 1] = integrator.propagate(level.psi, level.psiPrime, n, step,
+            level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, step,
                     level::QTildeAtGridPoint,
                     level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
                     Integrator.Direction.FORWARD);

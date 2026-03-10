@@ -14,7 +14,7 @@ public class QuantumLevel {
     public double upperBound;
     public double lowerBound;
     public double[] psi;
-    public double[] psiPrime;
+    public double[] currentPsiPrime; // Only use for RKN methods
     public double perturbativeCorrectionToEnergy;
     public List<ConvergenceInfo> convergenceInfo = new ArrayList<>();
 

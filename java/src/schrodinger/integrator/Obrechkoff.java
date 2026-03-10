@@ -17,7 +17,7 @@ public class Obrechkoff implements Integrator {
 
     // https://www.perplexity.ai/search/can-an-adams-moulton-method-be-4iA7wTxyTHOyelu30RUUGA#2254f9eb-2c6a-49ad-86e3-c5fbae55a1b0
     @Override
-    public double propagate(double[] psi, double[] psiPrime, int n, double step,
+    public double propagate(double[] psi, double[] currentPsiPrime, int n, double step,
                             DoubleUnaryOperator qTilde,
                             DoubleUnaryOperator qTildePrime,
                             DoubleUnaryOperator qTildeDoublePrime, Direction direction) {

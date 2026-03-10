@@ -32,7 +32,7 @@ public final class RKN4 implements Integrator {
     }
 
     @Override
-    public double propagate(double[] psi, double[] psiPrime, int n, double step,
+    public double propagate(double[] psi, double[] currentPsiPrime, int n, double step,
                             DoubleUnaryOperator qTilde,
                             DoubleUnaryOperator qTildePrime,
                             DoubleUnaryOperator qTildeDoublePrime,
@@ -48,16 +48,16 @@ public final class RKN4 implements Integrator {
         double q1 = qTilde.applyAsDouble(n0);
         double f1 = -q1 * psi[n0];
 
-        double Y2 = psi[n0] + C2 * h * d * psiPrime[n0] + h2 * A21 * f1;
+        double Y2 = psi[n0] + C2 * h * d * currentPsiPrime[n0] + h2 * A21 * f1;
         double q2 = qTilde.applyAsDouble(n0 + C2 * d);
         double f2 = -q2 * Y2;
 
-        double Y3 = psi[n0] + C3 * h * d * psiPrime[n0] + h2 * (A31 * f1 + A32 * f2);
+        double Y3 = psi[n0] + C3 * h * d * currentPsiPrime[n0] + h2 * (A31 * f1 + A32 * f2);
         double q3 = qTilde.applyAsDouble(n0 + C3 * d);
         double f3 = -q3 * Y3;
 
         // advance y and y'
-        psiPrime[n1] = psiPrime[n0] + h * d * (BP1 * f1 + BP2 * f2 + BP3 * f3);
-        return psi[n0] + h * d * psiPrime[n0] + h2 * (B1 * f1 + B2 * f2 + B3 * f3);
+        currentPsiPrime[n1] = currentPsiPrime[n0] + h * d * (BP1 * f1 + BP2 * f2 + BP3 * f3);
+        return psi[n0] + h * d * currentPsiPrime[n0] + h2 * (B1 * f1 + B2 * f2 + B3 * f3);
     }
 }

@@ -18,7 +18,7 @@ public interface Integrator {
      * @return The value of the wavefunction at the next point (n+1 or n-1)
      */
 
-    double propagate(double[] psi, double[] psiPrime, int n, double step,
+    double propagate(double[] psi, double[] currentPsiPrime, int n, double step,
                      DoubleUnaryOperator qTilde,
                      DoubleUnaryOperator qTildePrime,
                      DoubleUnaryOperator qTildeDoublePrime, Direction direction);
