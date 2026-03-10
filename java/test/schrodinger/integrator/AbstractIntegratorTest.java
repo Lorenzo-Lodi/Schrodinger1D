@@ -497,17 +497,17 @@ public abstract class AbstractIntegratorTest {
     private double integrateOneStep(double qFactor, Integrator.Direction direction) {
         int arraySize = 20;
         double[] psi = new double[arraySize];
-        double[] psiPrime = new double[arraySize];
+        double[] currentPsiPrime = new double[arraySize];
         for (int k = 0; k < arraySize; k++) {
             psi[k] = Math.cos(k);
-            psiPrime[k] = -Math.sin(k);
+            currentPsiPrime[k] = -Math.sin(k);
         }
 
         Integrator integrator = getIntegrator();
         DoubleUnaryOperator q = i -> qFactor * (0.1111 + 0.2222 * i + 0.3333 * i * i + 0.44444 * i * i * i);
         DoubleUnaryOperator q1 = i -> qFactor * (0.2222 + 2 * 0.3333 * i + 3. * 0.44444 * i * i);
         DoubleUnaryOperator q2 = i -> qFactor * (2 * 0.3333 + 3. * 2. * 0.44444 * i);
-        return integrator.propagate(psi, psiPrime, arraySize / 2, 0.123, q, q1, q2, direction);
+        return integrator.propagate(psi, currentPsiPrime, arraySize / 2, 0.123, q, q1, q2, direction);
     }
 
     public double integrateOneStep(Integrator.Direction direction) {
@@ -529,10 +529,10 @@ public abstract class AbstractIntegratorTest {
         int npoints = 1000000;
 
         double[] psi = new double[npoints];
-        double[] psiPrime = new double[npoints];
+        double[] currentPsiPrime = new double[npoints];
         for (int k = 0; k < 15; k++) {
             psi[k] = Math.cos(k);
-            psiPrime[k] = -Math.sin(k);
+            currentPsiPrime[k] = -Math.sin(k);
         }
 
         Integrator integrator = getIntegrator();
@@ -541,7 +541,7 @@ public abstract class AbstractIntegratorTest {
         DoubleUnaryOperator q2 = i -> 1e-3 * (2 * 0.3333 / (npoints * npoints));
         long t0 = System.nanoTime();
         for (int n = 14; n < npoints - 1; n++) {
-            psi[n + 1] = integrator.propagate(psi, psiPrime, n, 0.123, q, q1, q2, Integrator.Direction.FORWARD);
+            psi[n + 1] = integrator.propagate(psi, currentPsiPrime, n, 0.123, q, q1, q2, Integrator.Direction.FORWARD);
         }
         long elapsedNanos = System.nanoTime() - t0;
         double timePerPoint = ((double) elapsedNanos) / (npoints);
@@ -615,17 +615,17 @@ public abstract class AbstractIntegratorTest {
             double xmin = 0.;
             double xmax = 1.;
             double[] psi = new double[np];
-            double[] psiPrime = new double[np];
+            double[] currentPsiPrime = new double[np];
             double step = (xmax - xmin) / (np - 1);
 
             for (int i = 0; i < integrator.minHistoryLength(); i++) {
                 double x = xmin + i * step;
                 psi[i] = Math.exp(-x);
-                psiPrime[i] = -Math.exp(-x);
+                currentPsiPrime[i] = -Math.exp(-x);
             }
 
             for (int n = integrator.minHistoryLength() - 1; n < np - 1; n++) {
-                psi[n + 1] = integrator.propagate(psi, psiPrime, n, step,
+                psi[n + 1] = integrator.propagate(psi, currentPsiPrime, n, step,
                         i -> -1., i -> 0., i -> 0.,
                         Integrator.Direction.FORWARD);
             }
@@ -645,13 +645,13 @@ public abstract class AbstractIntegratorTest {
             double xmin = 0.;
             double xmax = 4. * Math.PI;
             double[] psi = new double[np];
-            double[] psiPrime = new double[np];
+            double[] currentPsiPrime = new double[np];
             double step = (xmax - xmin) / (np - 1);
 
             for (int i = 0; i < integrator.minHistoryLength(); i++) {
                 double x = xmin + i * step;
                 psi[i] = Math.exp(Math.cos(x));
-                psiPrime[i] = -Math.sin(x) * Math.exp(Math.cos(x));
+                currentPsiPrime[i] = -Math.sin(x) * Math.exp(Math.cos(x));
             }
             DoubleUnaryOperator qTilde = i -> Math.cos(xmin + i * step) - Math.pow(Math.sin(xmin + i * step), 2);
             DoubleUnaryOperator qTildePrime = i -> -Math.sin(xmin + i * step) - 2. * Math.cos(xmin + i * step) * Math.sin(xmin + i * step);
@@ -660,7 +660,7 @@ public abstract class AbstractIntegratorTest {
                     + 2. * Math.pow(Math.sin(xmin + i * step), 2);
 
             for (int n = integrator.minHistoryLength() - 1; n < np - 1; n++) {
-                psi[n + 1] = integrator.propagate(psi, psiPrime, n, step,
+                psi[n + 1] = integrator.propagate(psi, currentPsiPrime, n, step,
                         qTilde, qTildePrime, qTildeDoublePrime,
                         Integrator.Direction.FORWARD);
             }
