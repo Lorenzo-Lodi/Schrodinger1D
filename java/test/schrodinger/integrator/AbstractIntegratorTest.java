@@ -11,6 +11,7 @@ import schrodinger.potential.SchrodingerSystem;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleUnaryOperator;
+import java.util.function.IntToDoubleFunction;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -667,8 +668,20 @@ public abstract class AbstractIntegratorTest {
 
             double error = Math.exp(Math.cos(xmax)) - psi[np - 1];
             System.out.println(np + " " + error);
+
+
+            // I prefer put here the expected errors for each integrator, at least for now...
+            String className = integrator.getClass().getSimpleName();
+            double maxError = expectedError_propagate_forward_exp_to_cos_x(className, np);
+            assertTrue(Math.abs(error) < maxError,
+                    String.format("%s : |error| = %.3e should be < %.3e for np = %s",
+                            className, Math.abs(error), maxError, np));
         }
 
+    }
+
+    private double expectedError_propagate_forward_exp_to_cos_x(String className, int np) {
+        return 0.;
     }
 
 
