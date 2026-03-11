@@ -8,6 +8,7 @@ import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.SchrodingerSystem;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleUnaryOperator;
@@ -670,7 +671,7 @@ public abstract class AbstractIntegratorTest {
             System.out.println(np + " " + error);
 
 
-            // I prefer put here the expected errors for each integrator, at least for now...
+            // I prefer to put here the expected errors for each integrator, intead of each test class at least for now...
             String className = integrator.getClass().getSimpleName();
             double maxError = expectedError_propagate_forward_exp_to_cos_x(className, np);
             assertTrue(Math.abs(error) < maxError,
@@ -681,7 +682,114 @@ public abstract class AbstractIntegratorTest {
     }
 
     private double expectedError_propagate_forward_exp_to_cos_x(String className, int np) {
-        return 0.;
+
+        // We assume errors are in the format |error| = (C/np)^a
+        double a = 1.;
+        double C = 1.e-15; // Very tight defaults which will lead to fails
+        switch (className) {
+            case ("TaylorThreePoints"):
+                a = 1.88;
+                C = 85.4;
+                break;
+            case ("RKN4"):
+                a = 4.01;
+                C = 24.0;
+                break;
+            case ("Numerov"):
+                a = 3.62;
+                C = 15.1;
+                break;
+            case ("ExponentiallyFitted"):
+                a = 3.68;
+                C = 15.4;
+                break;
+            case ("EfnFixedBeta"):
+                a = 3.54;
+                C = 13.5;
+                break;
+            case ("Stormer5"):
+                a = 4.85;
+                C = 28.6;
+                break;
+            case ("Stormer8"):
+                a = 8.63;
+                C = 52.1;
+                break;
+            case ("Stormer6"):
+                a = 7.49;
+                C = 39.1;
+                break;
+            case ("Stormer8i"):
+                a = 8.70;
+                C = 36.6;
+                break;
+            case ("PredictorCorrector6"):
+                a = 8.88;
+                C = 41.2;
+                break;
+            case ("Obrechkoff"):
+                a = 6.07;
+                C = 17.5;
+                break;
+            case ("RK45"):
+                a = 5.95;
+                C = 14.3;
+                break;
+            case ("PredictorCorrector8NumerovIter1"):
+                a = 5.01;
+                C = 7.5;
+                break;
+            case ("PredictorCorrector8NumerovIter2"):
+                a = 6.33;
+                C = 13.9;
+                break;
+        }
+
+        return Math.pow(C / np, a);
+    }
+
+
+    @Test
+    public void propagate_backward_exp_to_cos_x() {
+        Integrator integrator = getIntegrator();
+        System.out.println(integrator.getClass().getSimpleName());
+
+        for (int np = 100; np <= 500; np += 10) {
+            double xmin = 0.;
+            double xmax = 4. * Math.PI;
+            double[] psi = new double[np];
+            double[] currentPsiPrime = new double[np];
+            double step = (xmax - xmin) / (np - 1);
+
+            for (int i = np - 1; i > np - 1 - integrator.minHistoryLength(); i--) {
+                double x = xmin + i * step;
+                psi[i] = Math.exp(Math.cos(x));
+                currentPsiPrime[i] = -Math.sin(x) * Math.exp(Math.cos(x));
+            }
+
+            DoubleUnaryOperator qTilde = i -> Math.cos(xmin + i * step) - Math.pow(Math.sin(xmin + i * step), 2);
+            DoubleUnaryOperator qTildePrime = i -> -Math.sin(xmin + i * step) - 2. * Math.cos(xmin + i * step) * Math.sin(xmin + i * step);
+            DoubleUnaryOperator qTildeDoublePrime = i -> -Math.cos(xmin + i * step)
+                    - 2. * Math.pow(Math.cos(xmin + i * step), 2)
+                    + 2. * Math.pow(Math.sin(xmin + i * step), 2);
+
+            for (int n = np  - integrator.minHistoryLength(); n > 0; n--) {
+                psi[n - 1] = integrator.propagate(psi, currentPsiPrime, n, step,
+                        qTilde, qTildePrime, qTildeDoublePrime,
+                        Integrator.Direction.BACKWARD);
+            }
+
+
+            double error = Math.exp(Math.cos(xmin)) - psi[0];
+            System.out.println(np + " " + error);
+
+//            String className = integrator.getClass().getSimpleName();
+//            double maxError = expectedError_propagate_forward_exp_to_cos_x(className, np);
+//            assertTrue(Math.abs(error) < maxError,
+//                    String.format("%s : |error| = %.3e should be < %.3e for np = %s",
+//                            className, Math.abs(error), maxError, np));
+        }
+
     }
 
 
