@@ -21,6 +21,7 @@ import schrodinger.potential.SchrodingerSystem;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleUnaryOperator;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -648,51 +649,18 @@ public abstract class AbstractIntegratorTest {
 
     @Test
     public void propagate_forward_exp_to_cos_x() {
-        Integrator integrator = getIntegrator();
-        System.out.println(integrator.getClass().getSimpleName());
-
-        for (int np = 100; np <= 500; np += 10) {
-            double xmin = 0.;
-            double xmax = 4. * Math.PI;
-            double[] psi = new double[np];
-            double[] currentPsiPrime = new double[np];
-            double step = (xmax - xmin) / (np - 1);
-
-            for (int n = 0; n < integrator.minHistoryLength(); n += 1) {
-                double x = xmin + n * step;
-                psi[n] = Math.exp(Math.cos(x));
-                currentPsiPrime[n] = -Math.sin(x) * Math.exp(Math.cos(x));
-            }
-            DoubleUnaryOperator qTilde = i -> Math.cos(xmin + i * step) - Math.pow(Math.sin(xmin + i * step), 2);
-            DoubleUnaryOperator qTildePrime = i -> -Math.sin(xmin + i * step) - 2. * Math.cos(xmin + i * step) * Math.sin(xmin + i * step);
-            DoubleUnaryOperator qTildeDoublePrime = i -> -Math.cos(xmin + i * step)
-                    - 2. * Math.pow(Math.cos(xmin + i * step), 2)
-                    + 2. * Math.pow(Math.sin(xmin + i * step), 2);
-
-            for (int n = integrator.minHistoryLength() - 1; n < np - 1; n += 1) {
-                psi[n + 1] = integrator.propagate(psi, currentPsiPrime, n, step,
-                        qTilde, qTildePrime, qTildeDoublePrime,
-                        Integrator.Direction.FORWARD);
-            }
-
-            double error = Math.exp(Math.cos(xmax)) - psi[np - 1];
-            System.out.println(np + " " + error);
-
-
-            // I prefer to put here the expected errors for each integrator, intead of each test class at least for now...
-            String className = integrator.getClass().getSimpleName();
-            double maxError = expectedError_propagate_exp_to_cos_x(integrator, np);
-            assertTrue(Math.abs(error) < maxError,
-                    String.format("%s : |error| = %.3e should be < %.3e for np = %s",
-                            className, Math.abs(error), maxError, np));
-        }
-
+        propagate_exp_to_cos_x(Integrator.Direction.FORWARD);
     }
 
     @Test
     public void propagate_backward_exp_to_cos_x() {
+        propagate_exp_to_cos_x(Integrator.Direction.BACKWARD);
+    }
+
+    public void propagate_exp_to_cos_x(Integrator.Direction direction) {
         Integrator integrator = getIntegrator();
         System.out.println(integrator.getClass().getSimpleName());
+        int d = direction.getValue();
 
         for (int np = 100; np <= 500; np += 10) {
             double xmin = 0.;
@@ -701,10 +669,16 @@ public abstract class AbstractIntegratorTest {
             double[] currentPsiPrime = new double[np];
             double step = (xmax - xmin) / (np - 1);
 
-            for (int n = np - 1; n > np - 1 - integrator.minHistoryLength(); n -= 1) {
-                double x = xmin + n * step;
-                psi[n] = Math.exp(Math.cos(x));
-                currentPsiPrime[n] = -Math.sin(x) * Math.exp(Math.cos(x));
+            boolean isBackward = direction.equals(Integrator.Direction.BACKWARD);
+            {
+                final int startIndex1 = isBackward ? np - 1 : 0;
+                final int endIndex1 = isBackward ? np - 1 - integrator.minHistoryLength() : integrator.minHistoryLength();
+                Predicate<Integer> condition = isBackward ? n -> (n > endIndex1) : n -> (n < endIndex1);
+                for (int n = startIndex1; condition.test(n); n = n + d) {
+                    double x = xmin + n * step;
+                    psi[n] = Math.exp(Math.cos(x));
+                    currentPsiPrime[n] = -Math.sin(x) * Math.exp(Math.cos(x));
+                }
             }
 
             DoubleUnaryOperator qTilde = i -> Math.cos(xmin + i * step) - Math.pow(Math.sin(xmin + i * step), 2);
@@ -713,14 +687,19 @@ public abstract class AbstractIntegratorTest {
                     - 2. * Math.pow(Math.cos(xmin + i * step), 2)
                     + 2. * Math.pow(Math.sin(xmin + i * step), 2);
 
-            for (int n = np - integrator.minHistoryLength(); n > 0; n -= 1) {
-                psi[n - 1] = integrator.propagate(psi, currentPsiPrime, n, step,
-                        qTilde, qTildePrime, qTildeDoublePrime,
-                        Integrator.Direction.BACKWARD);
+            {
+                final int startIndex2 = isBackward ? np - integrator.minHistoryLength() : integrator.minHistoryLength() - 1;
+                final int endIndex2 = isBackward ? np - 1 - integrator.minHistoryLength() : np - 1;
+                Predicate<Integer> condition = isBackward ? n -> (n > 0) : n -> (n < endIndex2);
+
+                for (int n = startIndex2; condition.test(n); n = n + d) {
+                    psi[n + d] = integrator.propagate(psi, currentPsiPrime, n, step,
+                            qTilde, qTildePrime, qTildeDoublePrime,
+                            direction);
+                }
             }
 
-
-            double error = Math.exp(Math.cos(xmin)) - psi[0];
+            double error = isBackward ? Math.exp(Math.cos(xmin)) - psi[0] : Math.exp(Math.cos(xmax)) - psi[np - 1];
             System.out.println(np + " " + error);
 
             String className = integrator.getClass().getSimpleName();
