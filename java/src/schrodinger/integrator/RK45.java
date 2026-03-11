@@ -2,7 +2,7 @@ package schrodinger.integrator;
 
 import java.util.function.DoubleUnaryOperator;
 
-public class RKN5 implements Integrator {
+public class RK45 implements Integrator {
 
     // Stage nodes (c_i)
     private static final double C2 = 0.5; // Actually 1/2 but written nicely
@@ -42,6 +42,45 @@ public class RKN5 implements Integrator {
 
     //    It’s not “RKN” in the strict specialized sense, but it is tableau-based, one-step, and gives you 5th-order global accuracy with moderate code/coefficients.
     // standard 5th-order Runge–Kutta method (Dormand–Prince 5(4))
+    // c nodes
+    private final static double c2 = 1.0 / 5.0;
+    private final static double c3 = 3.0 / 10.0;
+    private final static double c4 = 4.0 / 5.0;
+    private final static double c5 = 8.0 / 9.0;
+    private final static double c6 = 1.0;
+    private final static double c7 = 1.0;
+
+    // a matrix (Dormand–Prince)
+    private final static double a21 = 1.0 / 5.0;
+
+    private final static double a31 = 3.0 / 40.0;
+    private final static double a32 = 9.0 / 40.0;
+
+    private final static double a41 = 44.0 / 45.0;
+    private final static double a42 = -56.0 / 15.0;
+    private final static double a43 = 32.0 / 9.0;
+
+    private final static double a51 = 19372.0 / 6561.0;
+    private final static double a52 = -25360.0 / 2187.0;
+    private final static double a53 = 64448.0 / 6561.0;
+    private final static double a54 = -212.0 / 729.0;
+
+    private final static double a61 = 9017.0 / 3168.0;
+    private final static double a62 = -355.0 / 33.0;
+    private final static double a63 = 46732.0 / 5247.0;
+    private final static double a64 = 49.0 / 176.0;
+    private final static double a65 = -5103.0 / 18656.0;
+
+    private final static double a71 = 35.0 / 384.0;
+    private final static double a72 = 0.0;
+    private final static double a73 = 500.0 / 1113.0;
+    private final static double a74 = 125.0 / 192.0;
+    private final static double a75 = -2187.0 / 6784.0;
+    private final static double a76 = 11.0 / 84.0;
+
+    // b weights for the 5th-order solution (same as a7 row)
+    private final static double b1 = a71, b2 = a72, b3 = a73, b4 = a74, b5 = a75, b6 = a76, b7 = 0.0;
+
     @Override
     public double propagate(double[] psi, double[] psiPrime, int n, double step,
                             DoubleUnaryOperator qTilde,
@@ -56,45 +95,6 @@ public class RKN5 implements Integrator {
 
         // "x" is your fractional index coordinate (since qTilde accepts fractional indices)
         final double x0 = n0;
-
-        // c nodes
-        final double c2 = 1.0 / 5.0;
-        final double c3 = 3.0 / 10.0;
-        final double c4 = 4.0 / 5.0;
-        final double c5 = 8.0 / 9.0;
-        final double c6 = 1.0;
-        final double c7 = 1.0;
-
-        // a matrix (Dormand–Prince)
-        final double a21 = 1.0 / 5.0;
-
-        final double a31 = 3.0 / 40.0;
-        final double a32 = 9.0 / 40.0;
-
-        final double a41 = 44.0 / 45.0;
-        final double a42 = -56.0 / 15.0;
-        final double a43 = 32.0 / 9.0;
-
-        final double a51 = 19372.0 / 6561.0;
-        final double a52 = -25360.0 / 2187.0;
-        final double a53 = 64448.0 / 6561.0;
-        final double a54 = -212.0 / 729.0;
-
-        final double a61 = 9017.0 / 3168.0;
-        final double a62 = -355.0 / 33.0;
-        final double a63 = 46732.0 / 5247.0;
-        final double a64 = 49.0 / 176.0;
-        final double a65 = -5103.0 / 18656.0;
-
-        final double a71 = 35.0 / 384.0;
-        final double a72 = 0.0;
-        final double a73 = 500.0 / 1113.0;
-        final double a74 = 125.0 / 192.0;
-        final double a75 = -2187.0 / 6784.0;
-        final double a76 = 11.0 / 84.0;
-
-        // b weights for the 5th-order solution (same as a7 row)
-        final double b1 = a71, b2 = a72, b3 = a73, b4 = a74, b5 = a75, b6 = a76, b7 = 0.0;
 
         // state
         final double y0 = psi[n0];
