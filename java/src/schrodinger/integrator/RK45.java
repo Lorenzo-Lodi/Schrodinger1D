@@ -82,7 +82,7 @@ public class RK45 implements Integrator {
     private final static double b1 = a71, b2 = a72, b3 = a73, b4 = a74, b5 = a75, b6 = a76, b7 = 0.0;
 
     @Override
-    public double propagate(double[] psi, double[] psiPrime, int n, double step,
+    public double propagate(double[] psi, double[] currentPsiPrime, int n, double step,
                             DoubleUnaryOperator qTilde,
                             DoubleUnaryOperator qTildePrime,
                             DoubleUnaryOperator qTildeDoublePrime,
@@ -98,7 +98,7 @@ public class RK45 implements Integrator {
 
         // state
         final double y0 = psi[n0];
-        final double v0 = psiPrime[n0];
+        final double v0 = currentPsiPrime[0];
 
         // helper: acceleration v' = -q(x)*y
         // (q evaluated at fractional index x0 + ci*d, consistent with your convention)
@@ -142,7 +142,7 @@ public class RK45 implements Integrator {
         final double yNext = y0 + h * (b1 * ky1 + b2 * ky2 + b3 * ky3 + b4 * ky4 + b5 * ky5 + b6 * ky6 + b7 * ky7);
         final double vNext = v0 + h * (b1 * kv1 + b2 * kv2 + b3 * kv3 + b4 * kv4 + b5 * kv5 + b6 * kv6 + b7 * kv7);
 
-        psiPrime[n1] = vNext;
+        currentPsiPrime[0] = vNext;
         return yNext;
     }
 }

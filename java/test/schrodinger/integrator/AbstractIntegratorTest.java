@@ -293,7 +293,7 @@ public abstract class AbstractIntegratorTest {
             level.psi[n] = exactSol.evaluate(grid.rAtGridPoint(n));
         }
 
-        level.currentPsiPrime = new double[nOfPoints]; // Initialize this for RKN methods
+        level.currentPsiPrime = new double[1]; // TODO Initialize this for RKN methods
 
         // Propagate the wavefunction
         double step = level.getGrid().getStepSizeYCoordinate();
@@ -508,10 +508,10 @@ public abstract class AbstractIntegratorTest {
     private double integrateOneStep(double qFactor, Integrator.Direction direction) {
         int arraySize = 20;
         double[] psi = new double[arraySize];
-        double[] currentPsiPrime = new double[arraySize];
+        double[] currentPsiPrime = new double[1];
         for (int k = 0; k < arraySize; k++) {
             psi[k] = Math.cos(k);
-            currentPsiPrime[k] = -Math.sin(k);
+            currentPsiPrime[0] = -Math.sin(k);
         }
 
         Integrator integrator = getIntegrator();
@@ -540,10 +540,10 @@ public abstract class AbstractIntegratorTest {
         int npoints = 1000000;
 
         double[] psi = new double[npoints];
-        double[] currentPsiPrime = new double[npoints];
+        double[] currentPsiPrime = new double[1];
         for (int k = 0; k < 15; k++) {
             psi[k] = Math.cos(k);
-            currentPsiPrime[k] = -Math.sin(k);
+            currentPsiPrime[0] = -Math.sin(k);
         }
 
         Integrator integrator = getIntegrator();
@@ -626,13 +626,13 @@ public abstract class AbstractIntegratorTest {
             double xmin = 0.;
             double xmax = 1.;
             double[] psi = new double[np];
-            double[] currentPsiPrime = new double[np];
+            double[] currentPsiPrime = new double[1];
             double step = (xmax - xmin) / (np - 1);
 
             for (int i = 0; i < integrator.minHistoryLength(); i++) {
                 double x = xmin + i * step;
                 psi[i] = Math.exp(-x);
-                currentPsiPrime[i] = -Math.exp(-x);
+                currentPsiPrime[0] = -Math.exp(-x);
             }
 
             for (int n = integrator.minHistoryLength() - 1; n < np - 1; n++) {
@@ -666,7 +666,7 @@ public abstract class AbstractIntegratorTest {
             double xmin = 0.;
             double xmax = 4. * Math.PI;
             double[] psi = new double[np];
-            double[] currentPsiPrime = new double[np];
+            double[] currentPsiPrime = new double[1];
             double step = (xmax - xmin) / (np - 1);
 
             boolean isBackward = direction.equals(Integrator.Direction.BACKWARD);
@@ -677,7 +677,7 @@ public abstract class AbstractIntegratorTest {
                 for (int n = startIndex1; condition.test(n); n = n + d) {
                     double x = xmin + n * step;
                     psi[n] = Math.exp(Math.cos(x));
-                    currentPsiPrime[n] = -Math.sin(x) * Math.exp(Math.cos(x));
+                    currentPsiPrime[0] = -Math.sin(x) * Math.exp(Math.cos(x));
                 }
             }
 
