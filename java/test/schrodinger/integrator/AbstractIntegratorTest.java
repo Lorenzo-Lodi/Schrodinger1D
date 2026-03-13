@@ -303,7 +303,7 @@ public abstract class AbstractIntegratorTest {
             double der1 = (psip1 - psim1) / (2. * eps);
 
             double psipp1 = exactSol.evaluate(r + 2. * eps);
-            double psimm1 = exactSol.evaluate(r - 2. *eps);
+            double psimm1 = exactSol.evaluate(r - 2. * eps);
             double der2 = (psipp1 - psimm1) / (4. * eps);
 
             double der = (4. / 3.) * der1 - (1. / 3.) * der2;
@@ -325,9 +325,9 @@ public abstract class AbstractIntegratorTest {
         // Calculate errors at different points
         ConvergenceData data = new ConvergenceData();
         data.setElapsedNanos(elapsedNanos);
-        data.addError("10", exactSolution(grid.rAtGridPoint(nOfPoints / 10)) - level.psi[nOfPoints / 10]);
-        data.addError("4", exactSolution(grid.rAtGridPoint(nOfPoints / 4)) - level.psi[nOfPoints / 4]);
-        data.addError("2", exactSolution(grid.rAtGridPoint(nOfPoints / 2)) - level.psi[nOfPoints / 2]);
+        data.addError("10", exactSolution(grid.rAtGridPoint(nOfPoints / 10.)) - level.psi[nOfPoints / 10]);
+        data.addError("4", exactSolution(grid.rAtGridPoint(nOfPoints / 4.)) - level.psi[nOfPoints / 4]);
+        data.addError("2", exactSolution(grid.rAtGridPoint(nOfPoints / 2.)) - level.psi[nOfPoints / 2]);
 
         return data;
     }
