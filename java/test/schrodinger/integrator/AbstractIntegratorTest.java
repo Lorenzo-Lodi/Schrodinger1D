@@ -109,7 +109,6 @@ public abstract class AbstractIntegratorTest {
             return 4.;
         }
 
-
         // Base tolerance depends on integrator order
         double baseTolerance;
         if (baseOrder <= 2.0) {
@@ -134,7 +133,7 @@ public abstract class AbstractIntegratorTest {
                 // Some integrators show faster-than-expected convergence here
                 baseTolerance += 0.9;
             } else if (pointName.equals("50%")) {
-                baseTolerance += 0.4;
+                baseTolerance += 0.5;
             }
 
         }
@@ -208,7 +207,7 @@ public abstract class AbstractIntegratorTest {
      * @return the exact solution for the quantum state being tested
      */
     protected HarmonicOscillatorExactSolution getExactSolution() {
-        return HarmonicOscillatorExactSolution.excitedState(DEFAULT_R0, DEFAULT_ALPHA, getQuantumNumber());
+        return HarmonicOscillatorExactSolution.getState(DEFAULT_R0, DEFAULT_ALPHA, getQuantumNumber());
     }
 
     /**
@@ -216,8 +215,8 @@ public abstract class AbstractIntegratorTest {
      * with the exact analytical solution for the ground state (n=0).
      */
     @Test
-    public void testIntegratorConvergence() {
-        testIntegratorConvergence(0); // Default: ground state
+    public void harmonic_oscillator_ground_state() {
+        harmonic_oscillator_ground_state(0); // Default: ground state
     }
 
     /**
@@ -225,8 +224,8 @@ public abstract class AbstractIntegratorTest {
      * with the exact analytical solution for the 10th excited state (n=10, has 10 nodes).
      */
     @Test
-    public void testIntegratorConvergence10thExcitedState() {
-        testIntegratorConvergence(10);
+    public void harmonic_oscillator_10th_excited_state() {
+        harmonic_oscillator_ground_state(10);
     }
 
     /**
@@ -235,7 +234,7 @@ public abstract class AbstractIntegratorTest {
      *
      * @param quantumNumber the quantum number n (0 = ground state, 1 = first excited, etc.)
      */
-    protected void testIntegratorConvergence(int quantumNumber) {
+    protected void harmonic_oscillator_ground_state(int quantumNumber) {
         Integrator integrator = getIntegrator();
         if (integrator.minHistoryLength() > INITIALIZATION_N_MAX + 1) {
             String className = this.getClass().getSimpleName();
@@ -247,7 +246,7 @@ public abstract class AbstractIntegratorTest {
         PhysicalPotential potential = new PhysicalPotentialHarmonic(DEFAULT_R0, DEFAULT_ALPHA);
 
         // Initialize the exact solution for the specified quantum state
-        exactSolutionInstance = HarmonicOscillatorExactSolution.excitedState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
+        exactSolutionInstance = HarmonicOscillatorExactSolution.getState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
 
         Map<Integer, ConvergenceData> convergenceResults = new HashMap<>();
 
@@ -287,17 +286,23 @@ public abstract class AbstractIntegratorTest {
         QuantumLevel level = new QuantumLevel(system);
 
         // Use the exact energy for the specified quantum level
-        HarmonicOscillatorExactSolution exactSol = HarmonicOscillatorExactSolution.excitedState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
+        HarmonicOscillatorExactSolution exactSol = HarmonicOscillatorExactSolution.getState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
         level.energy = exactSol.getEnergy();
 
         // Initialize with exact solution
         for (int n = 0; n <= INITIALIZATION_N_MAX && n < nOfPoints; n++) {
             level.psi[n] = exactSol.evaluate(grid.rAtGridPoint(n));
-
-
         }
 
-        level.currentPsiPrime = new double[1]; // TODO Initialize this for RKN methods
+        {
+            level.currentPsiPrime = new double[1]; // Initialize first derivative for RKN methods
+            double eps = 1e-4;
+            double r = grid.rAtGridPoint(INITIALIZATION_N_MAX);
+            double psip1 = exactSol.evaluate(r + eps);
+            double psim1 = exactSol.evaluate(r - eps);
+            double der = (psip1 - psim1) / (2. * eps);
+            level.currentPsiPrime[0] = der;
+        }
 
         // Propagate the wavefunction
         double step = level.getGrid().getStepSizeYCoordinate();

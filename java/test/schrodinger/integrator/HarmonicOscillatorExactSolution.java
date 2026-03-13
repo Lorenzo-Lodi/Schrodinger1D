@@ -227,18 +227,7 @@ public class HarmonicOscillatorExactSolution {
             return h1;
         }
     }
-    
-    /**
-     * Factory method to create ground state (n=0)
-     * 
-     * @param r0 the center of the potential
-     * @param alpha the spring constant
-     * @return the ground state exact solution
-     */
-    public static HarmonicOscillatorExactSolution groundState(double r0, double alpha) {
-        return new HarmonicOscillatorExactSolution(r0, alpha, 0);
-    }
-    
+
     /**
      * Factory method to create the n-th excited state
      * 
@@ -247,7 +236,7 @@ public class HarmonicOscillatorExactSolution {
      * @param n the quantum number (0 = ground state, 1 = first excited, etc.)
      * @return the n-th excited state exact solution
      */
-    public static HarmonicOscillatorExactSolution excitedState(double r0, double alpha, int n) {
+    public static HarmonicOscillatorExactSolution getState(double r0, double alpha, int n) {
         return new HarmonicOscillatorExactSolution(r0, alpha, n);
     }
 }

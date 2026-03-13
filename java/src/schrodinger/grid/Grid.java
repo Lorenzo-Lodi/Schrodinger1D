@@ -45,7 +45,7 @@ public class Grid {
         return yMin + getStepSizeYCoordinate() * i;
     }
 
-    public double rAtGridPoint(int i) {
+    public double rAtGridPoint(double i) {
         return r(yAtGridPoint(i));
     }
 
