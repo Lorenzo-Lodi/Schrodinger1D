@@ -14,7 +14,7 @@ public class QuantumLevel {
     public double upperBound;
     public double lowerBound;
     public double[] psi;
-    public double[] currentPsiPrime; // Only use for RKN methods
+    public double[] currentPsiPrime; // Only used for RKN methods
     public double perturbativeCorrectionToEnergy;
     public List<ConvergenceInfo> convergenceInfo = new ArrayList<>();
 
@@ -45,17 +45,19 @@ public class QuantumLevel {
     }
 
     public double QTildePrimeAtGridPoint(double i) {
-        double eps = 1e-7;  // TODO
+        double eps = 1e-6;  // TODO
         double y = getGrid().yAtGridPoint(i);
-        double der = (QTilde(y + eps) - QTilde(y - eps)) / (2. * eps);
-        return der;
+        double der1 = (QTilde(y + eps) - QTilde(y - eps)) / (2. * eps);
+        double der2 = (QTilde(y + 2. * eps) - QTilde(y - 2. * eps)) / (4. * eps);
+        return (4. / 3.) * der1 - (1. / 3.) * der2;
     }
 
     public double QTildeDoublePrimeAtGridPoint(double i) {
-        double eps = 1e-6;  // TODO
+        double eps = 1e-4;  // TODO
         double y = getGrid().yAtGridPoint(i);
-        double der2 = (QTilde(y + eps) + QTilde(y - eps) - 2. * QTilde(y)) / (eps * eps);;
-        return der2;
+        double der1 = (QTilde(y + eps) + QTilde(y - eps) - 2. * QTilde(y)) / (eps * eps);
+        double der2 = (QTilde(y + 2. * eps) + QTilde(y - 2. * eps) - 2. * QTilde(y)) / (4. * eps * eps);
+        return (4. / 3.) * der1 - (1. / 3.) * der2;
     }
 
     // Note: because the wavefunctions are exponentially decreasing (or faster), the
