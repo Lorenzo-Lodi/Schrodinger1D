@@ -296,11 +296,18 @@ public abstract class AbstractIntegratorTest {
 
         {
             level.currentPsiPrime = new double[1]; // Initialize first derivative for RKN methods
-            double eps = 1e-4;
+            double eps = 5e-4;
             double r = grid.rAtGridPoint(INITIALIZATION_N_MAX);
             double psip1 = exactSol.evaluate(r + eps);
             double psim1 = exactSol.evaluate(r - eps);
-            double der = (psip1 - psim1) / (2. * eps);
+            double der1 = (psip1 - psim1) / (2. * eps);
+
+            double psipp1 = exactSol.evaluate(r + 2. * eps);
+            double psimm1 = exactSol.evaluate(r - 2. *eps);
+            double der2 = (psipp1 - psimm1) / (4. * eps);
+
+            double der = (4. / 3.) * der1 - (1. / 3.) * der2;
+
             level.currentPsiPrime[0] = der;
         }
 
