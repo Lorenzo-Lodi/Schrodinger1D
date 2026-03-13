@@ -290,10 +290,8 @@ public abstract class AbstractIntegratorTest {
         HarmonicOscillatorExactSolution exactSol = HarmonicOscillatorExactSolution.excitedState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
         level.energy = exactSol.getEnergy();
 
-        // Initialize with exact solution - use more points for higher quantum numbers
-//        int initMax = Math.max(INITIALIZATION_N_MAX, quantumNumber + 1);
-        int initMax = INITIALIZATION_N_MAX; // Why should I use more points for higher quantum numbers???
-        for (int n = 0; n <= initMax && n < nOfPoints; n++) {
+        // Initialize with exact solution
+        for (int n = 0; n <= INITIALIZATION_N_MAX && n < nOfPoints; n++) {
             level.psi[n] = exactSol.evaluate(grid.rAtGridPoint(n));
 
 
@@ -304,7 +302,7 @@ public abstract class AbstractIntegratorTest {
         // Propagate the wavefunction
         double step = level.getGrid().getStepSizeYCoordinate();
         long t0 = System.nanoTime();
-        for (int n = initMax; n < nOfPoints - 1; n++) {
+        for (int n = INITIALIZATION_N_MAX; n < nOfPoints - 1; n++) {
             level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, step,
                     level::QTildeAtGridPoint,
                     level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
@@ -320,16 +318,6 @@ public abstract class AbstractIntegratorTest {
         data.addError("2", exactSolution(grid.rAtGridPoint(nOfPoints / 2)) - level.psi[nOfPoints / 2]);
 
         return data;
-    }
-
-    /**
-     * Initializes the quantum state with the exact solution.
-     * Subclasses can override this method to handle different initialization requirements.
-     */
-    protected void initializeState(QuantumLevel state, Grid grid) {
-        for (int n = 0; n <= INITIALIZATION_N_MAX; n++) {
-            state.psi[n] = exactSolution(grid.rAtGridPoint(n));
-        }
     }
 
     /**
