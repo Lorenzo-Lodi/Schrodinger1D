@@ -33,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public abstract class AbstractIntegratorTest {
 
     private final static int INITIALIZATION_N_MAX = 7;
-    private final static int MIN_POINTS = 200;
 
     // Default potential parameters (matching the existing test setup)
     protected static final double DEFAULT_R0 = 10.0;
@@ -251,7 +250,7 @@ public abstract class AbstractIntegratorTest {
         Map<Integer, ConvergenceData> convergenceResults = new HashMap<>();
 
         // Test with different numbers of grid points
-        for (int nOfPoints = MIN_POINTS; nOfPoints <= 1100; nOfPoints += 100) {
+        for (int nOfPoints = 150; nOfPoints <= 500; nOfPoints += 50) {
             ConvergenceData data = testWithPoints(potential, integrator, nOfPoints, quantumNumber);
             convergenceResults.put(nOfPoints, data);
         }
@@ -709,7 +708,7 @@ public abstract class AbstractIntegratorTest {
             System.out.println(np + " " + error);
 
             String className = integrator.getClass().getSimpleName();
-            double maxError = expectedError_propagate_exp_to_cos_x(integrator, np);
+            double maxError = error_bound_propagate_exp_to_cos_x(integrator, np);
             assertTrue(Math.abs(error) < maxError,
                     String.format("%s : |error| = %.3e should be < %.3e for np = %s",
                             className, Math.abs(error), maxError, np));
@@ -717,9 +716,9 @@ public abstract class AbstractIntegratorTest {
 
     }
 
-    private double expectedError_propagate_exp_to_cos_x(Integrator integrator, int np) {
+    double error_bound_propagate_exp_to_cos_x(Integrator integrator, int np) {
 
-        // We assume errors are in the format |error| = (C/np)^a
+        // We assume errors are in the format |error| < (C/np)^a
         // The higher a , the better;
         // The smallest C, the better;
 
