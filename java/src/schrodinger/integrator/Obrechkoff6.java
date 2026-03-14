@@ -2,7 +2,7 @@ package schrodinger.integrator;
 
 import java.util.function.DoubleUnaryOperator;
 
-public class Obrechkoff implements Integrator {
+public class Obrechkoff6 implements Integrator {
 
     @Override
     public int minHistoryLength() {

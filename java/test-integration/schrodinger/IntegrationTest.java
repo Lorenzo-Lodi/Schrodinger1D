@@ -8,9 +8,9 @@ import schrodinger.integrator.IntegratorFactory;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.SchrodingerSystem;
-import schrodinger.pt_correction.NumerovPTCorrection;
-import schrodinger.pt_correction.PTCorrection;
-import schrodinger.pt_correction.TaylorThreePointsPTCorrection;
+import schrodinger.pt_correction.NumerovPTCorrector;
+import schrodinger.pt_correction.PTCorrector;
+import schrodinger.pt_correction.TaylorThreePointsPTCorrector;
 import schrodinger.solver.ShootingSolver;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +35,7 @@ public class IntegrationTest {
         assertTrue(ek.nodesLower < refEnergy);
 
         double refPerturbative = 2.270604341323613E-4;
-        PTCorrection pt = new TaylorThreePointsPTCorrection();
+        PTCorrector pt = new TaylorThreePointsPTCorrector();
         pt.compute(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
@@ -58,7 +58,7 @@ public class IntegrationTest {
         assertTrue(ek.nodesLower < refEnergy);
 
         double refPerturbative = 0.050063577379135055;
-        PTCorrection pt = new TaylorThreePointsPTCorrection();
+        PTCorrector pt = new TaylorThreePointsPTCorrector();
         pt.compute(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
@@ -81,7 +81,7 @@ public class IntegrationTest {
         assertTrue(ek.nodesLower < refEnergy);
 
         double refPerturbative = 2.0485571986324924E-7;
-        PTCorrection pt = new NumerovPTCorrection();
+        PTCorrector pt = new NumerovPTCorrector();
         pt.compute(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
@@ -104,7 +104,7 @@ public class IntegrationTest {
         assertTrue(ek.nodesLower < refEnergy);
 
         double refPerturbative = 3.0814906265290394E-4;
-        PTCorrection pt = new NumerovPTCorrection();
+        PTCorrector pt = new NumerovPTCorrector();
         pt.compute(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
@@ -112,7 +112,7 @@ public class IntegrationTest {
     @Test
     void test005() {
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
-        Integrator integrator = IntegratorFactory.getEfnFixedBeta();
+        Integrator integrator = IntegratorFactory.getEFNFixedBeta();
         double mass = 2.0d;
         int nOfDesiredNodes = 0;
         int nOfPoints = 200;
@@ -132,7 +132,7 @@ public class IntegrationTest {
     @Test
     void test006() {
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
-        Integrator integrator = IntegratorFactory.getEfnFixedBeta();
+        Integrator integrator = IntegratorFactory.getEFNFixedBeta();
         double mass = 2.0d;
         int nOfDesiredNodes = 10;
         int nOfPoints = 200;
@@ -168,7 +168,7 @@ public class IntegrationTest {
         assertTrue(ek.nodesLower < refEnergy);
 
         double refPerturbative = 3.1895686240242146E-4;
-        PTCorrection pt = new NumerovPTCorrection();
+        PTCorrector pt = new NumerovPTCorrector();
         pt.compute(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
@@ -191,7 +191,7 @@ public class IntegrationTest {
         assertTrue(ek.nodesLower < refEnergy);
 
         double refPerturbative = 3.11832250753927E-4;
-        PTCorrection pt = new NumerovPTCorrection();
+        PTCorrector pt = new NumerovPTCorrector();
         pt.compute(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
@@ -214,7 +214,7 @@ public class IntegrationTest {
         assertTrue(ek.nodesLower < refEnergy);
 
         double refPerturbative = 3.424279849395494E-4;
-        PTCorrection pt = new NumerovPTCorrection();
+        PTCorrector pt = new NumerovPTCorrector();
         pt.compute(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }

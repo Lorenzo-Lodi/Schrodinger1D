@@ -5,7 +5,7 @@ import schrodinger.QuantumLevel;
 /**
  * Perturbative correction for the Numerov integration method.
  */
-public class NumerovPTCorrection implements PTCorrection {
+public class NumerovPTCorrector implements PTCorrector {
 
     @Override
     public void compute(QuantumLevel level) {

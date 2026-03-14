@@ -1,15 +1,16 @@
 package schrodinger.integrator;
 
-import schrodinger.integrator.expfitted.ExponentiallyFitted;
+import schrodinger.integrator.expfitted.EFN;
 import schrodinger.integrator.expfitted.Numerov;
-import schrodinger.integrator.expfitted.EfnFixedBeta;
+import schrodinger.integrator.expfitted.EFNFixedBeta;
 import schrodinger.integrator.predcorr.PredictorCorrector6;
-import schrodinger.integrator.predcorr.PredictorCorrector8NumerovIter1;
-import schrodinger.integrator.predcorr.PredictorCorrector8NumerovIter2;
+import schrodinger.integrator.predcorr.PredictorCorrector8i1;
+import schrodinger.integrator.predcorr.PredictorCorrector8i2;
 import schrodinger.integrator.stormer.Stormer5;
 import schrodinger.integrator.stormer.Stormer6;
 import schrodinger.integrator.stormer.Stormer8;
-import schrodinger.pt_correction.PTCorrection;
+import schrodinger.integrator.stormer.Stormer8i;
+import schrodinger.pt_correction.PTCorrector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +25,12 @@ public class IntegratorFactory {
         return new Numerov();
     }
 
-    public static Integrator getEfnFixedBeta() {
-        return new EfnFixedBeta();
+    public static Integrator getEFNFixedBeta() {
+        return new EFNFixedBeta();
     }
 
-    public static Integrator getExponentiallyFitted() {
-        return new ExponentiallyFitted();
+    public static Integrator getEFN() {
+        return new EFN();
     }
 
     public static Integrator getStormer5() {
@@ -44,51 +45,51 @@ public class IntegratorFactory {
         return new Stormer8();
     }
 
+    public static Integrator getStormer8i() {
+        return new Stormer8i();
+    }
+
     public static Integrator getPredictorCorrector6() {
         return new PredictorCorrector6();
     }
 
-    public static Integrator getPredictorCorrector8NumerovIter1() {
-        return new PredictorCorrector8NumerovIter1();
+    public static Integrator getPredictorCorrector8i1() {
+        return new PredictorCorrector8i1();
     }
 
-    public static Integrator getPredictorCorrector8NumerovIter2() {
-        return new PredictorCorrector8NumerovIter2();
+    public static Integrator getPredictorCorrector8i2() {
+        return new PredictorCorrector8i2();
+    }
+
+    public static Integrator getObrechkoff6() {
+        return new Obrechkoff6();
+    }
+
+    public static Integrator getRKN4() {
+        return new RKN4();
+    }
+
+    public static Integrator getRK45DP() {
+        return new RK45DP();
     }
 
     public static List<Integrator> getAll() {
         List<Integrator> list = new ArrayList<>();
         list.add(getTaylorThreePoints());
         list.add(getNumerov());
-        list.add(getEfnFixedBeta());
-        list.add(getExponentiallyFitted());
+        list.add(getEFNFixedBeta());
+        list.add(getEFN());
         list.add(getStormer5());
         list.add(getStormer6());
         list.add(getStormer8());
+        list.add(getStormer8i());
+        list.add(getObrechkoff6());
         list.add(getPredictorCorrector6());
-        list.add(getPredictorCorrector8NumerovIter1());
-        list.add(getPredictorCorrector8NumerovIter2());
+        list.add(getPredictorCorrector8i1());
+        list.add(getPredictorCorrector8i2());
+        list.add(getRKN4());
+        list.add(getRK45DP());
         return list;
     }
 
-    /**
-     * Pair containing an integrator and its perturbative correction.
-     */
-    public static class IntegratorPair {
-        private final Integrator integrator;
-        private final PTCorrection correction;
-
-        public IntegratorPair(Integrator integrator, PTCorrection correction) {
-            this.integrator = integrator;
-            this.correction = correction;
-        }
-
-        public Integrator getIntegrator() {
-            return integrator;
-        }
-
-        public PTCorrection getCorrection() {
-            return correction;
-        }
-    }
 }

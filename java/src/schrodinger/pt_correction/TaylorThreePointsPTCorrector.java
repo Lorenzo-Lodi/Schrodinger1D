@@ -5,7 +5,7 @@ import schrodinger.QuantumLevel;
 /**
  * Perturbative correction for the Taylor Three Points integration method.
  */
-public class TaylorThreePointsPTCorrection implements PTCorrection {
+public class TaylorThreePointsPTCorrector implements PTCorrector {
 
     @Override
     public void compute(QuantumLevel level) {

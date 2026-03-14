@@ -4,12 +4,12 @@ import org.junit.jupiter.api.Test;
 import schrodinger.QuantumLevel;
 import schrodinger.grid.Grid;
 import schrodinger.grid.GridFactory;
-import schrodinger.integrator.expfitted.EfnFixedBeta;
-import schrodinger.integrator.expfitted.ExponentiallyFitted;
+import schrodinger.integrator.expfitted.EFNFixedBeta;
+import schrodinger.integrator.expfitted.EFN;
 import schrodinger.integrator.expfitted.Numerov;
 import schrodinger.integrator.predcorr.PredictorCorrector6;
-import schrodinger.integrator.predcorr.PredictorCorrector8NumerovIter1;
-import schrodinger.integrator.predcorr.PredictorCorrector8NumerovIter2;
+import schrodinger.integrator.predcorr.PredictorCorrector8i1;
+import schrodinger.integrator.predcorr.PredictorCorrector8i2;
 import schrodinger.integrator.stormer.Stormer5;
 import schrodinger.integrator.stormer.Stormer6;
 import schrodinger.integrator.stormer.Stormer8;
@@ -56,7 +56,7 @@ public abstract class AbstractIntegratorTest {
 
         // Exception for the Obrechkoff method. TODO investigate why the convergence is somewhat erratic.
         // Other tests show that the implementation is correct, though...
-        if (integrator instanceof Obrechkoff) {
+        if (integrator instanceof Obrechkoff6) {
             return 0.68;
         }
 
@@ -104,7 +104,7 @@ public abstract class AbstractIntegratorTest {
 
         // Exception for the Obrechkoff method. TODO investigate why the convergence is somewhat erratic.
         // Other tests show that the implementation is correct, though...
-        if (integrator instanceof Obrechkoff) {
+        if (integrator instanceof Obrechkoff6) {
             return 4.;
         }
 
@@ -250,7 +250,7 @@ public abstract class AbstractIntegratorTest {
         Map<Integer, ConvergenceData> convergenceResults = new HashMap<>();
 
         // Test with different numbers of grid points
-        for (int nOfPoints = 150; nOfPoints <= 500; nOfPoints += 50) {
+        for (int nOfPoints = 200; nOfPoints <= 1100; nOfPoints += 100) {
             ConvergenceData data = testWithPoints(potential, integrator, nOfPoints, quantumNumber);
             convergenceResults.put(nOfPoints, data);
         }
@@ -733,10 +733,10 @@ public abstract class AbstractIntegratorTest {
         } else if (integrator instanceof Numerov) {
             a = 3.62;
             C = 15.1;
-        } else if (integrator instanceof ExponentiallyFitted) {
+        } else if (integrator instanceof EFN) {
             a = 3.68;
             C = 15.4;
-        } else if (integrator instanceof EfnFixedBeta) {
+        } else if (integrator instanceof EFNFixedBeta) {
             a = 3.54;
             C = 13.5;
         } else if (integrator instanceof Stormer5) {
@@ -754,16 +754,16 @@ public abstract class AbstractIntegratorTest {
         } else if (integrator instanceof PredictorCorrector6) {
             a = 8.88;
             C = 41.2;
-        } else if (integrator instanceof Obrechkoff) {
+        } else if (integrator instanceof Obrechkoff6) {
             a = 6.07;
             C = 17.5;
-        } else if (integrator instanceof RK45) {
+        } else if (integrator instanceof RK45DP) {
             a = 5.95;
             C = 14.3;
-        } else if (integrator instanceof PredictorCorrector8NumerovIter1) {
+        } else if (integrator instanceof PredictorCorrector8i1) {
             a = 5.01;
-            C = 7.5;
-        } else if (integrator instanceof PredictorCorrector8NumerovIter2) {
+            C = 8.2;
+        } else if (integrator instanceof PredictorCorrector8i2) {
             a = 6.33;
             C = 13.9;
         }

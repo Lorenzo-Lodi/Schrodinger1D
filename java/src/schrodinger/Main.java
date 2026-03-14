@@ -15,7 +15,7 @@ public class Main {
         OutputManager.initCommonOutputFile("common.log");
 
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
-        Integrator integrator = IntegratorFactory.getEfnFixedBeta();
+        Integrator integrator = IntegratorFactory.getEFNFixedBeta();
         double mass = 2.0d;
         int nOfDesiredNodes = 10;
 

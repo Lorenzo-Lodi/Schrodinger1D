@@ -2,7 +2,7 @@ package schrodinger.integrator;
 
 import java.util.function.DoubleUnaryOperator;
 
-public class RK45 implements Integrator {
+public class RK45DP implements Integrator {
 
     // Stage nodes (c_i)
     private static final double C2 = 0.5; // Actually 1/2 but written nicely

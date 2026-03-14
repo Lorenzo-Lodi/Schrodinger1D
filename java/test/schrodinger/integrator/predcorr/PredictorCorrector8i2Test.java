@@ -11,21 +11,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests the convergence of the integrator by comparing numerical solutions
  * with the exact analytical solution for a harmonic oscillator potential.
  */
-public class PredictorCorrector8NumerovIter1Test extends AbstractIntegratorTest {
+public class PredictorCorrector8i2Test extends AbstractIntegratorTest {
 
     @Override
     protected Integrator getIntegrator() {
-        return new PredictorCorrector8NumerovIter1();
+        return new PredictorCorrector8i2();
     }
     @Test
     public void integrateForwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.FORWARD);
-        assertEquals(1.8651037536285697, val, 1e-14);
+        assertEquals(1.9597799044581992, val, 1e-14);
     }
 
     @Test
     public void integrateBackwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.BACKWARD);
-        assertEquals(2.0013275793801637, val, 1e-14);
+        assertEquals(2.0023768806193236, val, 1e-14);
     }
 }

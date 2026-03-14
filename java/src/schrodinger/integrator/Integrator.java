@@ -1,5 +1,7 @@
 package schrodinger.integrator;
 
+import schrodinger.pt_correction.PTCorrector;
+
 import java.util.function.DoubleUnaryOperator;
 
 /**
@@ -54,5 +56,10 @@ public interface Integrator {
             return value;
         }
     }
+
+    default PTCorrector getPertubativeCorrector() {
+        return null;
+    }
+
 
 }

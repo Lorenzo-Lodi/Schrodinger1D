@@ -26,7 +26,7 @@ public class DissociationTest {
         double rMinAng = 1.;
         double rMinBohr = rMinAng / BOHR_TO_ANG;
         PhysicalPotential potential = new PhysicalPotentialLennardJones(rMinBohr, wellDepthHartree, 6);
-        Integrator integrator = IntegratorFactory.getExponentiallyFitted();
+        Integrator integrator = IntegratorFactory.getEFN();
         double mass = 16.85762920 * UMA_TO_ELECTRON_MASS;
         int nOfPoints = 4000; // Adjusted so that the 14th state is weakly bound, needing an upper limit of around 50 or so
         Grid grid = GridFactory.generateSqrtGrid(1.2d, 45., nOfPoints,5);

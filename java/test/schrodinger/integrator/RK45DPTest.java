@@ -2,11 +2,11 @@ package schrodinger.integrator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RK45Test extends AbstractIntegratorTest {
+public class RK45DPTest extends AbstractIntegratorTest {
 
     @Override
     protected Integrator getIntegrator() {
-        return new RK45();
+        return new RK45DP();
     }
 
 //    @Test

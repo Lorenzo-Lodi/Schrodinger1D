@@ -1,6 +1,6 @@
 package schrodinger.integrator.expfitted;
 
-public class ExponentiallyFitted extends ExponentiallyFittedAbstract {
+public class EFN extends ExponentiallyFittedAbstract {
 
     /**
      * Computes b0 (beta) for S1 EF Numerov.

@@ -2,7 +2,7 @@ package schrodinger.solver;
 
 import schrodinger.OutputManager;
 import schrodinger.QuantumLevel;
-import schrodinger.pt_correction.PTCorrection;
+import schrodinger.pt_correction.PTCorrector;
 import schrodinger.grid.Grid;
 import schrodinger.integrator.Integrator;
 import schrodinger.potential.SchrodingerSystem;
@@ -15,11 +15,11 @@ public class ShootingSolver {
     private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
     private static final double PSI_MAX = 1e30; // stop integrating forward if wave function exceeds this value
     private final Integrator integrator;
-    private final PTCorrection correction;
+    private final PTCorrector correction;
     private final SchrodingerSystem system;
     private RefinementStrategy strategy;
 
-    public ShootingSolver(SchrodingerSystem system, Integrator integrator, PTCorrection correction) {
+    public ShootingSolver(SchrodingerSystem system, Integrator integrator, PTCorrector correction) {
         this.system = system;
         this.integrator = integrator;
         this.correction = correction;
