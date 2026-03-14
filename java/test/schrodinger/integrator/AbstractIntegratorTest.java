@@ -190,26 +190,6 @@ public abstract class AbstractIntegratorTest {
     }
 
     /**
-     * Returns the quantum number for the state being tested.
-     * Subclasses can override this to test different excited states.
-     *
-     * @return the quantum number n (0 = ground state, 1 = first excited, etc.)
-     */
-    protected int getQuantumNumber() {
-        return 0; // Default to ground state
-    }
-
-    /**
-     * Returns the exact solution for the current quantum state.
-     * This method is called once per test to initialize the exact solution instance.
-     *
-     * @return the exact solution for the quantum state being tested
-     */
-    protected HarmonicOscillatorExactSolution getExactSolution() {
-        return HarmonicOscillatorExactSolution.getState(DEFAULT_R0, DEFAULT_ALPHA, getQuantumNumber());
-    }
-
-    /**
      * Tests the convergence of the integrator by comparing numerical solutions
      * with the exact analytical solution for the ground state (n=0).
      */
@@ -481,28 +461,6 @@ public abstract class AbstractIntegratorTest {
      */
     protected double getGlobalConvergenceOrder() {
         return getIntegrator().globalConvergenceOrder();
-    }
-
-    /**
-     * Utility method to format floating point numbers for display.
-     */
-    protected static String padFloat(Double number) {
-        return padFloat(number, 2, 6);
-    }
-
-    /**
-     * Utility method to format floating point numbers for display.
-     */
-    protected static String padFloat(Double number, int nOfDecimals, int width) {
-        String padding = "";
-        int magnitude = number <= 1 ? 0 : (int) Math.log10(Math.abs(number));
-        int signPadding = (number >= 0) ? 0 : 1;
-
-        for (int i = 0; i < width - magnitude - signPadding - nOfDecimals; i++) {
-            padding += " ";
-        }
-
-        return padding + String.format("%." + nOfDecimals + "f", number) + " ";
     }
 
 
