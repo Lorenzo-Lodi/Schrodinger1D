@@ -25,14 +25,23 @@ import java.util.function.DoubleUnaryOperator;
  */
 public class PredictorCorrector6 extends PredictorCorrectorBase {
 
-    public PredictorCorrector6() { super(new Numerov()); }
-    public PredictorCorrector6(Integrator predictor) { super(predictor); }
+    public PredictorCorrector6() {
+        super(new Numerov());
+    }
+
+    public PredictorCorrector6(Integrator predictor) {
+        super(predictor);
+    }
 
     @Override
-    public int minHistoryLength() { return 3; }
+    public int minHistoryLength() {
+        return Math.max(3, predictor.minHistoryLength());
+    }
 
     @Override
-    public int globalConvergenceOrder() { return 6; }
+    public int globalConvergenceOrder() {
+        return 6;
+    }
 
     @Override
     public double propagate(double[] psi, double[] currentPsiPrime, int n, double step,
@@ -49,9 +58,9 @@ public class PredictorCorrector6 extends PredictorCorrectorBase {
         int n1 = n - d;        // n-1
         int n2 = n - 2 * d;   // n-2
 
-        double Q_n2  = qTilde.applyAsDouble(n2);
-        double Q_n1  = qTilde.applyAsDouble(n1);
-        double Q_n0  = qTilde.applyAsDouble(n0);
+        double Q_n2 = qTilde.applyAsDouble(n2);
+        double Q_n1 = qTilde.applyAsDouble(n1);
+        double Q_n0 = qTilde.applyAsDouble(n0);
         double Q_nP1 = qTilde.applyAsDouble(nP1);
         double Q_nP2 = qTilde.applyAsDouble(nP2);
 

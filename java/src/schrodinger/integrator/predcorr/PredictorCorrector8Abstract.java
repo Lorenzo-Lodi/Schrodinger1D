@@ -34,12 +34,12 @@ public abstract class PredictorCorrector8Abstract extends PredictorCorrectorBase
 
     @Override
     public int minHistoryLength() {
-        return 4;
+        return Math.max(4, predictor.minHistoryLength());
     }
 
     @Override
     public int globalConvergenceOrder() {
-        return 6;
+        return 8;
     }
 
     @Override
