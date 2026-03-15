@@ -674,15 +674,10 @@ public abstract class AbstractIntegratorTest {
 
     }
 
-    protected double error_bound_propagate_exp_to_cos_x(int np) {
-        // We assume errors are in the format |error| < (C/np)^a
-        // The higher a , the better;
-        // The smallest C, the better;
-
-        double a = 1.;
-        double C = 1.e-15; // Very tight defaults which will make the test fail
-        return Math.pow(C / np, a);
-    }
+    // We assume errors are in the format |error| < (C/np)^a
+    // The higher a , the better;
+    // The smallest C, the better;
+    abstract protected double error_bound_propagate_exp_to_cos_x(int np);
 
 
 }
