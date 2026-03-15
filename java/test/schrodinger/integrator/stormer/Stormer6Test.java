@@ -28,4 +28,12 @@ public class Stormer6Test extends AbstractIntegratorTest {
         double val = integrateOneStep(Integrator.Direction.BACKWARD);
         assertEquals(2.397959092265943, val, 1e-14);
     }
+
+    @Override
+    protected double error_bound_propagate_exp_to_cos_x(int np) {
+        double a = 7.49;
+        double C = 39.1;
+        return Math.pow(C / np, a);
+    }
+
 }

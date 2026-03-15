@@ -54,4 +54,12 @@ public class NumerovTest extends AbstractIntegratorTest {
         assertEquals(-1.6824522708378986, val, 1e-14);
     }
 
+    @Override
+    protected double error_bound_propagate_exp_to_cos_x(int np) {
+        double a = 3.62;
+        double C = 15.1;
+        return Math.pow(C / np, a);
+    }
+
+
 }

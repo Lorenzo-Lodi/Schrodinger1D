@@ -54,4 +54,11 @@ public class EFNTest extends AbstractIntegratorTest {
         assertEquals(-1.6824522709061138, val, 1e-14);
     }
 
+    @Override
+    protected double error_bound_propagate_exp_to_cos_x(int np) {
+        double a = 3.68;
+        double C = 15.4;
+        return Math.pow(C / np, a);
+    }
+
 }

@@ -28,4 +28,12 @@ public class PredictorCorrector8i2Test extends AbstractIntegratorTest {
         double val = integrateOneStep(Integrator.Direction.BACKWARD);
         assertEquals(2.0023768806193236, val, 1e-14);
     }
+
+    @Override
+    protected double error_bound_propagate_exp_to_cos_x(int np) {
+        double   a = 6.33;
+        double  C = 13.9;
+        return Math.pow(C / np, a);
+    }
+
 }

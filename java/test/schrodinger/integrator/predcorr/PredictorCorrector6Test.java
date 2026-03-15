@@ -30,4 +30,11 @@ public class PredictorCorrector6Test extends AbstractIntegratorTest {
         assertEquals(2.105467768082526, val, 1e-14);
     }
 
+    @Override
+    protected double error_bound_propagate_exp_to_cos_x(int np) {
+        double a = 8.88;
+        double C = 41.2;
+        return Math.pow(C / np, a);
+    }
+
 }

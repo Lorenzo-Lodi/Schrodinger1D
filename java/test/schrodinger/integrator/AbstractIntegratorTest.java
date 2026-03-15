@@ -666,7 +666,7 @@ public abstract class AbstractIntegratorTest {
             System.out.println(np + " " + error);
 
             String className = integrator.getClass().getSimpleName();
-            double maxError = error_bound_propagate_exp_to_cos_x(integrator, np);
+            double maxError = error_bound_propagate_exp_to_cos_x(np);
             assertTrue(Math.abs(error) < maxError,
                     String.format("%s : |error| = %.3e should be < %.3e for np = %s",
                             className, Math.abs(error), maxError, np));
@@ -674,58 +674,13 @@ public abstract class AbstractIntegratorTest {
 
     }
 
-    double error_bound_propagate_exp_to_cos_x(Integrator integrator, int np) {
-
+    protected double error_bound_propagate_exp_to_cos_x(int np) {
         // We assume errors are in the format |error| < (C/np)^a
         // The higher a , the better;
         // The smallest C, the better;
 
         double a = 1.;
         double C = 1.e-15; // Very tight defaults which will make the test fail
-        if (integrator instanceof TaylorThreePoints) {
-            a = 1.88;
-            C = 85.4;
-        } else if (integrator instanceof RKN4) {
-            a = 4.01;
-            C = 24.0;
-        } else if (integrator instanceof Numerov) {
-            a = 3.62;
-            C = 15.1;
-        } else if (integrator instanceof EFN) {
-            a = 3.68;
-            C = 15.4;
-        } else if (integrator instanceof EFNFixedBeta) {
-            a = 3.54;
-            C = 13.5;
-        } else if (integrator instanceof Stormer5) {
-            a = 4.85;
-            C = 28.6;
-        } else if (integrator instanceof Stormer8) {
-            a = 8.63;
-            C = 52.1;
-        } else if (integrator instanceof Stormer6) {
-            a = 7.49;
-            C = 39.1;
-        } else if (integrator instanceof Stormer8i) {
-            a = 8.70;
-            C = 36.6;
-        } else if (integrator instanceof PredictorCorrector6) {
-            a = 8.88;
-            C = 41.2;
-        } else if (integrator instanceof Obrechkoff6) {
-            a = 6.07;
-            C = 17.5;
-        } else if (integrator instanceof RK45DP) {
-            a = 5.95;
-            C = 14.3;
-        } else if (integrator instanceof PredictorCorrector8i1) {
-            a = 5.01;
-            C = 8.2;
-        } else if (integrator instanceof PredictorCorrector8i2) {
-            a = 6.33;
-            C = 13.9;
-        }
-
         return Math.pow(C / np, a);
     }
 
