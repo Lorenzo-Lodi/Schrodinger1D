@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class HarmonicOscillatorConvergenceVerifier {
 
     private final static int INITIALIZATION_N_MAX = 7;
-    private static final double DEFAULT_R0 = 10.0;
+    private static final double DEFAULT_R0 = 0.0;
     private static final double DEFAULT_ALPHA = 1.0;
     private HarmonicOscillatorExactSolution exactSolutionInstance;
     private final Integrator integrator;
@@ -121,15 +121,9 @@ public class HarmonicOscillatorConvergenceVerifier {
      * @return array {rMin, rMax}
      */
     private double[] getGridBoundaries(int quantumNumber) {
-        if (quantumNumber == 0) {
-            // Original grid for ground state
-            return new double[]{6.0, 14.0};
-        } else {
-            // For excited states, stay within classically allowed region
-            // For n=10: E=10.5, turning points at r = 10 ± sqrt(10.5) ≈ 6.76, 13.24
-            // Use [7.5, 12.5] to avoid numerical issues near turning points
-            return new double[]{DEFAULT_R0 - 2.5, DEFAULT_R0 + 2.5};
-        }
+        double energy = 0.5 + quantumNumber;
+        double turningPoint = Math.sqrt(energy);
+        return new double[]{DEFAULT_R0 - turningPoint - 3.0, DEFAULT_R0 + turningPoint + 3.0};
     }
 
     /**
@@ -208,6 +202,9 @@ public class HarmonicOscillatorConvergenceVerifier {
         String stateName = (quantumNumber == 0) ? "Ground State" : quantumNumber + "th Excited State";
         System.out.println("\n=== Testing " + stateName + " (n=" + quantumNumber + ") ===\n");
         System.out.println("Results for: " + integrator.getClass().getSimpleName() + "\n");
+        double[] bounds = getGridBoundaries(quantumNumber);
+        System.out.printf("xmin = %25.14f, xmax = %25.14f, grid size = %25.14f\n%n", bounds[0], bounds[1], bounds[1] - bounds[0]);
+
         printResults(convergenceResults);
 
         // Calculate and print convergence rates
