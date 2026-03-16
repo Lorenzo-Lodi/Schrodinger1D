@@ -166,7 +166,7 @@ public class HarmonicOscillatorConvergenceVerifier {
      * with the exact analytical solution for the ground state (n=0).
      */
     public void verify_harmonic_oscillator_ground_state() {
-        verify_harmonic_oscillator_ground_state(0); // Default: ground state
+        verify_harmonic_oscillator(0); // Default: ground state
     }
 
     /**
@@ -174,7 +174,7 @@ public class HarmonicOscillatorConvergenceVerifier {
      * with the exact analytical solution for the 10th excited state (n=10, has 10 nodes).
      */
     public void verify_harmonic_oscillator_10th_excited_state() {
-        verify_harmonic_oscillator_ground_state(10);
+        verify_harmonic_oscillator(10);
     }
 
     /**
@@ -183,7 +183,7 @@ public class HarmonicOscillatorConvergenceVerifier {
      *
      * @param quantumNumber the quantum number n (0 = ground state, 1 = first excited, etc.)
      */
-    private void verify_harmonic_oscillator_ground_state(int quantumNumber) {
+    private void verify_harmonic_oscillator(int quantumNumber) {
         if (integrator.minHistoryLength() > INITIALIZATION_N_MAX + 1) {
             String className = this.getClass().getSimpleName();
             String msg = String.format("Integrator %s requires at least %d previously-computed points, but only %d are available!",
