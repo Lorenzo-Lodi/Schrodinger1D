@@ -1,4 +1,4 @@
-package schrodinger.integrator;
+package schrodinger.integrator.verification;
 
 public class LinearFit {
 

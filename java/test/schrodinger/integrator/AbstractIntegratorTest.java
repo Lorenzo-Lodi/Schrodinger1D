@@ -1,6 +1,7 @@
 package schrodinger.integrator;
 
 import org.junit.jupiter.api.Test;
+import schrodinger.integrator.verification.*;
 
 import java.util.function.DoubleUnaryOperator;
 
@@ -83,10 +84,6 @@ public abstract class AbstractIntegratorTest {
         ExpCosXVerifier.propagate_exp_to_cos_x(getIntegrator(), direction, convergence_params_exp_to_cos_x());
     }
 
-    // We assume errors are in the format |error| < (C/np)^a
-    // The higher a , the better;
-    // The smallest C, the better;
     abstract protected ConvergenceParams convergence_params_exp_to_cos_x();
-
 
 }

@@ -12,8 +12,8 @@ import schrodinger.integrator.stormer.Stormer5;
 import schrodinger.integrator.stormer.Stormer6;
 import schrodinger.integrator.stormer.Stormer8;
 import schrodinger.integrator.stormer.Stormer8i;
-import schrodinger.integrator.various.Obrechkoff6;
-import schrodinger.integrator.various.TaylorThreePoints;
+import schrodinger.integrator.misc.Obrechkoff6;
+import schrodinger.integrator.misc.TaylorThreePoints;
 
 import java.util.ArrayList;
 import java.util.List;

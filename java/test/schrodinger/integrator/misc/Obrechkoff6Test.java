@@ -1,6 +1,8 @@
-package schrodinger.integrator;
+package schrodinger.integrator.misc;
 
-import schrodinger.integrator.various.Obrechkoff6;
+import schrodinger.integrator.AbstractIntegratorTest;
+import schrodinger.integrator.verification.ConvergenceParams;
+import schrodinger.integrator.Integrator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

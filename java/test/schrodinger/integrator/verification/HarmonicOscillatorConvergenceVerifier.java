@@ -1,8 +1,9 @@
-package schrodinger.integrator;
+package schrodinger.integrator.verification;
 
 import schrodinger.QuantumLevel;
 import schrodinger.grid.Grid;
 import schrodinger.grid.GridFactory;
+import schrodinger.integrator.Integrator;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.SchrodingerSystem;

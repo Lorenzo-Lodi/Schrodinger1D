@@ -2,7 +2,7 @@ package schrodinger.integrator.numerovlike;
 
 import org.junit.jupiter.api.Test;
 import schrodinger.integrator.AbstractIntegratorTest;
-import schrodinger.integrator.ConvergenceParams;
+import schrodinger.integrator.verification.ConvergenceParams;
 import schrodinger.integrator.Integrator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

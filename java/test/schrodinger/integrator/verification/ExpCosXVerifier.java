@@ -1,7 +1,8 @@
-package schrodinger.integrator;
+package schrodinger.integrator.verification;
+
+import schrodinger.integrator.Integrator;
 
 import java.util.function.DoubleUnaryOperator;
-import java.util.function.IntToDoubleFunction;
 import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

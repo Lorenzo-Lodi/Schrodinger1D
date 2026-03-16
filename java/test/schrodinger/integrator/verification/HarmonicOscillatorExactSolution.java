@@ -1,4 +1,4 @@
-package schrodinger.integrator;
+package schrodinger.integrator.verification;
 
 /**
  * Provides exact analytical solutions for the quantum harmonic oscillator.

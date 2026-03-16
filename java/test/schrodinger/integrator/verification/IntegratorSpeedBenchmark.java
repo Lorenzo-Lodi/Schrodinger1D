@@ -1,4 +1,6 @@
-package schrodinger.integrator;
+package schrodinger.integrator.verification;
+
+import schrodinger.integrator.Integrator;
 
 import java.util.function.DoubleUnaryOperator;
 

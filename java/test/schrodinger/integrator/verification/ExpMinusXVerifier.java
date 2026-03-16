@@ -1,4 +1,6 @@
-package schrodinger.integrator;
+package schrodinger.integrator.verification;
+
+import schrodinger.integrator.Integrator;
 
 public class ExpMinusXVerifier {
 

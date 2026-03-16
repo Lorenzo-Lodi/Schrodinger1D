@@ -1,7 +1,9 @@
-package schrodinger.integrator;
+package schrodinger.integrator.rungekutta;
 
 import org.junit.jupiter.api.Test;
-import schrodinger.integrator.rungekutta.RK45DP;
+import schrodinger.integrator.AbstractIntegratorTest;
+import schrodinger.integrator.verification.ConvergenceParams;
+import schrodinger.integrator.Integrator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -1,4 +1,4 @@
-package schrodinger.integrator.various;
+package schrodinger.integrator.misc;
 
 import schrodinger.integrator.Integrator;
 
