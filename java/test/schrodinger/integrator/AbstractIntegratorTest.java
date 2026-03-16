@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import schrodinger.QuantumLevel;
 import schrodinger.grid.Grid;
 import schrodinger.grid.GridFactory;
-import schrodinger.integrator.predcorr.PredictorCorrector8Abstract;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.SchrodingerSystem;
