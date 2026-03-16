@@ -18,13 +18,13 @@ public abstract class AbstractIntegratorTest {
     @Test
     void harmonic_oscillator_ground_state() {
         HarmonicOscillatorConvergenceVerifier ho = new HarmonicOscillatorConvergenceVerifier(getIntegrator());
-        ho.harmonic_oscillator_ground_state();
+        ho.verify_harmonic_oscillator_ground_state();
     }
 
     @Test
     void harmonic_oscillator_10th_excited_state() {
         HarmonicOscillatorConvergenceVerifier ho = new HarmonicOscillatorConvergenceVerifier(getIntegrator());
-        ho.harmonic_oscillator_10th_excited_state();
+        ho.verify_harmonic_oscillator_10th_excited_state();
     }
 
 
@@ -69,32 +69,7 @@ public abstract class AbstractIntegratorTest {
 
     @Test
     public void propagate_forward_exp_minus_x() {
-        Integrator integrator = getIntegrator();
-
-        // NB don't use too many points because some methods have fairly bad roundoff error which distorts the convergence patterns
-        for (int np = 10; np <= 20; np++) {
-            double xmin = 0.;
-            double xmax = 1.;
-            double[] psi = new double[np];
-            double[] currentPsiPrime = new double[1];
-            double step = (xmax - xmin) / (np - 1);
-
-            for (int i = 0; i < integrator.minHistoryLength(); i++) {
-                double x = xmin + i * step;
-                psi[i] = Math.exp(-x);
-                currentPsiPrime[0] = -Math.exp(-x);
-            }
-
-            for (int n = integrator.minHistoryLength() - 1; n < np - 1; n++) {
-                psi[n + 1] = integrator.propagate(psi, currentPsiPrime, n, step,
-                        i -> -1., i -> 0., i -> 0.,
-                        Integrator.Direction.FORWARD);
-            }
-
-            double error = Math.exp(-1.) - psi[np - 1];
-            System.out.println(np + " " + error);
-        }
-
+        ExpMinusXVerifier.propagate_forward_exp_minus_x(getIntegrator());
     }
 
     @Test
@@ -108,57 +83,7 @@ public abstract class AbstractIntegratorTest {
     }
 
     public void propagate_exp_to_cos_x(Integrator.Direction direction) {
-        Integrator integrator = getIntegrator();
-        System.out.println(integrator.getClass().getSimpleName());
-        int d = direction.getValue();
-
-        for (int np = 100; np <= 500; np += 10) {
-            double xmin = 0.;
-            double xmax = 4. * Math.PI;
-            double[] psi = new double[np];
-            double[] currentPsiPrime = new double[1];
-            double step = (xmax - xmin) / (np - 1);
-
-            boolean isBackward = direction.equals(Integrator.Direction.BACKWARD);
-            {
-                final int startIndex1 = isBackward ? np - 1 : 0;
-                final int endIndex1 = isBackward ? np - 1 - integrator.minHistoryLength() : integrator.minHistoryLength();
-                Predicate<Integer> condition = isBackward ? n -> (n > endIndex1) : n -> (n < endIndex1);
-                for (int n = startIndex1; condition.test(n); n = n + d) {
-                    double x = xmin + n * step;
-                    psi[n] = Math.exp(Math.cos(x));
-                    currentPsiPrime[0] = -Math.sin(x) * Math.exp(Math.cos(x));
-                }
-            }
-
-            DoubleUnaryOperator qTilde = i -> Math.cos(xmin + i * step) - Math.pow(Math.sin(xmin + i * step), 2);
-            DoubleUnaryOperator qTildePrime = i -> -Math.sin(xmin + i * step) - 2. * Math.cos(xmin + i * step) * Math.sin(xmin + i * step);
-            DoubleUnaryOperator qTildeDoublePrime = i -> -Math.cos(xmin + i * step)
-                    - 2. * Math.pow(Math.cos(xmin + i * step), 2)
-                    + 2. * Math.pow(Math.sin(xmin + i * step), 2);
-
-            {
-                final int startIndex2 = isBackward ? np - integrator.minHistoryLength() : integrator.minHistoryLength() - 1;
-                final int endIndex2 = isBackward ? np - 1 - integrator.minHistoryLength() : np - 1;
-                Predicate<Integer> condition = isBackward ? n -> (n > 0) : n -> (n < endIndex2);
-
-                for (int n = startIndex2; condition.test(n); n = n + d) {
-                    psi[n + d] = integrator.propagate(psi, currentPsiPrime, n, step,
-                            qTilde, qTildePrime, qTildeDoublePrime,
-                            direction);
-                }
-            }
-
-            double error = isBackward ? Math.exp(Math.cos(xmin)) - psi[0] : Math.exp(Math.cos(xmax)) - psi[np - 1];
-            System.out.println(np + " " + error);
-
-            String className = integrator.getClass().getSimpleName();
-            double maxError = error_bound_propagate_exp_to_cos_x(np);
-            assertTrue(Math.abs(error) < maxError,
-                    String.format("%s : |error| = %.3e should be < %.3e for np = %s",
-                            className, Math.abs(error), maxError, np));
-        }
-
+        ExpCosXVerifier.propagate_exp_to_cos_x(getIntegrator(), direction, this::error_bound_propagate_exp_to_cos_x);
     }
 
     // We assume errors are in the format |error| < (C/np)^a
