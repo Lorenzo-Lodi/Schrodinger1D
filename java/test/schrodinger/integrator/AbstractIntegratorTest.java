@@ -3,9 +3,6 @@ package schrodinger.integrator;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.DoubleUnaryOperator;
-import java.util.function.Predicate;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractIntegratorTest {
 
@@ -48,41 +45,41 @@ public abstract class AbstractIntegratorTest {
         return integrator.propagate(psi, currentPsiPrime, arraySize / 2, 0.123, q, q1, q2, direction);
     }
 
-    public double integrateOneStep(Integrator.Direction direction) {
+    protected double integrateOneStep(Integrator.Direction direction) {
         return integrateOneStep(1., direction);
     }
 
     // Same as integrateOneStep but with negated Q to test Z < 0 branch in exponentially fitted methods.
-    public double integrateOneStepNegativeQ(Integrator.Direction direction) {
+    protected double integrateOneStepNegativeQ(Integrator.Direction direction) {
         return integrateOneStep(-1., direction);
     }
 
     // Same as integrateOneStep but with very small Q  to test series expansion branch (|Z| < threshold).
-    public double integrateOneStepSmallZ(Integrator.Direction direction) {
+    protected double integrateOneStepSmallZ(Integrator.Direction direction) {
         return integrateOneStep(2.e-5, direction);
     }
 
     @Test
-    public void time_benchmark() {
+    void time_benchmark() {
         IntegratorSpeedBenchmark.time_benchmark(getIntegrator());
     }
 
     @Test
-    public void propagate_forward_exp_minus_x() {
+    void propagate_forward_exp_minus_x() {
         ExpMinusXVerifier.propagate_forward_exp_minus_x(getIntegrator());
     }
 
     @Test
-    public void propagate_forward_exp_to_cos_x() {
+    void propagate_forward_exp_to_cos_x() {
         propagate_exp_to_cos_x(Integrator.Direction.FORWARD);
     }
 
     @Test
-    public void propagate_backward_exp_to_cos_x() {
+    void propagate_backward_exp_to_cos_x() {
         propagate_exp_to_cos_x(Integrator.Direction.BACKWARD);
     }
 
-    public void propagate_exp_to_cos_x(Integrator.Direction direction) {
+    private void propagate_exp_to_cos_x(Integrator.Direction direction) {
         ExpCosXVerifier.propagate_exp_to_cos_x(getIntegrator(), direction, this::error_bound_propagate_exp_to_cos_x);
     }
 
