@@ -80,13 +80,13 @@ public abstract class AbstractIntegratorTest {
     }
 
     private void propagate_exp_to_cos_x(Integrator.Direction direction) {
-        ExpCosXVerifier.propagate_exp_to_cos_x(getIntegrator(), direction, this::error_bound_propagate_exp_to_cos_x);
+        ExpCosXVerifier.propagate_exp_to_cos_x(getIntegrator(), direction, convergence_params_exp_to_cos_x());
     }
 
     // We assume errors are in the format |error| < (C/np)^a
     // The higher a , the better;
     // The smallest C, the better;
-    abstract protected double error_bound_propagate_exp_to_cos_x(int np);
+    abstract protected ConvergenceParams convergence_params_exp_to_cos_x();
 
 
 }

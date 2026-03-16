@@ -2,6 +2,7 @@ package schrodinger.integrator.stormer;
 
 import org.junit.jupiter.api.Test;
 import schrodinger.integrator.AbstractIntegratorTest;
+import schrodinger.integrator.ConvergenceParams;
 import schrodinger.integrator.Integrator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,6 +18,7 @@ public class Stormer8iTest extends AbstractIntegratorTest {
     protected Integrator getIntegrator() {
         return new Stormer8i();
     }
+
     @Test
     public void integrateForwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.FORWARD);
@@ -30,10 +32,8 @@ public class Stormer8iTest extends AbstractIntegratorTest {
     }
 
     @Override
-    protected double error_bound_propagate_exp_to_cos_x(int np) {
-        double a = 8.70;
-        double C = 36.6;
-        return Math.pow(C / np, a);
+    protected ConvergenceParams convergence_params_exp_to_cos_x() {
+        return new ConvergenceParams(8.70, 36.6);
     }
 
 }

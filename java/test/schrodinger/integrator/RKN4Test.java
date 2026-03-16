@@ -24,10 +24,8 @@ public class RKN4Test extends AbstractIntegratorTest {
     }
 
     @Override
-    protected double error_bound_propagate_exp_to_cos_x(int np) {
-        double a = 4.01;
-        double C = 24.0;
-        return Math.pow(C / np, a);
+    protected ConvergenceParams convergence_params_exp_to_cos_x() {
+        return new ConvergenceParams(4.01, 24.0);
     }
 
 }

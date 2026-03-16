@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ExpCosXVerifier {
 
-    public static void propagate_exp_to_cos_x(Integrator integrator, Integrator.Direction direction, IntToDoubleFunction errorFunc) {
+    public static void propagate_exp_to_cos_x(Integrator integrator, Integrator.Direction direction, ConvergenceParams params) {
         System.out.println(integrator.getClass().getSimpleName());
         int d = direction.getValue();
 
@@ -53,7 +53,7 @@ public class ExpCosXVerifier {
             System.out.println(np + " " + error);
 
             String className = integrator.getClass().getSimpleName();
-            double errorBound = errorFunc.applyAsDouble(np);
+            double errorBound = params.calculateMaxError(np);
             assertTrue(Math.abs(error) < errorBound,
                     String.format("%s : |error| = %.3e should be < %.3e for np = %s",
                             className, Math.abs(error), errorBound, np));

@@ -15,8 +15,6 @@ public class Obrechkoff6Test extends AbstractIntegratorTest {
     }
 
 
-
-
 //    @Test
 //    public void integrateForwardReferenceTest() {
 //        double val = integrateOneStep(Integrator.Direction.FORWARD);
@@ -30,10 +28,8 @@ public class Obrechkoff6Test extends AbstractIntegratorTest {
 //    }
 
     @Override
-    protected double error_bound_propagate_exp_to_cos_x(int np) {
-        double a = 6.07;
-        double C = 17.5;
-        return Math.pow(C / np, a);
+    protected ConvergenceParams convergence_params_exp_to_cos_x() {
+        return new ConvergenceParams(6.07, 17.5);
     }
 
 

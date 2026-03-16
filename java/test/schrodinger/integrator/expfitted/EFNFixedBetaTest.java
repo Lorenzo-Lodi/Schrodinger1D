@@ -2,6 +2,7 @@ package schrodinger.integrator.expfitted;
 
 import org.junit.jupiter.api.Test;
 import schrodinger.integrator.AbstractIntegratorTest;
+import schrodinger.integrator.ConvergenceParams;
 import schrodinger.integrator.Integrator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,10 +56,8 @@ public class EFNFixedBetaTest extends AbstractIntegratorTest {
     }
 
     @Override
-    protected double error_bound_propagate_exp_to_cos_x(int np) {
-        double a = 3.54;
-        double C = 13.5;
-        return Math.pow(C / np, a);
+    protected ConvergenceParams convergence_params_exp_to_cos_x() {
+        return new ConvergenceParams(3.54, 13.5);
     }
 
 }
