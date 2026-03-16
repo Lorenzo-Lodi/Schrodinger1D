@@ -1,4 +1,4 @@
-package schrodinger.integrator.expfitted;
+package schrodinger.integrator.numerovlike;
 
 public class EFN extends ExponentiallyFittedAbstract {
 

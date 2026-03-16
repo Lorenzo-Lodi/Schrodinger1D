@@ -1,16 +1,19 @@
 package schrodinger.integrator;
 
-import schrodinger.integrator.expfitted.EFN;
-import schrodinger.integrator.expfitted.Numerov;
-import schrodinger.integrator.expfitted.EFNFixedBeta;
+import schrodinger.integrator.numerovlike.EFN;
+import schrodinger.integrator.numerovlike.Numerov;
+import schrodinger.integrator.numerovlike.EFNFixedBeta;
 import schrodinger.integrator.predcorr.PredictorCorrector6;
 import schrodinger.integrator.predcorr.PredictorCorrector8i1;
 import schrodinger.integrator.predcorr.PredictorCorrector8i2;
+import schrodinger.integrator.rungekutta.RK45DP;
+import schrodinger.integrator.rungekutta.RKN4;
 import schrodinger.integrator.stormer.Stormer5;
 import schrodinger.integrator.stormer.Stormer6;
 import schrodinger.integrator.stormer.Stormer8;
 import schrodinger.integrator.stormer.Stormer8i;
-import schrodinger.pt_correction.PTCorrector;
+import schrodinger.integrator.various.Obrechkoff6;
+import schrodinger.integrator.various.TaylorThreePoints;
 
 import java.util.ArrayList;
 import java.util.List;

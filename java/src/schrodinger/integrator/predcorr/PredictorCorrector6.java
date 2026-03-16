@@ -1,7 +1,7 @@
 package schrodinger.integrator.predcorr;
 
 import schrodinger.integrator.Integrator;
-import schrodinger.integrator.expfitted.Numerov;
+import schrodinger.integrator.numerovlike.Numerov;
 
 import java.util.function.DoubleUnaryOperator;
 

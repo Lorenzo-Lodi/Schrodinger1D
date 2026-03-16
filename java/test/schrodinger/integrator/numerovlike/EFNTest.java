@@ -1,4 +1,4 @@
-package schrodinger.integrator.expfitted;
+package schrodinger.integrator.numerovlike;
 
 import org.junit.jupiter.api.Test;
 import schrodinger.integrator.AbstractIntegratorTest;

@@ -1,4 +1,4 @@
-package schrodinger.integrator.expfitted;
+package schrodinger.integrator.numerovlike;
 
 // Exponentially-Fitted Numerov Method with Fixed β
 public class EFNFixedBeta extends ExponentiallyFittedAbstract {

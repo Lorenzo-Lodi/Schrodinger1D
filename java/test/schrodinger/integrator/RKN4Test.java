@@ -1,6 +1,7 @@
 package schrodinger.integrator;
 
 import org.junit.jupiter.api.Test;
+import schrodinger.integrator.rungekutta.RKN4;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

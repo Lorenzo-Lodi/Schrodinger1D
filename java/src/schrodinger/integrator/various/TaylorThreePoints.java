@@ -1,14 +1,14 @@
-package schrodinger.integrator.expfitted;
+package schrodinger.integrator.various;
 
 import schrodinger.integrator.Integrator;
 
 import java.util.function.DoubleUnaryOperator;
 
 /**
- * Numerov's method for integrating the Schrödinger equation.
- * Fourth-order accurate method.
+ * Three-point Taylor expansion method for integrating the Schrödinger equation.
+ * Second-order accurate method.
  */
-public class Numerov implements Integrator {
+public class TaylorThreePoints implements Integrator {
 
     @Override
     public int minHistoryLength() {
@@ -17,7 +17,7 @@ public class Numerov implements Integrator {
 
     @Override
     public int globalConvergenceOrder() {
-        return 4;
+        return 2;
     }
 
     @Override
@@ -25,11 +25,7 @@ public class Numerov implements Integrator {
                             DoubleUnaryOperator qTilde,
                             DoubleUnaryOperator qTildePrime,
                             DoubleUnaryOperator qTildeDoublePrime, Direction direction) {
-        double h2 = step * step;
-        return (psi[n] * (2.0d - 5. * h2 * qTilde.applyAsDouble(n) / 6.) -
-                (1. + h2 * qTilde.applyAsDouble(n - direction.getValue()) / 12.)
-                        * psi[n - direction.getValue()]) /
-                (1. + h2 * qTilde.applyAsDouble(n + direction.getValue()) / 12.);
+        return psi[n] * (2.0d - step * step * qTilde.applyAsDouble(n)) - psi[n - direction.getValue()];
     }
 
 }
