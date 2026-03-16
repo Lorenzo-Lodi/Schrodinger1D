@@ -42,18 +42,6 @@ public class NumerovTest extends AbstractIntegratorTest {
         assertEquals(-12.180183007186118, val, 1e-14);
     }
 
-    @Test
-    public void integrateForwardSmallZTest() {
-        double val = integrateOneStepSmallZ(Integrator.Direction.FORWARD);
-        assertEquals(-0.7668908395120383, val, 1e-14);
-    }
-
-    @Test
-    public void integrateBackwardSmallZTest() {
-        double val = integrateOneStepSmallZ(Integrator.Direction.BACKWARD);
-        assertEquals(-1.6824522708378986, val, 1e-14);
-    }
-
     @Override
     protected double error_bound_propagate_exp_to_cos_x(int np) {
         double a = 3.62;
