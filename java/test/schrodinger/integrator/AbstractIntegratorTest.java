@@ -41,7 +41,7 @@ public abstract class AbstractIntegratorTest {
      * @param pointName     the evaluation point name (e.g., "10%", "25%", "50%")
      * @return minimum acceptable R²
      */
-    protected double getMinRSquared(int quantumNumber, String pointName, Integrator integrator) {
+    protected double getMinRSquared(int quantumNumber, String pointName) {
         double baseOrder = getGlobalConvergenceOrder();
 
         if (quantumNumber == 0) {
@@ -83,14 +83,8 @@ public abstract class AbstractIntegratorTest {
      * @param pointName     the evaluation point name (e.g., "10%", "25%", "50%")
      * @return maximum allowed deviation from expected convergence order
      */
-    protected double getConvergenceOrderTolerance(int quantumNumber, String pointName, Integrator integrator) {
+    protected double getConvergenceOrderTolerance(int quantumNumber, String pointName) {
         double baseOrder = getGlobalConvergenceOrder();
-
-        // Exception for the Obrechkoff method. TODO investigate why the convergence is somewhat erratic.
-        // Other tests show that the implementation is correct, though...
-        if (integrator instanceof Obrechkoff6) {
-            return 4.;
-        }
 
         // Base tolerance depends on integrator order
         double baseTolerance;
@@ -368,8 +362,8 @@ public abstract class AbstractIntegratorTest {
             String pointName = pointNames[idx];
 
             // Get point-specific and state-dependent tolerances
-            double minRSquared = getMinRSquared(quantumNumber, pointName, integrator);
-            double convergenceTol = getConvergenceOrderTolerance(quantumNumber, pointName, integrator);
+            double minRSquared = getMinRSquared(quantumNumber, pointName);
+            double convergenceTol = getConvergenceOrderTolerance(quantumNumber, pointName);
 
             // Create arrays for ln(points) and ln(|error|)
             int n = convergenceResults.size();
