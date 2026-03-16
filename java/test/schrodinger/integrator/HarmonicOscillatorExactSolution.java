@@ -145,30 +145,7 @@ public class HarmonicOscillatorExactSolution {
         }
     }
     
-    /**
-     * Evaluates the exact wavefunction at position r with normalization.
-     *
-     * @param r the position
-     * @return the normalized wavefunction value ψ(r)
-     */
-    public double evaluateNormalized(double r) {
-        boolean wasNormalized = this.normalized;
-        // Temporarily enable normalization
-        HarmonicOscillatorExactSolution tempSol = new HarmonicOscillatorExactSolution(r0, alpha, quantumNumber, true);
-        return tempSol.evaluate(r);
-    }
 
-    /**
-     * Evaluates the unnormalized (raw) wavefunction at position r.
-     *
-     * @param r the position
-     * @return the unnormalized wavefunction value
-     */
-    public double evaluateUnnormalized(double r) {
-        HarmonicOscillatorExactSolution tempSol = new HarmonicOscillatorExactSolution(r0, alpha, quantumNumber, false);
-        return tempSol.evaluate(r);
-    }
-    
     /**
      * Computes the factorial n! using iterative multiplication.
      * 

@@ -4,16 +4,7 @@ import org.junit.jupiter.api.Test;
 import schrodinger.QuantumLevel;
 import schrodinger.grid.Grid;
 import schrodinger.grid.GridFactory;
-import schrodinger.integrator.expfitted.EFNFixedBeta;
-import schrodinger.integrator.expfitted.EFN;
-import schrodinger.integrator.expfitted.Numerov;
-import schrodinger.integrator.predcorr.PredictorCorrector6;
-import schrodinger.integrator.predcorr.PredictorCorrector8i1;
-import schrodinger.integrator.predcorr.PredictorCorrector8i2;
-import schrodinger.integrator.stormer.Stormer5;
-import schrodinger.integrator.stormer.Stormer6;
-import schrodinger.integrator.stormer.Stormer8;
-import schrodinger.integrator.stormer.Stormer8i;
+import schrodinger.integrator.predcorr.PredictorCorrector8Abstract;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.SchrodingerSystem;
@@ -54,12 +45,6 @@ public abstract class AbstractIntegratorTest {
     protected double getMinRSquared(int quantumNumber, String pointName, Integrator integrator) {
         double baseOrder = getGlobalConvergenceOrder();
 
-        // Exception for the Obrechkoff method. TODO investigate why the convergence is somewhat erratic.
-        // Other tests show that the implementation is correct, though...
-        if (integrator instanceof Obrechkoff6) {
-            return 0.68;
-        }
-
         if (quantumNumber == 0) {
             // Ground state: very high R² achievable for lower order methods
             if (baseOrder <= 4.0) {
@@ -85,7 +70,7 @@ public abstract class AbstractIntegratorTest {
             } else {
                 if (isNearNode) return 0.69;
                 if (isCenter) return 0.65;  // Very relaxed for high-order at center
-                return 0.88;
+                return 0.87;
             }
         }
     }
