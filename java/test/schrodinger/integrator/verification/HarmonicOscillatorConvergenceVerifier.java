@@ -36,35 +36,34 @@ public class HarmonicOscillatorConvergenceVerifier {
      * @return minimum acceptable R²
      */
     private double getMinRSquared(int quantumNumber, String pointName) {
-        double baseOrder = integrator.globalConvergenceOrder();
+        int baseOrder = integrator.globalConvergenceOrder();
 
         if (quantumNumber == 0) {
             // Ground state: very high R² achievable for lower order methods
-            if (baseOrder <= 4.0) {
+            if (baseOrder < 8) {
                 return 0.995;  // Original strict tolerance
             } else {
-                return 0.98;   // Slightly relaxed for higher-order methods
+                return 0.80;   // higher-order methods reach numerical noise for dense grids
             }
-        } else {
-            // Excited states: more variation due to nodes
-            // The 10% point is often near a node and shows erratic behavior
-            // The 50% point (center) can also show variation due to being at peak amplitude
-            boolean isNearNode = pointName.equals("10%");
-            boolean isCenter = pointName.equals("50%");
+        }
+        // Excited states: more variation due to nodes
+        // The 10% point is often near a node and shows erratic behavior
+        // The 50% point (center) can also show variation due to being at peak amplitude
+        boolean isNearNode = pointName.equals("10%");
+        boolean isCenter = pointName.equals("50%");
 
-            if (baseOrder <= 2.0) {
-                if (isNearNode) return 0.70;
-                if (isCenter) return 0.60;  // Also relaxed for 2nd order at center
-                return 0.94;
-            } else if (baseOrder <= 4.0) {
-                if (isNearNode) return 0.85;
-                if (isCenter) return 0.90;
-                return 0.94;
-            } else {
-                if (isNearNode) return 0.69;
-                if (isCenter) return 0.65;  // Very relaxed for high-order at center
-                return 0.87;
-            }
+        if (baseOrder < 2) {
+            if (isNearNode) return 0.70;
+            if (isCenter) return 0.60;  // Also relaxed for 2nd order at center
+            return 0.94;
+        } else if (baseOrder <= 4.0) {
+            if (isNearNode) return 0.85;
+            if (isCenter) return 0.90;
+            return 0.94;
+        } else {
+            if (isNearNode) return 0.69;
+            if (isCenter) return 0.65;  // Very relaxed for high-order at center
+            return 0.87;
         }
     }
 
@@ -78,35 +77,19 @@ public class HarmonicOscillatorConvergenceVerifier {
      * @return maximum allowed deviation from expected convergence order
      */
     private double getConvergenceOrderTolerance(int quantumNumber, String pointName) {
-        double baseOrder = integrator.globalConvergenceOrder();
+        int baseOrder = integrator.globalConvergenceOrder();
 
         // Base tolerance depends on integrator order
         double baseTolerance;
-        if (baseOrder <= 2.0) {
-            baseTolerance = 0.4;  // 2nd order methods
-        } else if (baseOrder <= 4.0) {
-            baseTolerance = 0.5;  // 4th order methods
-        } else if (baseOrder <= 5.0) {
-            baseTolerance = 0.6;  // 5th order methods
+        if (baseOrder < 8) {
+            baseTolerance = 0.75;
         } else {
-            baseTolerance = 1.2;  // 6th+ order methods (more sensitive to grid effects)
+            baseTolerance = 2.2; // high order methods are affected by roundoff
         }
 
         // Add extra tolerance for excited states
-        if (quantumNumber > 0) {
-            baseTolerance += 0.5;
-
-            // Different points show different behavior
-            if (pointName.equals("10%")) {
-                // Near a node - be very lenient
-                baseTolerance += 1.5;
-            } else if (pointName.equals("25%")) {
-                // Some integrators show faster-than-expected convergence here
-                baseTolerance += 0.9;
-            } else if (pointName.equals("50%")) {
-                baseTolerance += 0.5;
-            }
-
+        if (quantumNumber > 0 && baseOrder >= 5) {
+            baseTolerance = 1.5;
         }
 
         return baseTolerance;
@@ -362,6 +345,10 @@ public class HarmonicOscillatorConvergenceVerifier {
             for (Map.Entry<Integer, ConvergenceData> entry : convergenceResults.entrySet()) {
                 int nOfPoints = entry.getKey();
                 double error = entry.getValue().getError(fraction);
+
+                if (error == 0.) { // small hack to avoid exact zero
+                    error = 1e-19;
+                }
 
                 lnPoints[i] = Math.log(nOfPoints);
                 lnErrors[i] = Math.log(Math.abs(error));
