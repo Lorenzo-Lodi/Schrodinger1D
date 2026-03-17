@@ -188,12 +188,13 @@ public class HarmonicOscillatorConvergenceVerifier {
         PhysicalPotential potential = new PhysicalPotentialHarmonic(DEFAULT_R0, DEFAULT_ALPHA);
 
         // Initialize the exact solution for the specified quantum state
-        exactSolutionInstance = HarmonicOscillatorExactSolution.getState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
+        exactSolutionInstance = new HarmonicOscillatorExactSolution(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
 
         Map<Integer, ConvergenceData> convergenceResults = new HashMap<>();
 
         // Test with different numbers of grid points
-        for (int nOfPoints = 200; nOfPoints <= 1100; nOfPoints += 100) {
+        // NOTE: nOfPoints should be divisible by 20, otherwise when when compure nOfPoints/4 (etc.) we get fractions etc.
+        for (int nOfPoints = 200; nOfPoints <= 800; nOfPoints += 20) {
             ConvergenceData data = testWithPoints(potential, integrator, nOfPoints, quantumNumber);
             convergenceResults.put(nOfPoints, data);
         }
@@ -221,7 +222,6 @@ public class HarmonicOscillatorConvergenceVerifier {
      * @return Convergence data containing errors at different points
      */
     private ConvergenceData testWithPoints(PhysicalPotential potential, Integrator integrator, int nOfPoints, int quantumNumber) {
-        // Get level-dependent grid boundaries
         double[] gridBounds = getGridBoundaries(quantumNumber);
         double rMin = gridBounds[0];
         double rMax = gridBounds[1];
@@ -231,7 +231,7 @@ public class HarmonicOscillatorConvergenceVerifier {
         QuantumLevel level = new QuantumLevel(system);
 
         // Use the exact energy for the specified quantum level
-        HarmonicOscillatorExactSolution exactSol = HarmonicOscillatorExactSolution.getState(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
+        HarmonicOscillatorExactSolution exactSol = new HarmonicOscillatorExactSolution(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
         level.energy = exactSol.getEnergy();
 
         // Initialize with exact solution
@@ -295,7 +295,7 @@ public class HarmonicOscillatorConvergenceVerifier {
             ConvergenceData data = entry.getValue();
 
             // Print grid points and errors (using % flag to align positive/negative values)
-            System.out.printf("%10d\t\t% 20.18f\t% 20.18f\t% 20.18f",
+            System.out.printf("%10d\t\t% 20.19f\t% 20.19f\t% 20.19f",
                     nOfPoints,
                     data.getError("10"),
                     data.getError("4"),
