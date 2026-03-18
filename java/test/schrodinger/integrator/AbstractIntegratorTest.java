@@ -16,13 +16,13 @@ public abstract class AbstractIntegratorTest {
     @Test
     void harmonic_oscillator_ground_state() {
         HarmonicOscillatorConvergenceVerifier ho = new HarmonicOscillatorConvergenceVerifier(getIntegrator());
-        ho.verify_harmonic_oscillator_ground_state();
+        ho.verify_harmonic_oscillator(0);
     }
 
     @Test
     void harmonic_oscillator_10th_excited_state() {
         HarmonicOscillatorConvergenceVerifier ho = new HarmonicOscillatorConvergenceVerifier(getIntegrator());
-        ho.verify_harmonic_oscillator_10th_excited_state();
+        ho.verify_harmonic_oscillator(10);
     }
 
 

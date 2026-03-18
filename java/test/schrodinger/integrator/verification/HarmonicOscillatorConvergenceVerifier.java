@@ -26,23 +26,6 @@ public class HarmonicOscillatorConvergenceVerifier {
     }
 
     /**
-     * Tests the convergence of the integrator by comparing numerical solutions
-     * with the exact analytical solution for the ground state (n=0).
-     */
-    public void verify_harmonic_oscillator_ground_state() {
-        verify_harmonic_oscillator(0);
-    }
-
-    /**
-     * Tests the convergence of the integrator by comparing numerical solutions
-     * with the exact analytical solution for the 10th excited state (n=10, has 10 nodes).
-     */
-    public void verify_harmonic_oscillator_10th_excited_state() {
-        verify_harmonic_oscillator(10);
-    }
-
-
-    /**
      * Returns the grid boundaries for testing, which depend on the quantum state.
      *
      * @param quantumNumber the quantum number
@@ -85,7 +68,7 @@ public class HarmonicOscillatorConvergenceVerifier {
      *
      * @param quantumNumber the quantum number n (0 = ground state, 1 = first excited, etc.)
      */
-    private void verify_harmonic_oscillator(int quantumNumber) {
+    public void verify_harmonic_oscillator(int quantumNumber) {
         if (integrator.minHistoryLength() > INITIALIZATION_N_MAX + 1) {
             String className = this.getClass().getSimpleName();
             String msg = String.format("Integrator %s requires at least %d previously-computed points, but only %d are available!",
