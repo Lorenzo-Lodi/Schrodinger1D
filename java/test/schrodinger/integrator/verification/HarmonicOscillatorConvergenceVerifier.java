@@ -26,79 +26,24 @@ public class HarmonicOscillatorConvergenceVerifier {
     }
 
     /**
-     * Returns the minimum R² threshold for linear fit, which depends on quantum state,
-     * integrator order, and evaluation point. Ground state can achieve very high R²,
-     * but excited states with nodes show more variability, especially at points
-     * near nodes (typically the 10% evaluation point).
-     *
-     * @param quantumNumber the quantum number
-     * @param pointName     the evaluation point name (e.g., "10%", "25%", "50%")
-     * @return minimum acceptable R²
+     * Tests the convergence of the integrator by comparing numerical solutions
+     * with the exact analytical solution for the ground state (n=0).
      */
-    private double getMinRSquared(int quantumNumber, String pointName) {
-        int baseOrder = integrator.globalConvergenceOrder();
-
-        if (quantumNumber == 0) {
-            // Ground state: very high R² achievable for lower order methods
-            if (baseOrder < 8) {
-                return 0.995;  // Original strict tolerance
-            } else {
-                return 0.80;   // higher-order methods reach numerical noise for dense grids
-            }
-        }
-        // Excited states: more variation due to nodes
-        // The 10% point is often near a node and shows erratic behavior
-        // The 50% point (center) can also show variation due to being at peak amplitude
-        boolean isNearNode = pointName.equals("10%");
-        boolean isCenter = pointName.equals("50%");
-
-        if (baseOrder < 2) {
-            if (isNearNode) return 0.70;
-            if (isCenter) return 0.60;  // Also relaxed for 2nd order at center
-            return 0.94;
-        } else if (baseOrder <= 4.0) {
-            if (isNearNode) return 0.85;
-            if (isCenter) return 0.90;
-            return 0.94;
-        } else {
-            if (isNearNode) return 0.69;
-            if (isCenter) return 0.65;  // Very relaxed for high-order at center
-            return 0.87;
-        }
+    public void verify_harmonic_oscillator_ground_state() {
+        verify_harmonic_oscillator(0);
     }
 
     /**
-     * Returns the convergence order tolerance, which depends on quantum state,
-     * integrator order, and evaluation point. Higher-order methods show more variation,
-     * and excited states with nodes show additional variation, especially near nodes.
-     *
-     * @param quantumNumber the quantum number
-     * @param pointName     the evaluation point name (e.g., "10%", "25%", "50%")
-     * @return maximum allowed deviation from expected convergence order
+     * Tests the convergence of the integrator by comparing numerical solutions
+     * with the exact analytical solution for the 10th excited state (n=10, has 10 nodes).
      */
-    private double getConvergenceOrderTolerance(int quantumNumber, String pointName) {
-        int baseOrder = integrator.globalConvergenceOrder();
-
-        // Base tolerance depends on integrator order
-        double baseTolerance;
-        if (baseOrder < 8) {
-            baseTolerance = 0.75;
-        } else {
-            baseTolerance = 2.2; // high order methods are affected by roundoff
-        }
-
-        // Add extra tolerance for excited states
-        if (quantumNumber > 0 && baseOrder >= 5) {
-            baseTolerance = 1.5;
-        }
-
-        return baseTolerance;
+    public void verify_harmonic_oscillator_10th_excited_state() {
+        verify_harmonic_oscillator(10);
     }
+
 
     /**
      * Returns the grid boundaries for testing, which depend on the quantum state.
-     * For ground state, uses original wider grid. For excited states, uses narrower
-     * grid within the classically allowed region to avoid numerical instabilities.
      *
      * @param quantumNumber the quantum number
      * @return array {rMin, rMax}
@@ -125,10 +70,6 @@ public class HarmonicOscillatorConvergenceVerifier {
             return errors.getOrDefault(pointFraction, 0.0);
         }
 
-        public Map<String, Double> getAllErrors() {
-            return new HashMap<>(errors);
-        }
-
         public void setElapsedNanos(long ns) {
             this.elapsedNanos = ns;
         }
@@ -136,22 +77,6 @@ public class HarmonicOscillatorConvergenceVerifier {
         public long getElapsedNanos() {
             return elapsedNanos;
         }
-    }
-
-    /**
-     * Tests the convergence of the integrator by comparing numerical solutions
-     * with the exact analytical solution for the ground state (n=0).
-     */
-    public void verify_harmonic_oscillator_ground_state() {
-        verify_harmonic_oscillator(0); // Default: ground state
-    }
-
-    /**
-     * Tests the convergence of the integrator by comparing numerical solutions
-     * with the exact analytical solution for the 10th excited state (n=10, has 10 nodes).
-     */
-    public void verify_harmonic_oscillator_10th_excited_state() {
-        verify_harmonic_oscillator(10);
     }
 
     /**
@@ -169,14 +94,12 @@ public class HarmonicOscillatorConvergenceVerifier {
         }
 
         PhysicalPotential potential = new PhysicalPotentialHarmonic(DEFAULT_R0, DEFAULT_ALPHA);
-
-        // Initialize the exact solution for the specified quantum state
         exactSolutionInstance = new HarmonicOscillatorExactSolution(DEFAULT_R0, DEFAULT_ALPHA, quantumNumber);
 
         Map<Integer, ConvergenceData> convergenceResults = new HashMap<>();
 
         // Test with different numbers of grid points
-        // NOTE: nOfPoints should be divisible by 20, otherwise when when compure nOfPoints/4 (etc.) we get fractions etc.
+        // NOTE: nOfPoints should be divisible by 20, otherwise when computing nOfPoints/4 (etc.) we get fractions etc.
         for (int nOfPoints = 200; nOfPoints <= 800; nOfPoints += 20) {
             ConvergenceData data = testWithPoints(potential, integrator, nOfPoints, quantumNumber);
             convergenceResults.put(nOfPoints, data);
@@ -398,6 +321,77 @@ public class HarmonicOscillatorConvergenceVerifier {
     private double exactSolution(double x) {
         return exactSolutionInstance.evaluate(x);
     }
+
+    /**
+     * Returns the minimum R² threshold for linear fit, which depends on quantum state,
+     * integrator order, and evaluation point. Ground state can achieve very high R²,
+     * but excited states with nodes show more variability, especially at points
+     * near nodes (typically the 10% evaluation point).
+     *
+     * @param quantumNumber the quantum number
+     * @param pointName     the evaluation point name (e.g., "10%", "25%", "50%")
+     * @return minimum acceptable R²
+     */
+    private double getMinRSquared(int quantumNumber, String pointName) {
+        int baseOrder = integrator.globalConvergenceOrder();
+
+        if (quantumNumber == 0) {
+            // Ground state: very high R² achievable for lower order methods
+            if (baseOrder < 8) {
+                return 0.995;  // Original strict tolerance
+            } else {
+                return 0.80;   // higher-order methods reach numerical noise for dense grids
+            }
+        }
+        // Excited states: more variation due to nodes
+        // The 10% point is often near a node and shows erratic behavior
+        // The 50% point (center) can also show variation due to being at peak amplitude
+        boolean isNearNode = pointName.equals("10%");
+        boolean isCenter = pointName.equals("50%");
+
+        if (baseOrder < 2) {
+            if (isNearNode) return 0.70;
+            if (isCenter) return 0.60;  // Also relaxed for 2nd order at center
+            return 0.94;
+        } else if (baseOrder <= 4.0) {
+            if (isNearNode) return 0.85;
+            if (isCenter) return 0.90;
+            return 0.94;
+        } else {
+            if (isNearNode) return 0.69;
+            if (isCenter) return 0.65;  // Very relaxed for high-order at center
+            return 0.87;
+        }
+    }
+
+    /**
+     * Returns the convergence order tolerance, which depends on quantum state,
+     * integrator order, and evaluation point. Higher-order methods show more variation,
+     * and excited states with nodes show additional variation, especially near nodes.
+     *
+     * @param quantumNumber the quantum number
+     * @param pointName     the evaluation point name (e.g., "10%", "25%", "50%")
+     * @return maximum allowed deviation from expected convergence order
+     */
+    private double getConvergenceOrderTolerance(int quantumNumber, String pointName) {
+        int baseOrder = integrator.globalConvergenceOrder();
+
+        // Base tolerance depends on integrator order
+        double baseTolerance;
+        if (baseOrder < 8) {
+            baseTolerance = 0.75;
+        } else {
+            baseTolerance = 2.2; // high order methods are affected by roundoff
+        }
+
+        // Add extra tolerance for excited states
+        if (quantumNumber > 0 && baseOrder >= 5) {
+            baseTolerance = 1.5;
+        }
+
+        return baseTolerance;
+    }
+
 
 
 }
