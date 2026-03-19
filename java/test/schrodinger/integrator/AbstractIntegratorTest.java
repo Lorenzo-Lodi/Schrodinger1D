@@ -67,7 +67,18 @@ public abstract class AbstractIntegratorTest {
 
     @Test
     void propagate_forward_exp_minus_x() {
-        ExpMinusXVerifier.propagate_forward_exp_minus_x(getIntegrator());
+        propagate_exp_minus_x(Integrator.Direction.FORWARD);
+    }
+
+    @Test
+    void propagate_backward_exp_minus_x() {
+        propagate_exp_minus_x(Integrator.Direction.BACKWARD);
+    }
+
+    void propagate_exp_minus_x(Integrator.Direction direction) {
+        ExpMinusXVerifier verifier = new ExpMinusXVerifier(getIntegrator());
+        ConvergenceParams convergenceParams = new ConvergenceParams(1, 1000);
+        verifier.propagate(direction, convergenceParams);
     }
 
     @Test
