@@ -7,19 +7,17 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ExpCosXVerifier {
+public class ManufacturedSolutionVerifier {
 
-    public static void propagate_exp_to_cos_x(Integrator integrator, Integrator.Direction direction, ConvergenceParams params) {
+    public static void propagate(DoubleUnaryOperator[] funcs, Integrator integrator, Integrator.Direction direction, ConvergenceParams params) {
         System.out.println(integrator.getClass().getSimpleName());
         int d = direction.getValue();
 
-        DoubleUnaryOperator f = x -> Math.exp(Math.cos(x));
-        DoubleUnaryOperator fPrime = x -> -Math.sin(x) * Math.exp(Math.cos(x));
-        DoubleUnaryOperator qTilde = x -> Math.cos(x) - Math.pow(Math.sin(x), 2);
-        DoubleUnaryOperator qTildePrime = x -> -Math.sin(x) - 2. * Math.cos(x) * Math.sin(x);
-        DoubleUnaryOperator qTildeDoublePrime = x -> -Math.cos(x)
-                - 2. * Math.pow(Math.cos(x), 2)
-                + 2. * Math.pow(Math.sin(x), 2);
+        DoubleUnaryOperator f = funcs[0];
+        DoubleUnaryOperator fPrime = funcs[1];
+        DoubleUnaryOperator qTilde = funcs[2];
+        DoubleUnaryOperator qTildePrime = funcs[3];
+        DoubleUnaryOperator qTildeDoublePrime = funcs[4];
 
         for (int np = 100; np <= 500; np += 10) {
             double xmin = 0.;

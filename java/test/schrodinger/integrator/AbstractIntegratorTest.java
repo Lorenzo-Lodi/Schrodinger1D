@@ -81,7 +81,14 @@ public abstract class AbstractIntegratorTest {
     }
 
     private void propagate_exp_to_cos_x(Integrator.Direction direction) {
-        ExpCosXVerifier.propagate_exp_to_cos_x(getIntegrator(), direction, convergence_params_exp_to_cos_x());
+        DoubleUnaryOperator[] funcs = new DoubleUnaryOperator[5];
+        funcs[0] = x -> Math.exp(Math.cos(x));
+        funcs[1] = x -> -Math.sin(x) * Math.exp(Math.cos(x));
+        funcs[2] = x -> Math.cos(x) - Math.pow(Math.sin(x), 2);
+        funcs[3] = x -> -Math.sin(x) - 2. * Math.cos(x) * Math.sin(x);
+        funcs[4] = x -> -Math.cos(x) - 2. * Math.pow(Math.cos(x), 2) + 2. * Math.pow(Math.sin(x), 2);
+
+        ManufacturedSolutionVerifier.propagate(funcs, getIntegrator(), direction, convergence_params_exp_to_cos_x());
     }
 
     abstract protected ConvergenceParams convergence_params_exp_to_cos_x();
