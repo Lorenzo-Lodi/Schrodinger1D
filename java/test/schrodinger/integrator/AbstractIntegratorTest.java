@@ -91,6 +91,32 @@ public abstract class AbstractIntegratorTest {
         ManufacturedSolutionVerifier.propagate(funcs, getIntegrator(), direction, convergence_params_exp_to_cos_x());
     }
 
+    @Test
+    void propagate_forward_exp_to_cos_x_minus_x() {
+        propagate_exp_to_cos_x_minus_x(Integrator.Direction.FORWARD);
+    }
+
+    @Test
+    void propagate_backward_exp_to_cos_x_minus_x() {
+        propagate_exp_to_cos_x_minus_x(Integrator.Direction.BACKWARD);
+    }
+
+    private void propagate_exp_to_cos_x_minus_x(Integrator.Direction direction) {
+        DoubleUnaryOperator[] funcs = new DoubleUnaryOperator[5];
+        funcs[0] = x -> Math.exp(Math.cos(x) - x / (4. * Math.PI));
+        funcs[1] = x -> -Math.exp(Math.cos(x) - x / (4. * Math.PI)) * (Math.sin(x) + 1. / (4. * Math.PI));
+
+        funcs[2] = x -> Math.cos(x) - Math.pow(1. + 4. * Math.PI * Math.sin(x), 2) / (16. * Math.PI * Math.PI);
+        funcs[3] = x -> -Math.sin(x) - (Math.cos(x) * (1. + 4. * Math.PI * Math.sin(x))) / (2. * Math.PI);
+
+        funcs[4] = x -> -Math.cos(x) - 2. * Math.pow(Math.cos(x), 2) + (Math.sin(x) * (1. + 4. * Math.PI * Math.sin(x))) / (2. * Math.PI);
+
+        ConvergenceParams myparams = new ConvergenceParams(1, 10000);
+
+        ManufacturedSolutionVerifier.propagate(funcs, getIntegrator(), direction, myparams);
+    }
+
+
     abstract protected ConvergenceParams convergence_params_exp_to_cos_x();
 
 }
