@@ -97,7 +97,7 @@ public abstract class AbstractIntegratorTest {
 
     private void propagate_exp_to_cos_x_minus_x(Integrator.Direction direction) {
         ExpCosXMinusXVerifier verifier = new ExpCosXMinusXVerifier(getIntegrator());
-        ConvergenceParams convergenceParams = new ConvergenceParams(1, 10000);
+        ConvergenceParams convergenceParams = new ConvergenceParams(1, 1000);
         verifier.propagate(direction, convergenceParams);
     }
 

@@ -23,7 +23,7 @@ public class RK45DPTest extends AbstractIntegratorTest {
     @Test
     public void integrateBackwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.BACKWARD);
-        assertEquals(0.8376003369215926, val, 1e-14);
+        assertEquals(0.8480065536184797, val, 1e-14);
     }
 
     @Override

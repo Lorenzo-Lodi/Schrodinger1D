@@ -6,31 +6,6 @@ import java.util.function.DoubleUnaryOperator;
 
 public class RK45DP implements Integrator {
 
-    // Stage nodes (c_i)
-    private static final double C2 = 0.5; // Actually 1/2 but written nicely
-    private static final double C3 = 0.5 + Math.sqrt(5.0) / 10.0; // ~0.7236
-    private static final double C4 = 0.5 - Math.sqrt(5.0) / 10.0; // ~0.2763
-
-    // Weights for updating Position (b_i)
-    private static final double B1 = 1.0 / 12.0;
-    private static final double B2 = 5.0 / 12.0;
-    private static final double B3 = 5.0 / 12.0;
-    private static final double B4 = 1.0 / 12.0;
-
-    // Weights for updating Velocity (b'_i)
-    private static final double BP1 = 1.0 / 12.0;
-    private static final double BP2 = 5.0 / 12.0;
-    private static final double BP3 = 5.0 / 12.0;
-    private static final double BP4 = 1.0 / 12.0;
-
-    // Internal matrix coefficients (a_ij)
-    private static final double A21 = 1.0 / 8.0;
-    private static final double A31 = (1.0 + Math.sqrt(5.0)) / 10.0;
-    private static final double A32 = (1.0 - Math.sqrt(5.0)) / 10.0;
-    private static final double A41 = (1.0 - Math.sqrt(5.0)) / 10.0;
-    private static final double A42 = (1.0 + Math.sqrt(5.0)) / 10.0;
-    private static final double A43 = 0.0;
-
     @Override
     public int minHistoryLength() {
         return 1;
@@ -90,8 +65,8 @@ public class RK45DP implements Integrator {
                             DoubleUnaryOperator qTildeDoublePrime,
                             Direction direction) {
 
-        final double h = step;
         final int d = direction.getValue();
+        final double h = step*d;
         final int n0 = n;
         final int n1 = n + d;
 
