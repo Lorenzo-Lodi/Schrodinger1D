@@ -15,11 +15,11 @@ public abstract class ManufacturedSolutionVerifier {
     private final DoubleUnaryOperator qTildeDoublePrime;
     private final Integrator integrator;
 
-    protected ManufacturedSolutionVerifier(DoubleUnaryOperator f,
-                                           DoubleUnaryOperator fPrime,
-                                           DoubleUnaryOperator qTilde,
-                                           DoubleUnaryOperator qTildePrime,
-                                           DoubleUnaryOperator qTildeDoublePrime,
+    protected ManufacturedSolutionVerifier(DoubleUnaryOperator f, // The exact solution to the problem
+                                           DoubleUnaryOperator fPrime, // First derivative of the exact solution
+                                           DoubleUnaryOperator qTilde,  // the Q(x) function, - f''(x) / f(x)
+                                           DoubleUnaryOperator qTildePrime, // Q'(x)
+                                           DoubleUnaryOperator qTildeDoublePrime, // Q''(x)
                                            Integrator integrator) {
         this.f = f;
         this.fPrime = fPrime;
@@ -29,13 +29,11 @@ public abstract class ManufacturedSolutionVerifier {
         this.integrator = integrator;
     }
 
-    public void propagate(Integrator.Direction direction, ConvergenceParams params) {
+    public void propagate(double xmin, double xmax, int nPointsStart, int nPointsEnd, int nPointsStep, Integrator.Direction direction, ConvergenceParams params) {
         System.out.println(integrator.getClass().getSimpleName());
         int d = direction.getValue();
 
-        for (int np = 100; np <= 500; np += 10) {
-            double xmin = 0.;
-            double xmax = 4. * Math.PI;
+        for (int np = nPointsStart; np <= nPointsEnd; np += nPointsStep) {
             double[] psi = new double[np];
             double[] currentPsiPrime = new double[1];
             double step = (xmax - xmin) / (np - 1);

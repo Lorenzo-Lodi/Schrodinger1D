@@ -13,4 +13,9 @@ public class ExpCosXMinusXVerifier extends ManufacturedSolutionVerifier {
                 integrator);
     }
 
+    public void propagate(Integrator.Direction direction, ConvergenceParams params) {
+        super.propagate(0., 4. * Math.PI, 100, 500, 10, direction, params);
+    }
+
+
 }
