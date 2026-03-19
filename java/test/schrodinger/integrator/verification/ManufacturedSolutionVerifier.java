@@ -7,17 +7,31 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ManufacturedSolutionVerifier {
+public abstract class ManufacturedSolutionVerifier {
+    private final DoubleUnaryOperator f;
+    private final DoubleUnaryOperator fPrime;
+    private final DoubleUnaryOperator qTilde;
+    private final DoubleUnaryOperator qTildePrime;
+    private final DoubleUnaryOperator qTildeDoublePrime;
+    private final Integrator integrator;
 
-    public static void propagate(DoubleUnaryOperator[] funcs, Integrator integrator, Integrator.Direction direction, ConvergenceParams params) {
+    protected ManufacturedSolutionVerifier(DoubleUnaryOperator f,
+                                           DoubleUnaryOperator fPrime,
+                                           DoubleUnaryOperator qTilde,
+                                           DoubleUnaryOperator qTildePrime,
+                                           DoubleUnaryOperator qTildeDoublePrime,
+                                           Integrator integrator) {
+        this.f = f;
+        this.fPrime = fPrime;
+        this.qTilde = qTilde;
+        this.qTildePrime = qTildePrime;
+        this.qTildeDoublePrime = qTildeDoublePrime;
+        this.integrator = integrator;
+    }
+
+    public void propagate(Integrator.Direction direction, ConvergenceParams params) {
         System.out.println(integrator.getClass().getSimpleName());
         int d = direction.getValue();
-
-        DoubleUnaryOperator f = funcs[0];
-        DoubleUnaryOperator fPrime = funcs[1];
-        DoubleUnaryOperator qTilde = funcs[2];
-        DoubleUnaryOperator qTildePrime = funcs[3];
-        DoubleUnaryOperator qTildeDoublePrime = funcs[4];
 
         for (int np = 100; np <= 500; np += 10) {
             double xmin = 0.;
