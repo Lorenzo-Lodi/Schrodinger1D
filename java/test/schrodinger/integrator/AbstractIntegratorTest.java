@@ -65,6 +65,7 @@ public abstract class AbstractIntegratorTest {
         IntegratorSpeedBenchmark.time_benchmark(getIntegrator());
     }
 
+    // =================================================================================================================
     @Test
     void propagate_forward_exp_minus_x() {
         propagate_exp_minus_x(Integrator.Direction.FORWARD);
@@ -81,6 +82,7 @@ public abstract class AbstractIntegratorTest {
         verifier.propagate(direction, convergenceParams);
     }
 
+    // =================================================================================================================
     @Test
     void propagate_forward_exp_to_cos_x() {
         propagate_exp_to_cos_x(Integrator.Direction.FORWARD);
@@ -96,6 +98,9 @@ public abstract class AbstractIntegratorTest {
         verifier.propagate(direction, convergence_params_exp_to_cos_x());
     }
 
+    abstract protected ConvergenceParams convergence_params_exp_to_cos_x();
+
+    // =================================================================================================================
     @Test
     void propagate_forward_exp_to_cos_x_minus_x() {
         propagate_exp_to_cos_x_minus_x(Integrator.Direction.FORWARD);
@@ -112,7 +117,23 @@ public abstract class AbstractIntegratorTest {
         verifier.propagate(direction, convergenceParams);
     }
 
+    // =================================================================================================================
+    @Test
+    void propagate_forward_tanh_x() {
+        propagate_tanh_x(Integrator.Direction.FORWARD);
+    }
 
-    abstract protected ConvergenceParams convergence_params_exp_to_cos_x();
+    @Test
+    void propagate_backward_tanh_x() {
+        propagate_tanh_x(Integrator.Direction.BACKWARD);
+    }
+
+    private void propagate_tanh_x(Integrator.Direction direction) {
+        TanhXVerifier verifier = new TanhXVerifier(getIntegrator());
+        ConvergenceParams convergenceParams = new ConvergenceParams(1, 1000);
+        verifier.propagate(direction, convergenceParams);
+    }
+// =================================================================================================================
+
 
 }
