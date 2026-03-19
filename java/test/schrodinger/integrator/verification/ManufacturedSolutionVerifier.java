@@ -30,8 +30,13 @@ public abstract class ManufacturedSolutionVerifier {
     }
 
     public void propagate(double xmin, double xmax, int nPointsStart, int nPointsEnd, int nPointsStep, Integrator.Direction direction, ConvergenceParams params) {
-        System.out.println(integrator.getClass().getSimpleName());
         int d = direction.getValue();
+
+        System.out.println(integrator.getClass().getSimpleName());
+        {
+            String s = (d == 1) ? "error@xmax" : "error@xmin";
+            System.out.printf("%10s %27s %27s %27s", "np", "step", s, "errorRMS\n");
+        }
 
         for (int np = nPointsStart; np <= nPointsEnd; np += nPointsStep) {
             double[] psi = new double[np];
@@ -54,20 +59,27 @@ public abstract class ManufacturedSolutionVerifier {
             DoubleUnaryOperator qTildePrimeI = i -> qTildePrime.applyAsDouble(xmin + i * step);
             DoubleUnaryOperator qTildeDoublePrimeI = i -> qTildeDoublePrime.applyAsDouble(xmin + i * step);
 
+            double rmsError = 0.;
             {
                 final int startIndex2 = isBackward ? np - integrator.minHistoryLength() : integrator.minHistoryLength() - 1;
                 final int endIndex2 = isBackward ? np - 1 - integrator.minHistoryLength() : np - 1;
                 Predicate<Integer> condition = isBackward ? n -> (n > 0) : n -> (n < endIndex2);
 
+                double count = 0.;
                 for (int n = startIndex2; condition.test(n); n = n + d) {
                     psi[n + d] = integrator.propagate(psi, currentPsiPrime, n, step,
                             qTildeI, qTildePrimeI, qTildeDoublePrimeI,
                             direction);
+                    rmsError += Math.pow(psi[n + d] - f.applyAsDouble(xmin + (n + d) * step), 2);
+                    count++;
                 }
+
+                rmsError = Math.sqrt(rmsError / count);
             }
 
             double error = isBackward ? f.applyAsDouble(xmin) - psi[0] : f.applyAsDouble(xmax) - psi[np - 1];
-            System.out.println(np + " " + error);
+//            System.out.println(np + " " + step + "  " + error + " " + rmsError);
+            System.out.printf("%10d %27.18f %27.20f %27.20f\n", np, step, error, rmsError);
 
             String className = integrator.getClass().getSimpleName();
             double errorBound = params.calculateMaxError(np);
