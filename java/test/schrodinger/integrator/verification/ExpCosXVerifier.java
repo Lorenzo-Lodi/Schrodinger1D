@@ -13,6 +13,10 @@ public class ExpCosXVerifier {
         System.out.println(integrator.getClass().getSimpleName());
         int d = direction.getValue();
 
+        DoubleUnaryOperator f = x -> Math.exp(Math.cos(x));
+        DoubleUnaryOperator fPrime = x -> -Math.sin(x) * Math.exp(Math.cos(x));
+        DoubleUnaryOperator qTilde = x -> Math.cos(x) - Math.pow(Math.sin(x), 2);
+
         for (int np = 100; np <= 500; np += 10) {
             double xmin = 0.;
             double xmax = 4. * Math.PI;
@@ -27,12 +31,12 @@ public class ExpCosXVerifier {
                 Predicate<Integer> condition = isBackward ? n -> (n > endIndex1) : n -> (n < endIndex1);
                 for (int n = startIndex1; condition.test(n); n = n + d) {
                     double x = xmin + n * step;
-                    psi[n] = Math.exp(Math.cos(x));
-                    currentPsiPrime[0] = -Math.sin(x) * Math.exp(Math.cos(x));
+                    psi[n] = f.applyAsDouble(x);
+                    currentPsiPrime[0] = fPrime.applyAsDouble(x);
                 }
             }
 
-            DoubleUnaryOperator qTilde = i -> Math.cos(xmin + i * step) - Math.pow(Math.sin(xmin + i * step), 2);
+            DoubleUnaryOperator qTildeI = i -> qTilde.applyAsDouble(xmin + i * step);
             DoubleUnaryOperator qTildePrime = i -> -Math.sin(xmin + i * step) - 2. * Math.cos(xmin + i * step) * Math.sin(xmin + i * step);
             DoubleUnaryOperator qTildeDoublePrime = i -> -Math.cos(xmin + i * step)
                     - 2. * Math.pow(Math.cos(xmin + i * step), 2)
@@ -45,7 +49,7 @@ public class ExpCosXVerifier {
 
                 for (int n = startIndex2; condition.test(n); n = n + d) {
                     psi[n + d] = integrator.propagate(psi, currentPsiPrime, n, step,
-                            qTilde, qTildePrime, qTildeDoublePrime,
+                            qTildeI, qTildePrime, qTildeDoublePrime,
                             direction);
                 }
             }
