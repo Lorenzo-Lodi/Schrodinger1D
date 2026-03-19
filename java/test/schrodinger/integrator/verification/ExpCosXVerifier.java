@@ -16,6 +16,10 @@ public class ExpCosXVerifier {
         DoubleUnaryOperator f = x -> Math.exp(Math.cos(x));
         DoubleUnaryOperator fPrime = x -> -Math.sin(x) * Math.exp(Math.cos(x));
         DoubleUnaryOperator qTilde = x -> Math.cos(x) - Math.pow(Math.sin(x), 2);
+        DoubleUnaryOperator qTildePrime = x -> -Math.sin(x) - 2. * Math.cos(x) * Math.sin(x);
+        DoubleUnaryOperator qTildeDoublePrime = x -> -Math.cos(x)
+                - 2. * Math.pow(Math.cos(x), 2)
+                + 2. * Math.pow(Math.sin(x), 2);
 
         for (int np = 100; np <= 500; np += 10) {
             double xmin = 0.;
@@ -37,10 +41,8 @@ public class ExpCosXVerifier {
             }
 
             DoubleUnaryOperator qTildeI = i -> qTilde.applyAsDouble(xmin + i * step);
-            DoubleUnaryOperator qTildePrime = i -> -Math.sin(xmin + i * step) - 2. * Math.cos(xmin + i * step) * Math.sin(xmin + i * step);
-            DoubleUnaryOperator qTildeDoublePrime = i -> -Math.cos(xmin + i * step)
-                    - 2. * Math.pow(Math.cos(xmin + i * step), 2)
-                    + 2. * Math.pow(Math.sin(xmin + i * step), 2);
+            DoubleUnaryOperator qTildePrimeI = i -> qTildePrime.applyAsDouble(xmin + i * step);
+            DoubleUnaryOperator qTildeDoublePrimeI = i -> qTildeDoublePrime.applyAsDouble(xmin + i * step);
 
             {
                 final int startIndex2 = isBackward ? np - integrator.minHistoryLength() : integrator.minHistoryLength() - 1;
@@ -49,12 +51,12 @@ public class ExpCosXVerifier {
 
                 for (int n = startIndex2; condition.test(n); n = n + d) {
                     psi[n + d] = integrator.propagate(psi, currentPsiPrime, n, step,
-                            qTildeI, qTildePrime, qTildeDoublePrime,
+                            qTildeI, qTildePrimeI, qTildeDoublePrimeI,
                             direction);
                 }
             }
 
-            double error = isBackward ? Math.exp(Math.cos(xmin)) - psi[0] : Math.exp(Math.cos(xmax)) - psi[np - 1];
+            double error = isBackward ? f.applyAsDouble(xmin) - psi[0] : f.applyAsDouble(xmax) - psi[np - 1];
             System.out.println(np + " " + error);
 
             String className = integrator.getClass().getSimpleName();
