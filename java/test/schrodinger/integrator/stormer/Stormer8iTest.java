@@ -33,7 +33,7 @@ public class Stormer8iTest extends AbstractIntegratorTest {
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x() {
-        return new ConvergenceParams(8.70, 36.6);
+        return new ConvergenceParams(8.0, 0.3);
     }
 
 }

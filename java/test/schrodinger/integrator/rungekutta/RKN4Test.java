@@ -28,7 +28,7 @@ public class RKN4Test extends AbstractIntegratorTest {
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x() {
-        return new ConvergenceParams(4.01, 24.0);
+        return new ConvergenceParams(4.01, 0.53);
     }
 
 }
