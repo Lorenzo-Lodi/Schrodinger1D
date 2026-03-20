@@ -33,7 +33,7 @@ public class TaylorThreePointsTest extends AbstractIntegratorTest {
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x() {
-        return new ConvergenceParams(1.88, 85.4);
+        return new ConvergenceParams(1.88, 0.15);
     }
 
 }

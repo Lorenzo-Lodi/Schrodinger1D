@@ -38,6 +38,7 @@ public abstract class ManufacturedSolutionVerifier {
             System.out.printf("%10s %27s %27s %27s", "np", "step", s, "errorRMS\n");
         }
 
+        double maxRatio = 0.;
         for (int np = nPointsStart; np <= nPointsEnd; np += nPointsStep) {
             double[] psi = new double[np];
             double[] currentPsiPrime = new double[1];
@@ -85,6 +86,15 @@ public abstract class ManufacturedSolutionVerifier {
             assertTrue(Math.abs(error) < errorBound,
                     String.format("%s : |error| = %.3e should be < %.3e for np = %s",
                             className, Math.abs(error), errorBound, np));
+            double ratio = errorBound / Math.abs(error);
+            if (ratio > maxRatio) maxRatio = ratio;
+        }
+
+        System.out.printf("Max ratio MAX_ERROR / ACTUAL_ERROR = %20.4f\n", maxRatio);
+        double maxRatioThreshold = 100;
+        if (maxRatio > maxRatioThreshold) {
+            System.out.printf("Warning: Ratio is greater than the threshold %20.4f. Consider tightnening "
+                    + "the errorBound threshold to strengthen the test!\n", maxRatioThreshold);
         }
 
     }

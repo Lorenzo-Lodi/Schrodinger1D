@@ -80,7 +80,7 @@ public abstract class AbstractIntegratorTest {
 
     void propagate_exp_minus_x(Integrator.Direction direction) {
         ExpMinusXVerifier verifier = new ExpMinusXVerifier(getIntegrator());
-        ConvergenceParams convergenceParams = new ConvergenceParams(1, 1000);
+        ConvergenceParams convergenceParams = new ConvergenceParams(1, 0.001);
         verifier.propagate(direction, convergenceParams);
     }
 
@@ -115,7 +115,7 @@ public abstract class AbstractIntegratorTest {
 
     private void propagate_exp_to_cos_x_minus_x(Integrator.Direction direction) {
         ExpCosXMinusXVerifier verifier = new ExpCosXMinusXVerifier(getIntegrator());
-        ConvergenceParams convergenceParams = new ConvergenceParams(1, 1000);
+        ConvergenceParams convergenceParams = new ConvergenceParams(1, 0.001);
         verifier.propagate(direction, convergenceParams);
     }
 
@@ -132,13 +132,13 @@ public abstract class AbstractIntegratorTest {
 
     private void propagate_tanh_x(Integrator.Direction direction) {
         TanhXVerifier verifier = new TanhXVerifier(getIntegrator());
-        ConvergenceParams convergenceParams = new ConvergenceParams(1, 1000);
+        ConvergenceParams convergenceParams = new ConvergenceParams(1, 0.001);
         verifier.propagate(direction, convergenceParams);
     }
 
     // Make abstract at the end
     protected ConvergenceParams convergence_params_tanh_x() {
-        return new ConvergenceParams(1, 1000);
+        return new ConvergenceParams(1, 0.001);
     }
 // =================================================================================================================
 
