@@ -36,4 +36,18 @@ public class PredictorCorrector8i2Test extends AbstractIntegratorTest {
         return new ConvergenceParams(6.33, 0.8);
     }
 
+    @Override
+    protected ConvergenceParams convergence_params_exp_minus_x() {
+        return new ConvergenceParams(8.00, 0.7);
+    }
+
+    @Override
+    protected ConvergenceParams convergence_params_exp_to_cos_x_minus_x() {
+        return new ConvergenceParams(8.00, 0.5);
+    }
+
+    @Override
+    protected ConvergenceParams convergence_params_tanh_x() {
+        return new ConvergenceParams(8.00, 1.1);
+    }
 }

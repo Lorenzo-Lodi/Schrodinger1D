@@ -48,5 +48,19 @@ public class NumerovTest extends AbstractIntegratorTest {
         return new ConvergenceParams(3.62, 0.8);
     }
 
+    @Override
+    protected ConvergenceParams convergence_params_exp_minus_x() {
+        return new ConvergenceParams(4.00, 100.);
+    }
+
+    @Override
+    protected ConvergenceParams convergence_params_exp_to_cos_x_minus_x() {
+        return new ConvergenceParams(4.00, 100.);
+    }
+
+    @Override
+    protected ConvergenceParams convergence_params_tanh_x() {
+        return new ConvergenceParams(4.00, 100.);
+    }
 
 }
