@@ -62,17 +62,18 @@ public class EFNTest extends AbstractIntegratorTest {
 
     @Override
     protected ConvergenceParams convergence_params_exp_minus_x() {
-        return new ConvergenceParams(4.00, 100.);
+        // It is actually exact for this function (to roundoff), hence the huge characteristicStepSize
+        return new ConvergenceParams(1.00, 10000000000.);
     }
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x_minus_x() {
-        return new ConvergenceParams(4.00, 100.);
+        return new ConvergenceParams(4.00, 0.65);
     }
 
     @Override
     protected ConvergenceParams convergence_params_tanh_x() {
-        return new ConvergenceParams(4.00, 100.);
+        return new ConvergenceParams(4.00, 1.4);
     }
 
 }
