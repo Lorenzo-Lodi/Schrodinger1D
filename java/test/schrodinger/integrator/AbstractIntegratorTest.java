@@ -13,6 +13,13 @@ public abstract class AbstractIntegratorTest {
      */
     protected abstract Integrator getIntegrator();
 
+    // =================================================================================================================
+    @Test
+    void time_benchmark() {
+        IntegratorSpeedBenchmark.time_benchmark(getIntegrator());
+    }
+    // =================================================================================================================
+
     @Test
     void harmonic_oscillator_ground_state() {
         HarmonicOscillatorConvergenceVerifier ho = new HarmonicOscillatorConvergenceVerifier(getIntegrator());
@@ -24,7 +31,7 @@ public abstract class AbstractIntegratorTest {
         HarmonicOscillatorConvergenceVerifier ho = new HarmonicOscillatorConvergenceVerifier(getIntegrator());
         ho.verify_harmonic_oscillator(10);
     }
-
+    // =================================================================================================================
 
     // This is a freeze/regression test to detect accidental changes to integrator behavior during refactoring.
     // Uses "meaningless" values: cos(k) for psi and a polynomial for Q.
@@ -58,11 +65,6 @@ public abstract class AbstractIntegratorTest {
     // Same as integrateOneStep but with very small Q  to test series expansion branch (|Z| < threshold).
     protected double integrateOneStepSmallZ(Integrator.Direction direction) {
         return integrateOneStep(2.e-5, direction);
-    }
-
-    @Test
-    void time_benchmark() {
-        IntegratorSpeedBenchmark.time_benchmark(getIntegrator());
     }
 
     // =================================================================================================================

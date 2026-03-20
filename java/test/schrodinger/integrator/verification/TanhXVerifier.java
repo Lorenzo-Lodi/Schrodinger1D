@@ -14,7 +14,7 @@ public class TanhXVerifier extends ManufacturedSolutionVerifier {
     }
 
     public void propagate(Integrator.Direction direction, ConvergenceParams params) {
-        super.propagate(-4., 5., 10, 100, 10, direction, params);
+        super.propagate(-4., 5., 20, 100, 10, direction, params);
     }
 
 }
