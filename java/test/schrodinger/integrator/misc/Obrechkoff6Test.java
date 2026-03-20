@@ -39,16 +39,16 @@ public class Obrechkoff6Test extends AbstractIntegratorTest {
 
     @Override
     protected ConvergenceParams convergence_params_exp_minus_x() {
-        return new ConvergenceParams(6.00, 100.);
+        return new ConvergenceParams(6.00, 2.1);
     }
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x_minus_x() {
-        return new ConvergenceParams(6.00, 100.);
+        return new ConvergenceParams(6.00, 0.7);
     }
 
     @Override
     protected ConvergenceParams convergence_params_tanh_x() {
-        return new ConvergenceParams(6.00, 100.);
+        return new ConvergenceParams(6.00, 1.8);
     }
 }
