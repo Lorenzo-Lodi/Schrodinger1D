@@ -78,11 +78,10 @@ public abstract class ManufacturedSolutionVerifier {
             }
 
             double error = isBackward ? f.applyAsDouble(xmin) - psi[0] : f.applyAsDouble(xmax) - psi[np - 1];
-//            System.out.println(np + " " + step + "  " + error + " " + rmsError);
             System.out.printf("%10d %27.18f %27.20f %27.20f\n", np, step, error, rmsError);
 
             String className = integrator.getClass().getSimpleName();
-            double errorBound = params.calculateMaxError(np);
+            double errorBound = params.calculateMaxError(step);
             assertTrue(Math.abs(error) < errorBound,
                     String.format("%s : |error| = %.3e should be < %.3e for np = %s",
                             className, Math.abs(error), errorBound, np));

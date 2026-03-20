@@ -1,15 +1,20 @@
 package schrodinger.integrator.verification;
 
 public class ConvergenceParams {
-    public final double characteristicNumberOfPoints;
     public final double convergenceOrder;
+    public final double characteristicStepSize;
 
-    public ConvergenceParams(double convergenceOrder, double characteristicNumberOfPoints) {
+    public ConvergenceParams(double convergenceOrder, double characteristicStepSize) {
         this.convergenceOrder = convergenceOrder;
-        this.characteristicNumberOfPoints = characteristicNumberOfPoints;
+        this.characteristicStepSize = characteristicStepSize;
     }
 
+    @Deprecated
     public double calculateMaxError(int np) {
-        return Math.pow(characteristicNumberOfPoints / np, convergenceOrder);
+        return 1e-10;
+    }
+
+    public double calculateMaxError(double stepSize) {
+        return Math.pow(stepSize / characteristicStepSize, convergenceOrder);
     }
 }

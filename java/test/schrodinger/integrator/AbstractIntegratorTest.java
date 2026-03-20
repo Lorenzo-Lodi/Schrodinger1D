@@ -135,6 +135,11 @@ public abstract class AbstractIntegratorTest {
         ConvergenceParams convergenceParams = new ConvergenceParams(1, 1000);
         verifier.propagate(direction, convergenceParams);
     }
+
+    // Make abstract at the end
+    protected ConvergenceParams convergence_params_tanh_x() {
+        return new ConvergenceParams(1, 1000);
+    }
 // =================================================================================================================
 
 
