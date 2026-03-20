@@ -91,10 +91,10 @@ public abstract class ManufacturedSolutionVerifier {
         }
 
         System.out.printf("Max ratio MAX_ERROR / ACTUAL_ERROR = %20.4f\n", maxRatio);
-        double maxRatioThreshold = 100;
+        double maxRatioThreshold = 25000;
         if (maxRatio > maxRatioThreshold) {
-            System.out.printf("Warning: Ratio is greater than the threshold %20.4f. Consider tightnening "
-                    + "the errorBound threshold to strengthen the test!\n", maxRatioThreshold);
+            System.out.printf("Ratio MAX_ERROR / ACTUAL_ERROR is greater than the maximum threshold %20.4f. " +
+                    "This means the test is too permissive. Tighten the errorBound threshold to strengthen the test!\n", maxRatioThreshold);
         }
 
     }

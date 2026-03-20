@@ -1,5 +1,6 @@
 package schrodinger.integrator.misc;
 
+import org.junit.jupiter.api.Test;
 import schrodinger.integrator.AbstractIntegratorTest;
 import schrodinger.integrator.verification.ConvergenceParams;
 import schrodinger.integrator.Integrator;
@@ -19,21 +20,21 @@ public class Obrechkoff6Test extends AbstractIntegratorTest {
     }
 
 
-//    @Test
-//    public void integrateForwardReferenceTest() {
-//        double val = integrateOneStep(Integrator.Direction.FORWARD);
-//        assertEquals(5.32756630584979, val, 1e-14);
-//    }
-//
-//    @Test
-//    public void integrateBackwardReferenceTest() {
-//        double val = integrateOneStep(Integrator.Direction.BACKWARD);
-//        assertEquals(4.4120103459770625, val, 1e-14);
-//    }
+    @Test
+    public void integrateForwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.FORWARD);
+        assertEquals(2.3229953427486745, val, 1e-14);
+    }
+
+    @Test
+    public void integrateBackwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.BACKWARD);
+        assertEquals(1.4410273443477517, val, 1e-14);
+    }
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x() {
-        return new ConvergenceParams(6.07, 17.5);
+        return new ConvergenceParams(6.07, 0.70);
     }
 
 

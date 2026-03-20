@@ -57,7 +57,7 @@ public class EFNFixedBetaTest extends AbstractIntegratorTest {
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x() {
-        return new ConvergenceParams(3.54, 13.5);
+        return new ConvergenceParams(3.54, 0.9);
     }
 
 }

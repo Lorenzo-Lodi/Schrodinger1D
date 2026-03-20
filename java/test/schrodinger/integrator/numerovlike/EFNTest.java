@@ -57,7 +57,7 @@ public class EFNTest extends AbstractIntegratorTest {
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x() {
-        return new ConvergenceParams(3.68, 15.4);
+        return new ConvergenceParams(3.68, 0.8);
     }
 
 }
