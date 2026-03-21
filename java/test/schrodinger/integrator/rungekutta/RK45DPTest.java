@@ -33,17 +33,17 @@ public class RK45DPTest extends AbstractIntegratorTest {
 
     @Override
     protected ConvergenceParams convergence_params_exp_minus_x() {
-        return new ConvergenceParams(5.00, 100.);
+        return new ConvergenceParams(5.00, 1.6);
     }
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x_minus_x() {
-        return new ConvergenceParams(5.00, 100.);
+        return new ConvergenceParams(5.00, 1.3);
     }
 
     @Override
     protected ConvergenceParams convergence_params_tanh_x() {
-        return new ConvergenceParams(5.00, 2.99);
+        return new ConvergenceParams(5.00, 2.5);
     }
 
 }
