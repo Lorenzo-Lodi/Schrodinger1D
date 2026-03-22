@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.Date;
 import java.util.function.DoubleUnaryOperator;
 
 public class IntegratorSpeedBenchmark {
@@ -29,17 +30,23 @@ public class IntegratorSpeedBenchmark {
         }
         long elapsedNanos = System.nanoTime() - t0;
         double timePerPoint = ((double) elapsedNanos) / (npoints);
-        String msg = String.format("Time taken for integrating %d points is %10.3f ns / point for %s\n", npoints, timePerPoint, integrator.getClass().getSimpleName());
+        Date date = new Date();
+        String sysInfo = System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch");
+        String jdkInfo = System.getProperty("java.vendor") + ", " + System.getProperty("java.vm.name") +
+                ", " + System.getProperty("java.version");
+        String cpuInfo = getCpuName();
+        String msg = String.format("Time for integrating %d points: %10.3f ns / point for %24s ; %30s ; %30s ; %30s ; %s\n",
+                npoints, timePerPoint, integrator.getClass().getSimpleName(), date, sysInfo, jdkInfo, cpuInfo);
         System.out.printf(msg);
 
-        Path out = Path.of("benchmark-results.txt");
+        Path out = Path.of("docs", "benchmark-results.txt");
 
         try {
             Files.writeString(
-                out,
-                msg,
-                StandardOpenOption.CREATE,
-                StandardOpenOption.APPEND
+                    out,
+                    msg,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.APPEND
             );
         } catch (IOException e) {
             throw new RuntimeException("Failed to write benchmark output", e);
@@ -102,5 +109,69 @@ public class IntegratorSpeedBenchmark {
 //  speed! This really shouldn't be the case, as they are more complex.
 
     }
+
+    private static String getCpuName() {
+        String os = System.getProperty("os.name", "").toLowerCase();
+        try {
+            if (os.contains("linux")) {
+                return java.nio.file.Files.lines(java.nio.file.Path.of("/proc/cpuinfo"))
+                        .filter(s -> s.startsWith("model name"))
+                        .map(s -> s.replaceFirst(".*:\\s*", ""))
+                        .findFirst()
+                        .orElse("Unknown CPU");
+            }
+            if (os.contains("windows")) {
+                return getCpuNameWindowsFast();
+            }
+        } catch (Exception ignored) {
+        }
+        return "Unknown CPU";
+    }
+
+    private static String getCpuNameWindowsSlow() throws Exception {
+        Process p = new ProcessBuilder(
+                "powershell", "-NoProfile", "-Command",
+                "(Get-CimInstance Win32_Processor | Select-Object -First 1).Name"
+        ).start();
+        try (java.io.BufferedReader r =
+                     new java.io.BufferedReader(new java.io.InputStreamReader(p.getInputStream()))) {
+            String line = r.readLine();
+            return (line == null || line.isBlank()) ? "Unknown CPU" : line.trim();
+        }
+    }
+
+    private static String getCpuNameWindowsFast() {
+        try {
+            Process p = new ProcessBuilder(
+                    "reg", "query",
+                    "HKLM\\HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+                    "/v", "ProcessorNameString"
+            ).start();
+
+            try (java.io.BufferedReader r = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(p.getInputStream()))) {
+                String line;
+                while ((line = r.readLine()) != null) {
+                    line = line.trim();
+                    if (line.startsWith("ProcessorNameString")) {
+                        String[] parts = line.split("\\s{2,}", 3);
+                        if (parts.length == 3) {
+                            String cpuName = parts[2].trim();
+                            cpuName = cpuName.replace("(R)", ""); // Clean up
+                            cpuName = cpuName.replace("(TM)", ""); // Clean up
+                            return cpuName;
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return "Unknown CPU";
+    }
+
+    private static String getCpuNameWindowsFastest() {
+        return System.getenv("PROCESSOR_IDENTIFIER");
+    }
+
 
 }
