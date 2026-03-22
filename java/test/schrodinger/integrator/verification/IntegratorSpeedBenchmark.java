@@ -6,7 +6,8 @@ import java.nio.file.Path;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.function.DoubleUnaryOperator;
 
 public class IntegratorSpeedBenchmark {
@@ -30,13 +31,14 @@ public class IntegratorSpeedBenchmark {
         }
         long elapsedNanos = System.nanoTime() - t0;
         double timePerPoint = ((double) elapsedNanos) / (npoints);
-        Date date = new Date();
-        String sysInfo = System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch");
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+        String sysInfo = System.getProperty("os.name") + " v" + System.getProperty("os.version");
         String jdkInfo = System.getProperty("java.vendor") + ", " + System.getProperty("java.vm.name") +
                 ", " + System.getProperty("java.version");
         String cpuInfo = getCpuName();
-        String msg = String.format("Time for integrating %d points: %10.3f ns / point for %24s ; %30s ; %30s ; %30s ; %s\n",
-                npoints, timePerPoint, integrator.getClass().getSimpleName(), date, sysInfo, jdkInfo, cpuInfo);
+        String gitHash = getGitCommit();
+        String msg = String.format("Time for integrating %d points: %10.3f ns / point for %24s ; %25s ; %25s ; %30s ; %s ; git hash = %s\n",
+                npoints, timePerPoint, integrator.getClass().getSimpleName(), timestamp, sysInfo, jdkInfo, cpuInfo, gitHash);
         System.out.printf(msg);
 
         Path out = Path.of("docs", "benchmark-results.txt");
@@ -171,6 +173,19 @@ public class IntegratorSpeedBenchmark {
 
     private static String getCpuNameWindowsFastest() {
         return System.getenv("PROCESSOR_IDENTIFIER");
+    }
+
+    private static String getGitCommit() {
+        try {
+            Process p = new ProcessBuilder("git", "rev-parse", "--short", "HEAD").start();
+            try (java.io.BufferedReader r =
+                         new java.io.BufferedReader(new java.io.InputStreamReader(p.getInputStream()))) {
+                String line = r.readLine();
+                return (line == null || line.isBlank()) ? "Unknown commit" : line.trim();
+            }
+        } catch (Exception e) {
+            return "Unknown commit";
+        }
     }
 
 
