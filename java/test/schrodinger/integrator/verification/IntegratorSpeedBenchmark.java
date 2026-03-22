@@ -2,6 +2,10 @@ package schrodinger.integrator.verification;
 
 import schrodinger.integrator.Integrator;
 
+import java.nio.file.Path;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.function.DoubleUnaryOperator;
 
 public class IntegratorSpeedBenchmark {
@@ -25,8 +29,21 @@ public class IntegratorSpeedBenchmark {
         }
         long elapsedNanos = System.nanoTime() - t0;
         double timePerPoint = ((double) elapsedNanos) / (npoints);
-        String msg = String.format("Time taken for integrating %d points is %10.3f ns / point for %s", npoints, timePerPoint, integrator.getClass().getSimpleName());
-        System.out.println(msg);
+        String msg = String.format("Time taken for integrating %d points is %10.3f ns / point for %s\n", npoints, timePerPoint, integrator.getClass().getSimpleName());
+        System.out.printf(msg);
+
+        Path out = Path.of("benchmark-results.txt");
+
+        try {
+            Files.writeString(
+                out,
+                msg,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND
+            );
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write benchmark output", e);
+        }
 
 //        Results 2026-03-05 h 16:40, commit e61c3cd0d1e0c9103dc4e39340a33adb5cf5c48f
 //        Laptop i7 1355U, Amazon corretto 21.0.8

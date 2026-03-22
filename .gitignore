@@ -7,3 +7,6 @@ java/.claude
 *.class
 java/common.log
 java/DissociationTest.log
+java/.gitignore
+java/.project
+java/.classpath
