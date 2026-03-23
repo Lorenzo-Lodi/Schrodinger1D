@@ -13,9 +13,6 @@ public final class CFMagnus4 implements Integrator {
     private static final double[][] W = new double[EXPONENTIALS][NODES]; // Weights
 
     static {
-        // --- PRE-POPULATED WITH CF4 (4th Order) ---
-        // Replace with CF8 coefficients from Alvermann & Fehske (2011) Table 2/3
-
         double sqrt3 = Math.sqrt(3.0);
 
         // 1. Gauss-Legendre Nodes on [0, 1]
