@@ -21,8 +21,6 @@ public final class CFMagnus4 implements Integrator {
         // 1. Gauss-Legendre Nodes on [0, 1]
         C[0] = 0.5 - sqrt3 / 6.0;
         C[1] = 0.5 + sqrt3 / 6.0;
-        C[2] = 0.5 + sqrt3 / 6.0;
-        C[3] = 0.5 + sqrt3 / 6.0;
 
         // 2. Weights for Exponential 1
         W[0][0] = 0.25 + sqrt3 / 6.0;
