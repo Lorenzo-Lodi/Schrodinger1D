@@ -116,11 +116,12 @@ public class IntegratorSpeedBenchmark {
         String os = System.getProperty("os.name", "").toLowerCase();
         try {
             if (os.contains("linux")) {
-                return java.nio.file.Files.lines(java.nio.file.Path.of("/proc/cpuinfo"))
+                String cpuName = java.nio.file.Files.lines(java.nio.file.Path.of("/proc/cpuinfo"))
                         .filter(s -> s.startsWith("model name"))
                         .map(s -> s.replaceFirst(".*:\\s*", ""))
                         .findFirst()
                         .orElse("Unknown CPU");
+                return cleanUpCPUName(cpuName);
             }
             if (os.contains("windows")) {
                 return getCpuNameWindowsFast();
@@ -159,8 +160,7 @@ public class IntegratorSpeedBenchmark {
                         String[] parts = line.split("\\s{2,}", 3);
                         if (parts.length == 3) {
                             String cpuName = parts[2].trim();
-                            cpuName = cpuName.replace("(R)", ""); // Clean up
-                            cpuName = cpuName.replace("(TM)", ""); // Clean up
+                            cpuName = cleanUpCPUName(cpuName);
                             return cpuName;
                         }
                     }
@@ -169,6 +169,12 @@ public class IntegratorSpeedBenchmark {
         } catch (Exception ignored) {
         }
         return "Unknown CPU";
+    }
+
+    private static String cleanUpCPUName(String cpuName) {
+        cpuName = cpuName.replace("(R)", "");
+        cpuName = cpuName.replace("(TM)", "");
+        return cpuName;
     }
 
     private static String getCpuNameWindowsFastest() {
