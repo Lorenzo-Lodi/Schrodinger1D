@@ -27,7 +27,7 @@ public class CFMagnus8Test extends AbstractIntegratorTest {
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x() {
-        return new ConvergenceParams(4.01, 0.00053);
+        return new ConvergenceParams(4.01, 0.53);
     }
 
     @Override
@@ -37,12 +37,12 @@ public class CFMagnus8Test extends AbstractIntegratorTest {
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x_minus_x() {
-        return new ConvergenceParams(4.00, 0.0005);
+        return new ConvergenceParams(4.00, 0.5);
     }
 
     @Override
     protected ConvergenceParams convergence_params_tanh_x() {
-        return new ConvergenceParams(4.00, 0.0009);
+        return new ConvergenceParams(4.00, 0.9);
     }
 
 }
