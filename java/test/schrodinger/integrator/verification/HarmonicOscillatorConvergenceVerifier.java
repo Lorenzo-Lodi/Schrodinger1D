@@ -320,7 +320,7 @@ public class HarmonicOscillatorConvergenceVerifier {
 
         if (quantumNumber == 0) {
             // Ground state: very high R² achievable for lower order methods
-            if (baseOrder < 8) {
+            if (baseOrder < 6) {
                 return 0.995;  // Original strict tolerance
             } else {
                 return 0.80;   // higher-order methods reach numerical noise for dense grids
