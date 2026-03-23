@@ -35,22 +35,27 @@ public final class CFMagnus8 implements Integrator {
         F[0][1] = 0.152866146944615909929839;
         F[0][2] = 0.119167378745981369601216;
         F[0][3] = 0.068619226448029559107538;
+
         F[1][0] = 0.379420807516005431504230;
         F[1][1] = 0.148839980923180990943008;
         F[1][2] = -0.115880829186628075021088;
         F[1][3] = -0.188555246668412628269760;
+
         F[2][0] = 0.469459306644050573017994;
         F[2][1] = -0.379844237839363505173921;
         F[2][2] = 0.022898814729462898505141;
         F[2][3] = 0.571855043580130805495594;
+
         F[3][0] = -0.448225927391070886302766;
         F[3][1] = 0.362889857410989942809900;
         F[3][2] = -0.022565582830528472333301;
         F[3][3] = -0.544507517141613383517695;
+
         F[4][0] = -0.293924473106317605373923;
         F[4][1] = -0.026255628265819381983204;
         F[4][2] = 0.096761509131620390100068;
         F[4][3] = 0.000018330145571671744069;
+
         F[5][0] = 0.447109510586798614120629;
         F[5][1] = 0.0;
         F[5][2] = -0.200762581179816221704073;
@@ -64,23 +69,29 @@ public final class CFMagnus8 implements Integrator {
             F[10 - i][3] = -F[i][3];
         }
 
-        // Precompute effective node weights using Alvermann's EXACT polynomials
+        // Precompute effective node weights from Table 4
         for (int i = 0; i < EXPONENTIALS; i++) {
             A1W[i] = F[i][0];
 
             for (int k = 0; k < NODES; k++) {
-                // Shift node back to [-1/2, 1/2] to match the paper's math domain
-                double x = C[k] - 0.5;
+                double x = C[k];
 
-                // Unnormalized Legendre Polynomials
+                // shifted Legendre polynomials on [0,1]
                 double p0 = 1.0;
-                double p1 = x;
-                double p2 = x * x - 1.0 / 12.0;
-                double p3 = x * x * x - 0.15 * x; // 3/20 = 0.15
+                double p1 = 2.0 * x - 1.0;
+                double p2 = 6.0 * x * x - 6.0 * x + 1.0;
+                double p3 = 20.0 * x * x * x - 30.0 * x * x + 12.0 * x - 1.0;
 
-                V[i][k] = GW[k] * (F[i][0] * p0 + F[i][1] * p1 + F[i][2] * p2 + F[i][3] * p3);
+                // Eq. (25): A_n has factor (2n-1)
+                V[i][k] = GW[k] * (
+                        F[i][0] * p0
+                                + 3.0 * F[i][1] * p1
+                                + 5.0 * F[i][2] * p2
+                                + 7.0 * F[i][3] * p3
+                );
             }
         }
+
     }
 
     @Override
@@ -126,14 +137,12 @@ public final class CFMagnus8 implements Integrator {
                 double w = Math.sqrt(z);
                 double cos = Math.cos(w);
                 double sinc = Math.sin(w) / w;
-
                 yNext = cos * y + a * sinc * yp;
                 ypNext = -b * sinc * y + cos * yp;
             } else if (z < 0.0) {
                 double nu = Math.sqrt(-z);
                 double cosh = Math.cosh(nu);
                 double sinhc = Math.sinh(nu) / nu;
-
                 yNext = cosh * y + a * sinhc * yp;
                 ypNext = -b * sinhc * y + cosh * yp;
             } else {

@@ -32,7 +32,7 @@ public class CFMagnus8Test extends AbstractIntegratorTest {
 
     @Override
     protected ConvergenceParams convergence_params_exp_minus_x() {
-        return new ConvergenceParams(1.00, 1e12);
+        return new ConvergenceParams(1.00, 5e11);
     }
 
     @Override
