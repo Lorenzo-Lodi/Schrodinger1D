@@ -31,8 +31,9 @@ public abstract class ManufacturedSolutionVerifier {
 
     public void propagate(double xmin, double xmax, int nPointsStart, int nPointsEnd, int nPointsStep, Integrator.Direction direction, ConvergenceParams params) {
         int d = direction.getValue();
-
-        System.out.println(integrator.getClass().getSimpleName());
+        double t0 = System.nanoTime();
+        String className = integrator.getClass().getSimpleName();
+        System.out.println(className);
         {
             String s = (d == 1) ? "error@xmax" : "error@xmin";
             System.out.printf("%10s %27s %27s %27s", "np", "step", s, "errorRMS\n");
@@ -81,7 +82,6 @@ public abstract class ManufacturedSolutionVerifier {
             double error = isBackward ? f.applyAsDouble(xmin) - psi[0] : f.applyAsDouble(xmax) - psi[np - 1];
             System.out.printf("%10d %27.18f %27.20f %27.20f\n", np, step, error, rmsError);
 
-            String className = integrator.getClass().getSimpleName();
             double errorBound = params.calculateMaxError(step);
             assertTrue(Math.abs(error) < errorBound,
                     String.format("%s : |error| = %.3e should be < %.3e for np = %s",
@@ -91,6 +91,9 @@ public abstract class ManufacturedSolutionVerifier {
         }
 
         System.out.printf("Max ratio MAX_ERROR / ACTUAL_ERROR = %20.4f\n", maxRatio);
+        double elapsedMicros = (System.nanoTime() - t0) * 0.001;
+        System.out.printf("Elapsed time for %s in ms = %10.3f\n", className, elapsedMicros);
+
         double maxRatioThreshold = 25000;
         if (maxRatio > maxRatioThreshold) {
             System.out.printf("Ratio MAX_ERROR / ACTUAL_ERROR is greater than the maximum threshold %20.4f. " +

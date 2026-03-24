@@ -38,8 +38,30 @@ also by Magnus6e4, PC6 and even CFMagnus4.
 It too, like CFMagnus6e5Opt, evaluates Q(x) at 3 subpoints but it's quite a bit faster than that method (more on performance later).
 Overall it performs similarly to PC6, but PC6 beats it for dense grids (because PC6 shows effective h^7 convergence in this case).
 
-9. At this point it is more difficult to identify a clear winner,
+9. At this point it is more difficult to identify a clear winner.
+As an all-rounder I'd pick Stormer6; it shows a convergence which is closer to h^7 than h^6, but with a relatively large prefactor.
 
+10. Then I'd put CFMagnus4. It shows a perfect h^4 convergence, but with a small prefactor, so that it beats
+Stormer6 for coarse grids up to about 230 points. CFMagnus4 evaluates Q(x) at 3 subpoints.
+
+11. Then, perhaps, I'd put Stormer8. This is the explicit version of Stormer8i and it's in all ways inferior to it.
+I'd chosen to leave it for comparison, however. It shows h^8 convergence, but with a huge prefactor and some
+pre-asymptotic drops for coarse grids. For dense grids with more than 250 points it beats Stormer6. However,
+its performance becomes pretty poor at coarse grids, becoming even worse than Numerov for less than 180 points or so.
+
+12-14. Then I'd put ex-aequo EFN, EFNFixedBeta and Numerov. Overall the errors for these methods are within a factor of two,
+so they perfoms very very similarly. For coarse grids (up to 200 points) EFN is best, while for dense grids EFNFixedBeta
+is best. Numerov is intermediate.
+Numerov shows a fast convergence (of h^5.5 type in fact) up to about 200 points, but then deteriorates considerably
+and from 260 points onwards the convergence seems to be close to h^3.5.
+I don't know the reason for this behaviour.
+
+15. Then there is Stormer5. It does show the expected h^5 convergence, but because of the large prefactor Numerov-like
+methods beat it for all step sizes.
+
+16. Then there is RKN4. It shows perfect h^4 convergence but with a large prefactor (errors are about 10x Numerov's).
+
+17. Finally, Taylor3Points shows the expected h^2 convergence. It is, by FAR, the worse performing method of all.
 
 errorRMS
 np	step	CFMagnus4	CFMagnus6e4	CFMagnus6e5Opt	CFMagnus8	EFNFixedBeta	EFN	Numerov	Obrechkoff6	PC6	PC8i1	PC8i2	RK45DP	RKN4	Stormer5	Stormer6	Stormer8	Stormer8i	Taylor3p
