@@ -17,7 +17,7 @@ public final class CFMagnus6 implements Integrator {
     private static final double[][] F = new double[EXPONENTIALS][3];
 
     private static final double[] A1W = new double[EXPONENTIALS];
-    private static final double[][] V = new double[EXPONENTIALS][NODES];
+    private static final double[][] W = new double[EXPONENTIALS][NODES];
 
     static {
         // 1. Gauss-Legendre Nodes mapped to [0, 1]
@@ -60,7 +60,7 @@ public final class CFMagnus6 implements Integrator {
                 double p1 = 2.0 * c - 1.0;
                 double p2 = 6.0 * c * c - 6.0 * c + 1.0;
 
-                V[i][k] = GW[k] * (
+                W[i][k] = GW[k] * (
                         F[i][0] * p0
                                 + 3.0 * F[i][1] * p1
                                 + 5.0 * F[i][2] * p2
@@ -99,9 +99,10 @@ public final class CFMagnus6 implements Integrator {
 
         // 2. Multiply the state vector by the sequence of Exponentials (Must be in reverse order!)
         for (int i = EXPONENTIALS - 1; i >= 0; i--) {
+
             double sumWQ = 0.0;
             for (int k = 0; k < NODES; k++) {
-                sumWQ += V[i][k] * Q[k];
+                sumWQ += W[i][k] * Q[k];
             }
 
             double W_i = hd * A1W[i];
