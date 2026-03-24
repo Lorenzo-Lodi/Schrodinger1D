@@ -46,11 +46,10 @@ public final class CFMagnus4 implements Integrator {
                             Direction direction) {
 
         double hd = step * direction.getValue();
-
         double y = psi[n];
         double yp = currentPsiPrime[0];
 
-        // 1. Pre-calculate Q(x) at the Gauss-Legendre quadrature nodes
+        // 1. Evaluate Q(x) at the Gauss-Legendre nodes
         double[] Q = new double[NODES];
         for (int k = 0; k < NODES; k++) {
             Q[k] = qTilde.applyAsDouble(n + C[k] * direction.getValue());
@@ -72,20 +71,20 @@ public final class CFMagnus4 implements Integrator {
             double K_i = hd * sumWQ;
 
             // 3. Exact Analytical 2x2 Matrix Exponential
-            double omegaSq = W_i * K_i;
+            double z = W_i * K_i;
             double yNext, ypNext;
 
-            if (omegaSq > 0) {
+            if (z > 0) {
                 // Oscillatory regime (Q > 0)
-                double omega = Math.sqrt(omegaSq);
-                double cos = Math.cos(omega);
-                double sinc = Math.sin(omega) / omega; // sin(w)/w
+                double w = Math.sqrt(z);
+                double cos = Math.cos(w);
+                double sinc = Math.sin(w) / w; // sin(w)/w
 
                 yNext = cos * y + W_i * sinc * yp;
                 ypNext = -K_i * sinc * y + cos * yp;
-            } else if (omegaSq < 0) {
+            } else if (z < 0) {
                 // Exponential regime (Q < 0)
-                double nu = Math.sqrt(-omegaSq);
+                double nu = Math.sqrt(-z);
                 double cosh = Math.cosh(nu);
                 double sinhc = Math.sinh(nu) / nu; // sinh(v)/v
 
