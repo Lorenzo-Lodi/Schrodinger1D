@@ -4,7 +4,7 @@ import schrodinger.integrator.Integrator;
 
 import java.util.function.DoubleUnaryOperator;
 
-public class CFMagnusAbstract {
+public abstract class CFMagnusAbstract {
 
     private final int NODES;
     private final int EXPONENTIALS;
