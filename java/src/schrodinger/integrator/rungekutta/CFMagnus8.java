@@ -10,8 +10,6 @@ public final class CFMagnus8 extends CFMagnusAbstract implements Integrator {
     private static final int EXPONENTIALS = 11;
 
     private static final double[] C = new double[NODES];
-    private static final double[] GW = new double[NODES];
-    private static final double[][] F = new double[EXPONENTIALS][4];
 
     private static final double[] A1W = new double[EXPONENTIALS];
     private static final double[][] W = new double[EXPONENTIALS][NODES];
@@ -26,11 +24,13 @@ public final class CFMagnus8 extends CFMagnusAbstract implements Integrator {
         C[3] = 0.5 + Math.sqrt((15.0 + 2.0 * sqrt30) / 140.0);
 
         // Quadrature weights for interval size 1
+        final double[] GW = new double[NODES];
         GW[0] = (18.0 - sqrt30) / 72.0;
         GW[1] = (18.0 + sqrt30) / 72.0;
         GW[2] = (18.0 + sqrt30) / 72.0;
         GW[3] = (18.0 - sqrt30) / 72.0;
 
+        final double[][] F = new double[EXPONENTIALS][4];
         F[0][0] = 0.169715531043933180094151;
         F[0][1] = 0.152866146944615909929839;
         F[0][2] = 0.119167378745981369601216;

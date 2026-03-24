@@ -10,8 +10,9 @@ public final class CFMagnus4 extends CFMagnusAbstract implements Integrator {
     private static final int EXPONENTIALS = 2;
 
     private static final double[] C = new double[NODES]; // Gauss-Legendre nodes
-    private static final double[][] W = new double[EXPONENTIALS][NODES]; // Weights
+
     private static final double[] A1W = new double[EXPONENTIALS];
+    private static final double[][] W = new double[EXPONENTIALS][NODES]; // Weights
 
     static {
         double sqrt3 = Math.sqrt(3.0);

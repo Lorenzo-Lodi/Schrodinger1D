@@ -11,10 +11,6 @@ public final class CFMagnus6e4 extends CFMagnusAbstract implements Integrator {
     private static final int EXPONENTIALS = 4;
 
     private static final double[] C = new double[NODES];
-    private static final double[] GW = new double[NODES];
-
-    // F arrays: 4 exponentials, 3 Legendre coefficients (A_1, A_2, A_3)
-    private static final double[][] F = new double[EXPONENTIALS][3];
 
     private static final double[] A1W = new double[EXPONENTIALS];
     private static final double[][] W = new double[EXPONENTIALS][NODES];
@@ -27,12 +23,15 @@ public final class CFMagnus6e4 extends CFMagnusAbstract implements Integrator {
         C[2] = 0.5 + 0.5 * sqrt35;
 
         // 2. Quadrature weights for interval size 1
+        final double[] GW = new double[NODES];
         GW[0] = 5.0 / 18.0;
         GW[1] = 8.0 / 18.0;  // or 4.0 / 9.0
         GW[2] = 5.0 / 18.0;
 
         // 3. User-provided coefficients for CF6:4 (First half)
         // From Table 3 of 1102.5071v2.pdf
+        // F arrays: 4 exponentials, 3 Legendre coefficients (A_1, A_2, A_3)
+        final double[][] F = new double[EXPONENTIALS][3];
         F[0][0] = 1.0798524263824308825;
         F[0][1] = F[0][0] - (2.0 / 3.0) * F[0][0] * F[0][0];
         F[0][2] = 1.0 / (10.0 - 10.0 * F[0][0]);

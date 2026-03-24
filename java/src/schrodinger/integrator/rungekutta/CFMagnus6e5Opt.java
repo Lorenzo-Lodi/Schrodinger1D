@@ -9,28 +9,27 @@ public final class CFMagnus6e5Opt extends CFMagnusAbstract implements Integrator
     private static final int EXPONENTIALS = 5;
 
     private static final double[] C = new double[NODES];
-    private static final double[] GW = new double[NODES];
-
-    // F arrays: 5 exponentials, 4 Legendre coefficients (A_1, A_2, A_3, A_4)
-    private static final double[][] F = new double[EXPONENTIALS][4];
 
     private static final double[] A1W = new double[EXPONENTIALS];
     private static final double[][] W = new double[EXPONENTIALS][NODES];
 
     static {
         // 1. Gauss-Legendre Nodes mapped to [0, 1]
-        double sqrt35 = Math.sqrt(3.0 / 5.0);
+        final double sqrt35 = Math.sqrt(3.0 / 5.0);
         C[0] = 0.5 - 0.5 * sqrt35;
         C[1] = 0.5;
         C[2] = 0.5 + 0.5 * sqrt35;
 
         // 2. Quadrature weights for interval size 1
+        final double[] GW = new double[NODES];
         GW[0] = 5.0 / 18.0;
         GW[1] = 8.0 / 18.0;  // or 4.0 / 9.0
         GW[2] = 5.0 / 18.0;
 
         // 3. User-provided coefficients for CF6:5Opt (First half)
         // From Table 6 of 1102.5071v2.pdf
+        // F arrays: 5 exponentials, 4 Legendre coefficients (A_1, A_2, A_3, A_4)
+        final double[][] F = new double[EXPONENTIALS][4];
         F[0][0] = 0.1714;
         F[0][1] = 0.15409059414309687213;
         F[0][2] = 0.11947178242929061641;
@@ -50,9 +49,9 @@ public final class CFMagnus6e5Opt extends CFMagnusAbstract implements Integrator
         // 4. Apply Time-Reversal Symmetry for the second half
         // F[2] is the mirror of F[1], F[3] is the mirror of F[0]
         for (int i = 0; i < 2; i++) {
-            F[4 - i][0] =  F[i][0]; // Even parity
+            F[4 - i][0] = F[i][0]; // Even parity
             F[4 - i][1] = -F[i][1]; // Odd parity flips
-            F[4 - i][2] =  F[i][2]; // Even parity
+            F[4 - i][2] = F[i][2]; // Even parity
             F[4 - i][3] = -F[i][3]; // Odd parity flips
         }
 
