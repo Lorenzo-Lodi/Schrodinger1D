@@ -4,7 +4,7 @@ import schrodinger.integrator.Integrator;
 
 import java.util.function.DoubleUnaryOperator;
 
-public final class CFMagnus8 implements Integrator {
+public final class CFMagnus8 extends CFMagnusAbstract implements Integrator {
 
     private static final int NODES = 4;
     private static final int EXPONENTIALS = 11;
@@ -94,6 +94,10 @@ public final class CFMagnus8 implements Integrator {
 
     }
 
+    public CFMagnus8() {
+        super(NODES, EXPONENTIALS, C, W, A1W);
+    }
+
     @Override
     public int minHistoryLength() {
         return 1;
@@ -104,57 +108,4 @@ public final class CFMagnus8 implements Integrator {
         return 8;
     }
 
-    @Override
-    public double propagate(double[] psi, double[] currentPsiPrime, int n, double step,
-                            DoubleUnaryOperator qTilde,
-                            DoubleUnaryOperator qTildePrime,
-                            DoubleUnaryOperator qTildeDoublePrime,
-                            Direction direction) {
-
-        double hd = step * direction.getValue();
-        double y = psi[n];
-        double yp = currentPsiPrime[0];
-
-        double[] q = new double[NODES];
-        for (int k = 0; k < NODES; k++) {
-            q[k] = qTilde.applyAsDouble(n + C[k] * direction.getValue());
-        }
-
-        // Exponentials MUST be evaluated in reverse order!
-        for (int i = EXPONENTIALS - 1; i >= 0; i--) {
-            double qComb = 0.0;
-            for (int k = 0; k < NODES; k++) {
-                qComb += W[i][k] * q[k];
-            }
-
-            double a = hd * A1W[i];
-            double b = hd * qComb;
-
-            double z = a * b;
-            double yNext, ypNext;
-
-            if (z > 0.0) {
-                double w = Math.sqrt(z);
-                double cos = Math.cos(w);
-                double sinc = Math.sin(w) / w;
-                yNext = cos * y + a * sinc * yp;
-                ypNext = -b * sinc * y + cos * yp;
-            } else if (z < 0.0) {
-                double nu = Math.sqrt(-z);
-                double cosh = Math.cosh(nu);
-                double sinhc = Math.sinh(nu) / nu;
-                yNext = cosh * y + a * sinhc * yp;
-                ypNext = -b * sinhc * y + cosh * yp;
-            } else {
-                yNext = y + a * yp;
-                ypNext = yp - b * y;
-            }
-
-            y = yNext;
-            yp = ypNext;
-        }
-
-        currentPsiPrime[0] = yp;
-        return y;
-    }
 }
