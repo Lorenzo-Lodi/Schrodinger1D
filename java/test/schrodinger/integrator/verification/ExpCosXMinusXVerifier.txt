@@ -63,6 +63,57 @@ methods beat it for all step sizes.
 
 17. Finally, Taylor3Points shows the expected h^2 convergence. It is, by FAR, the worse performing method of all.
 
+===================================
+I then repeated the analysis considering the performance (timings) for each integrator.
+HOWEVER, the timings I got for the data with 100-500 points were rather erratic, with methods which should undoubtedly come out faster than some
+others coming slower, etc. I suspect this is due to the small size of the runs and, potentially, effects of the Java garbage collection etc.
+
+Also, these runs did NOT cache the values of Q(x). On the other hand in the use for the Schrodinger equation Q(x) will probably be
+cached.
+
+I therefore increased the number of points to 5000 and 10000 (which proved consistent). I normalized the performance to the fastest method, Taylor3p.
+The averages of the timings for 100-5000 and 100-10000 points (in steps of 10 points) are:
+
+time    method
+12.85	PC8i2
+8.67	PC8i1
+6.22	CFMagnus8
+4.46	PC6
+3.74	Stormer8i
+3.68	CFMagnus6e5Opt
+3.59	Stormer8
+3.46	CFMagnus6e4
+2.94	Obrechkoff6
+2.77	RK45DP
+2.75	CFMagnus4
+2.68	Stormer5
+2.67	Stormer6
+2.14	Numerov
+2.00	RKN4
+1.97	EFN
+1.90	EFNFixedBeta
+1.00	Taylor3p
+
+
+I then plotted the errors but for the x coordinate I chose the number of points times the time for that method.
+The CFMagnus8 proves (by a large margin) to be the most efficient method in these tests. It is about 6 times slower than
+Taylor3p and 2 times slower than the Numerov-like method, but enormously more efficient.
+
+Then comes CFMagnus6e5Opt. Although asymptotically is "only" 6th order, it has a very small prefactor and is quite fast,
+about 1.8 times slower than Numerov.
+
+Then the situation depends more strongly on whether we want super-high accuracy or we can satisfy ourself with a more modest
+accuracy goal. For medium accuracies RK45DP does very well (although the reasons for its superconvergence are unclear).
+The PC6 method is slightly worse but deals a good balance between speed and accuracy.
+
+For the highest accuracy (high number of points) Stormer8i eventually prevails, although it doesn't do very well at large grid sizes.
+
+PC8 is never competitive with Stormer8i, as Stormer8i is much faster and they have the same asymptotic.
+
+BTW, for np=100 the error of  CFMagnus8 is already 2e7 times smaller than Numerov's! Although Numerov is 4x faster, it just
+cannot make up for this huge difference in prefactor and scaling! Nor can other methods.
+
+
 errorRMS
 np	step	CFMagnus4	CFMagnus6e4	CFMagnus6e5Opt	CFMagnus8	EFNFixedBeta	EFN	Numerov	Obrechkoff6	PC6	PC8i1	PC8i2	RK45DP	RKN4	Stormer5	Stormer6	Stormer8	Stormer8i	Taylor3p
 100	0.1269	2.50E-05	1.92E-05	6.40E-08	1.15E-11	3.12E-04	1.60E-04	2.79E-04	7.43E-06	3.07E-05	1.31E-06	1.29E-06	2.41E-06	9.08E-04	6.48E-04	2.42E-04	7.82E-04	3.67E-05	1.03E-01
