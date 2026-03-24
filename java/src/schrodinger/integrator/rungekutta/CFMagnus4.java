@@ -11,6 +11,7 @@ public final class CFMagnus4 implements Integrator {
 
     private static final double[] C = new double[NODES]; // Gauss-Legendre nodes
     private static final double[][] W = new double[EXPONENTIALS][NODES]; // Weights
+    private static final double[] A1W = new double[EXPONENTIALS];
 
     static {
         double sqrt3 = Math.sqrt(3.0);
@@ -19,13 +20,17 @@ public final class CFMagnus4 implements Integrator {
         C[0] = 0.5 - sqrt3 / 6.0;
         C[1] = 0.5 + sqrt3 / 6.0;
 
-        // 2. Weights for Exponential 1
-        W[0][0] = 0.25 + sqrt3 / 6.0;
-        W[0][1] = 0.25 - sqrt3 / 6.0;
+        // 2. Weights for Exponential 1 (assumes reverse iteration)
+        W[1][0] = 0.25 + sqrt3 / 6.0;
+        W[1][1] = 0.25 - sqrt3 / 6.0;
 
-        // 3. Weights for Exponential 2
-        W[1][0] = 0.25 - sqrt3 / 6.0;
-        W[1][1] = 0.25 + sqrt3 / 6.0;
+        // 3. Weights for Exponential 2 (assumes reverse iteration)
+        W[0][0] = 0.25 - sqrt3 / 6.0;
+        W[0][1] = 0.25 + sqrt3 / 6.0;
+
+        // 4. Precompute A1W (Sum of weights for each exponential)
+        A1W[0] = W[0][0] + W[0][1]; // 0.5
+        A1W[1] = W[1][0] + W[1][1]; // 0.5
     }
 
     @Override
@@ -56,18 +61,16 @@ public final class CFMagnus4 implements Integrator {
         }
 
         // 2. Multiply the state vector by the sequence of Exponentials
-        for (int i = 0; i < EXPONENTIALS; i++) {
+        for (int i = EXPONENTIALS - 1; i >= 0; i--) {
 
-            double sumW = 0.0;
             double sumWQ = 0.0;
 
             for (int k = 0; k < NODES; k++) {
-                sumW += W[i][k];
                 sumWQ += W[i][k] * Q[k];
             }
 
             // Elements of the combined matrix C_i
-            double W_i = hd * sumW;
+            double W_i = hd * A1W[i];
             double K_i = hd * sumWQ;
 
             // 3. Exact Analytical 2x2 Matrix Exponential
