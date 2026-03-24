@@ -104,10 +104,10 @@ public final class CFMagnus6 implements Integrator {
                 qComb += V[i][k] * Q[k];
             }
 
-            double a = hd * A1W[i];
-            double b = hd * qComb;
+            double W_i = hd * A1W[i];
+            double K_i = hd * qComb;
 
-            double z = a * b;
+            double z = W_i * K_i;
             double yNext, ypNext;
 
             if (z > 0.0) {
@@ -116,20 +116,20 @@ public final class CFMagnus6 implements Integrator {
                 double cos = Math.cos(w);
                 double sinc = Math.sin(w) / w;
 
-                yNext = cos * y + a * sinc * yp;
-                ypNext = -b * sinc * y + cos * yp;
+                yNext = cos * y + W_i * sinc * yp;
+                ypNext = -K_i * sinc * y + cos * yp;
             } else if (z < 0.0) {
                 // Exponential regime (Q < 0)
                 double nu = Math.sqrt(-z);
                 double cosh = Math.cosh(nu);
                 double sinhc = Math.sinh(nu) / nu;
 
-                yNext = cosh * y + a * sinhc * yp;
-                ypNext = -b * sinhc * y + cosh * yp;
+                yNext = cosh * y + W_i * sinhc * yp;
+                ypNext = -K_i * sinhc * y + cosh * yp;
             } else {
                 // Edge case: Q = 0 (Free particle)
-                yNext = y + a * yp;
-                ypNext = yp - b * y;
+                yNext = y + W_i * yp;
+                ypNext = yp - K_i * y;
             }
 
             y = yNext;

@@ -74,7 +74,7 @@ public final class CFMagnus4 implements Integrator {
             double z = W_i * K_i;
             double yNext, ypNext;
 
-            if (z > 0) {
+            if (z > 0.0) {
                 // Oscillatory regime (Q > 0)
                 double w = Math.sqrt(z);
                 double cos = Math.cos(w);
@@ -82,7 +82,7 @@ public final class CFMagnus4 implements Integrator {
 
                 yNext = cos * y + W_i * sinc * yp;
                 ypNext = -K_i * sinc * y + cos * yp;
-            } else if (z < 0) {
+            } else if (z < 0.0) {
                 // Exponential regime (Q < 0)
                 double nu = Math.sqrt(-z);
                 double cosh = Math.cosh(nu);
