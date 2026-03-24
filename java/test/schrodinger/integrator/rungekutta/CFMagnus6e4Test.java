@@ -7,11 +7,11 @@ import schrodinger.integrator.verification.ConvergenceParams;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CFMagnus6Test extends AbstractIntegratorTest {
+public class CFMagnus6e4Test extends AbstractIntegratorTest {
 
     @Override
     protected Integrator getIntegrator() {
-        return new CFMagnus6();
+        return new CFMagnus6e4();
     }
 
     @Test

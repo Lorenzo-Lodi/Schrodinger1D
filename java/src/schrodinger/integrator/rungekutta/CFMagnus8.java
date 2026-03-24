@@ -14,7 +14,7 @@ public final class CFMagnus8 implements Integrator {
     private static final double[][] F = new double[EXPONENTIALS][4];
 
     private static final double[] A1W = new double[EXPONENTIALS];
-    private static final double[][] V = new double[EXPONENTIALS][NODES];
+    private static final double[][] W = new double[EXPONENTIALS][NODES];
 
     static {
         double sqrt30 = Math.sqrt(30.0);
@@ -83,7 +83,7 @@ public final class CFMagnus8 implements Integrator {
                 double p3 = 20.0 * x * x * x - 30.0 * x * x + 12.0 * x - 1.0;
 
                 // Eq. (25): A_n has factor (2n-1)
-                V[i][k] = GW[k] * (
+                W[i][k] = GW[k] * (
                         F[i][0] * p0
                                 + 3.0 * F[i][1] * p1
                                 + 5.0 * F[i][2] * p2
@@ -124,7 +124,7 @@ public final class CFMagnus8 implements Integrator {
         for (int i = EXPONENTIALS - 1; i >= 0; i--) {
             double qComb = 0.0;
             for (int k = 0; k < NODES; k++) {
-                qComb += V[i][k] * q[k];
+                qComb += W[i][k] * q[k];
             }
 
             double a = hd * A1W[i];

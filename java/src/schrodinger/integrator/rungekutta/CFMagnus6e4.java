@@ -4,7 +4,7 @@ import schrodinger.integrator.Integrator;
 
 import java.util.function.DoubleUnaryOperator;
 
-public final class CFMagnus6 implements Integrator {
+public final class CFMagnus6e4 implements Integrator {
 
     // 6th order requires 3 Gauss-Legendre nodes and 4 exponentials
     private static final int NODES = 3;
