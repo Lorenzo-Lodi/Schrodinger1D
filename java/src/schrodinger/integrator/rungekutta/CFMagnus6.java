@@ -99,13 +99,13 @@ public final class CFMagnus6 implements Integrator {
 
         // 2. Multiply the state vector by the sequence of Exponentials (Must be in reverse order!)
         for (int i = EXPONENTIALS - 1; i >= 0; i--) {
-            double qComb = 0.0;
+            double sumWQ = 0.0;
             for (int k = 0; k < NODES; k++) {
-                qComb += V[i][k] * Q[k];
+                sumWQ += V[i][k] * Q[k];
             }
 
             double W_i = hd * A1W[i];
-            double K_i = hd * qComb;
+            double K_i = hd * sumWQ;
 
             double z = W_i * K_i;
             double yNext, ypNext;
