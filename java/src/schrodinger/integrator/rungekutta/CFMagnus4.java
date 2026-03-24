@@ -45,8 +45,7 @@ public final class CFMagnus4 implements Integrator {
                             DoubleUnaryOperator qTildeDoublePrime,
                             Direction direction) {
 
-        double h = step;
-        int d = direction.getValue();
+        double hd = step * direction.getValue();
 
         double y = psi[n];
         double yp = currentPsiPrime[0];
@@ -54,7 +53,7 @@ public final class CFMagnus4 implements Integrator {
         // 1. Pre-calculate Q(x) at the Gauss-Legendre quadrature nodes
         double[] Q = new double[NODES];
         for (int k = 0; k < NODES; k++) {
-            Q[k] = qTilde.applyAsDouble(n + C[k] * d);
+            Q[k] = qTilde.applyAsDouble(n + C[k] * direction.getValue());
         }
 
         // 2. Multiply the state vector by the sequence of Exponentials
@@ -69,8 +68,8 @@ public final class CFMagnus4 implements Integrator {
             }
 
             // Elements of the combined matrix C_i
-            double W_i = h * d * sumW;
-            double K_i = h * d * sumWQ;
+            double W_i = hd * sumW;
+            double K_i = hd * sumWQ;
 
             // 3. Exact Analytical 2x2 Matrix Exponential
             double omegaSq = W_i * K_i;

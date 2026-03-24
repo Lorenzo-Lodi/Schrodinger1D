@@ -91,13 +91,13 @@ public final class CFMagnus6 implements Integrator {
         double y = psi[n];
         double yp = currentPsiPrime[0];
 
-        // 1. Evaluate Q(x) at the 3 Gauss-Legendre nodes
+        // 1. Evaluate Q(x) at the Gauss-Legendre nodes
         double[] q = new double[NODES];
         for (int k = 0; k < NODES; k++) {
             q[k] = qTilde.applyAsDouble(n + C[k] * direction.getValue());
         }
 
-        // 2. Evaluate the 4 Exponentials (Must be in reverse order!)
+        // 2. Multiply the state vector by the sequence of Exponentials (Must be in reverse order!)
         for (int i = EXPONENTIALS - 1; i >= 0; i--) {
             double qComb = 0.0;
             for (int k = 0; k < NODES; k++) {
