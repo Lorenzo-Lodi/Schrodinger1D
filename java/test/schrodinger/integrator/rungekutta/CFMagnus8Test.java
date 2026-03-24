@@ -1,5 +1,6 @@
 package schrodinger.integrator.rungekutta;
 
+import org.junit.jupiter.api.Test;
 import schrodinger.integrator.AbstractIntegratorTest;
 import schrodinger.integrator.Integrator;
 import schrodinger.integrator.verification.ConvergenceParams;
@@ -13,17 +14,17 @@ public class CFMagnus8Test extends AbstractIntegratorTest {
         return new CFMagnus8();
     }
 
-//    @Test
-//    public void integrateForwardReferenceTest() {
-//        double val = integrateOneStep(Integrator.Direction.FORWARD);
-//        assertEquals(0.3996918280374979, val, 1e-14);
-//    }
-//
-//    @Test
-//    public void integrateBackwardReferenceTest() {
-//        double val = integrateOneStep(Integrator.Direction.BACKWARD);
-//        assertEquals(0.336941647798199, val, 1e-14);
-//    }
+    @Test
+    public void integrateForwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.FORWARD);
+        assertEquals(0.7527195988991293, val, 1e-14);
+    }
+
+    @Test
+    public void integrateBackwardReferenceTest() {
+        double val = integrateOneStep(Integrator.Direction.BACKWARD);
+        assertEquals(0.7469433084401753, val, 1e-14);
+    }
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x() {
