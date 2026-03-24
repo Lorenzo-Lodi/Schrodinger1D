@@ -35,7 +35,7 @@ public final class CFMagnus4 implements Integrator {
 
     @Override
     public int globalConvergenceOrder() {
-        return 4; // Change to 8 when using CF8 coefficients
+        return 4;
     }
 
     @Override

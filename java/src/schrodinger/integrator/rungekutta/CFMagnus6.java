@@ -111,6 +111,7 @@ public final class CFMagnus6 implements Integrator {
             double yNext, ypNext;
 
             if (z > 0.0) {
+                // Oscillatory regime (Q > 0)
                 double w = Math.sqrt(z);
                 double cos = Math.cos(w);
                 double sinc = Math.sin(w) / w;
@@ -118,6 +119,7 @@ public final class CFMagnus6 implements Integrator {
                 yNext = cos * y + a * sinc * yp;
                 ypNext = -b * sinc * y + cos * yp;
             } else if (z < 0.0) {
+                // Exponential regime (Q < 0)
                 double nu = Math.sqrt(-z);
                 double cosh = Math.cosh(nu);
                 double sinhc = Math.sinh(nu) / nu;
@@ -125,6 +127,7 @@ public final class CFMagnus6 implements Integrator {
                 yNext = cosh * y + a * sinhc * yp;
                 ypNext = -b * sinhc * y + cosh * yp;
             } else {
+                // Edge case: Q = 0 (Free particle)
                 yNext = y + a * yp;
                 ypNext = yp - b * y;
             }
