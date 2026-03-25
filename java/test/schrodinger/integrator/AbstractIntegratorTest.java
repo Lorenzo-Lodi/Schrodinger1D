@@ -92,10 +92,7 @@ public abstract class AbstractIntegratorTest {
         verifier.propagate(direction, convergence_params_exp_minus_x());
     }
 
-    // Make abstract at the end
-    protected ConvergenceParams convergence_params_exp_minus_x() {
-        return new ConvergenceParams(1, 0.001);
-    }
+    abstract protected ConvergenceParams convergence_params_exp_minus_x();
 
     // =================================================================================================================
     @Test
@@ -132,10 +129,7 @@ public abstract class AbstractIntegratorTest {
         verifier.propagate(direction, convergence_params_exp_to_cos_x_minus_x());
     }
 
-    // Make abstract at the end
-    protected ConvergenceParams convergence_params_exp_to_cos_x_minus_x() {
-        return new ConvergenceParams(1, 0.001);
-    }
+    abstract protected ConvergenceParams convergence_params_exp_to_cos_x_minus_x();
 
     // =================================================================================================================
     @Test
@@ -153,8 +147,26 @@ public abstract class AbstractIntegratorTest {
         verifier.propagate(direction, convergence_params_tanh_x());
     }
 
+    abstract protected ConvergenceParams convergence_params_tanh_x();
+
+    // =================================================================================================================
+    @Test
+    void propagate_forward_cos_x() {
+        propagate_cos_x(Integrator.Direction.FORWARD);
+    }
+
+    @Test
+    void propagate_backward_cos_x() {
+        propagate_cos_x(Integrator.Direction.BACKWARD);
+    }
+
+    private void propagate_cos_x(Integrator.Direction direction) {
+        CosXVerifier verifier = new CosXVerifier(getIntegrator());
+        verifier.propagate(direction, convergence_params_cos_x());
+    }
+
     // Make abstract at the end
-    protected ConvergenceParams convergence_params_tanh_x() {
+    protected ConvergenceParams convergence_params_cos_x() {
         return new ConvergenceParams(1, 0.001);
     }
 // =================================================================================================================
