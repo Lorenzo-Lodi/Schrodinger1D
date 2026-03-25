@@ -69,7 +69,8 @@ public final class CFMagnus8 extends CFMagnusAbstract implements Integrator {
             F[10 - i][3] = -F[i][3];
         }
 
-        // Precompute effective node weights from Table 4
+
+        // 5. Precompute effective node weights using exact polynomials
         for (int i = 0; i < EXPONENTIALS; i++) {
             A1W[i] = F[i][0];
 
@@ -82,7 +83,7 @@ public final class CFMagnus8 extends CFMagnusAbstract implements Integrator {
                 double p2 = 6.0 * x * x - 6.0 * x + 1.0;
                 double p3 = 20.0 * x * x * x - 30.0 * x * x + 12.0 * x - 1.0;
 
-                // Eq. (25): A_n has factor (2n-1)
+                // Eq. (25): A_n has factor (2n-1) -> 1, 3, 5, 7
                 W[i][k] = GW[k] * (
                         F[i][0] * p0
                                 + 3.0 * F[i][1] * p1

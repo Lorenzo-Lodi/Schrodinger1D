@@ -60,14 +60,15 @@ public final class CFMagnus6e5Opt extends CFMagnusAbstract implements Integrator
             A1W[i] = F[i][0];
 
             for (int k = 0; k < NODES; k++) {
-                double c = C[k];
+                double x = C[k];
 
+                // shifted Legendre polynomials on [0,1]
                 double p0 = 1.0;
-                double p1 = 2.0 * c - 1.0;
-                double p2 = 6.0 * c * c - 6.0 * c + 1.0;
-                double p3 = 20.0 * c * c * c - 30.0 * c * c + 12.0 * c - 1.0;
+                double p1 = 2.0 * x - 1.0;
+                double p2 = 6.0 * x * x - 6.0 * x + 1.0;
+                double p3 = 20.0 * x * x * x - 30.0 * x * x + 12.0 * x - 1.0;
 
-                // Eq. 25: A_n has factor (2n - 1) -> 1, 3, 5, 7
+                // Eq. (25): A_n has factor (2n - 1) -> 1, 3, 5, 7
                 W[i][k] = GW[k] * (
                         F[i][0] * p0
                                 + 3.0 * F[i][1] * p1
