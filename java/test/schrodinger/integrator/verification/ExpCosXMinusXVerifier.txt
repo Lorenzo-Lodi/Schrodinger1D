@@ -16,7 +16,6 @@ in the range we investigated. For np=100-150 it has 3-4 less digits of accuracy 
 CFMagnus6e5Opt gradually gains ground against Magnus8, but cannot catch it in the investigated range.
 This method evaluates Q(x) at 3 subpoints, so the same considerantions made for CFMagnus8 hold: it's very good but slow.
 
-
 3. Then we have the PC8 methods (which use Stormer6 as a predictor). They perform identically (so the second iteration is not needed).
 They have h^8 convergence, but catch up to CFMagnus6e5Opt only for about 400 points, when they are also start being
 affected by numerical noise. The PC8 method seem more affected by numerical noise than the Magnus methods, as
