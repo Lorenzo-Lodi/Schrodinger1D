@@ -27,6 +27,14 @@ public class CFMagnus8Test extends AbstractIntegratorTest {
     }
 
     @Override
+    protected Double error_threshold_harmonic_oscillator(int quantumNumber) {
+        if(quantumNumber == 0) {
+            return 1.5e-12;
+        }
+        return 5e-12;
+    }
+
+    @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x() {
         return new ConvergenceParams(4.01, 0.53);
     }

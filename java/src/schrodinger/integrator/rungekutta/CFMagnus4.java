@@ -2,15 +2,11 @@ package schrodinger.integrator.rungekutta;
 
 import schrodinger.integrator.Integrator;
 
-import java.util.function.DoubleUnaryOperator;
-
 public final class CFMagnus4 extends CFMagnusAbstract implements Integrator {
 
     private static final int NODES = 2;
     private static final int EXPONENTIALS = 2;
-
     private static final double[] C = new double[NODES]; // Gauss-Legendre nodes
-
     private static final double[] A1W = new double[EXPONENTIALS];
     private static final double[][] W = new double[EXPONENTIALS][NODES]; // Weights
 

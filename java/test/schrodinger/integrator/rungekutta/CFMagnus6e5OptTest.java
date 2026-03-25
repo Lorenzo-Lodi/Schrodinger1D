@@ -27,6 +27,15 @@ public class CFMagnus6e5OptTest extends AbstractIntegratorTest {
     }
 
     @Override
+    protected Double error_threshold_harmonic_oscillator(int quantumNumber) {
+        if(quantumNumber == 0) {
+            return 2.e-12;
+        }
+        return 5e-11;
+    }
+
+
+    @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x() {
         return new ConvergenceParams(6.00, 0.6);
     }

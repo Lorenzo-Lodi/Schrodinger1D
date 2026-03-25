@@ -20,9 +20,11 @@ public class HarmonicOscillatorConvergenceVerifier {
     private static final double DEFAULT_ALPHA = 1.0;
     private HarmonicOscillatorExactSolution exactSolutionInstance;
     private final Integrator integrator;
+    private final Double maxErrorThreshold;
 
-    public HarmonicOscillatorConvergenceVerifier(Integrator integrator) {
+    public HarmonicOscillatorConvergenceVerifier(Integrator integrator, Double maxErrorThreshold) {
         this.integrator = integrator;
+        this.maxErrorThreshold = maxErrorThreshold;
     }
 
     /**
@@ -270,16 +272,27 @@ public class HarmonicOscillatorConvergenceVerifier {
             System.out.printf("Point %s:\t\ta = %.6f\tb = %.6f\tR^2 = %.6f%n",
                     pointNames[idx], a, b, rSquared);
 
-            // Assert R² is greater than minimum threshold (state-dependent)
-            assertTrue(rSquared > minRSquared,
-                    String.format("%s (%s): R² (%.6f) should be > %.6f for point %s",
-                            className, stateName, rSquared, minRSquared, pointNames[idx]));
+            if (maxErrorThreshold == null) {
+                // Assert R² is greater than minimum threshold (state-dependent)
+                assertTrue(rSquared > minRSquared,
+                        String.format("%s (%s): R² (%.6f) should be > %.6f for point %s",
+                                className, stateName, rSquared, minRSquared, pointNames[idx]));
 
-            // Assert b coefficient is within tolerance of expected value (state-dependent)
-            double bDeviation = Math.abs(b - expectedBCoefficient);
-            assertTrue(bDeviation <= convergenceTol,
-                    String.format("%s (%s): b coefficient (%.6f) deviates %.6f from expected %.6f (max allowed: %.6f) for point %s",
-                            className, stateName, b, bDeviation, expectedBCoefficient, convergenceTol, pointNames[idx]));
+                // Assert b coefficient is within tolerance of expected value (state-dependent)
+                double bDeviation = Math.abs(b - expectedBCoefficient);
+                assertTrue(bDeviation <= convergenceTol,
+                        String.format("%s (%s): b coefficient (%.6f) deviates %.6f from expected %.6f (max allowed: %.6f) for point %s",
+                                className, stateName, b, bDeviation, expectedBCoefficient, convergenceTol, pointNames[idx]));
+            } else {
+                // if maxErrorThreshold specified, just check the errors
+                for (int j = 0; j < lnErrors.length - 1; j++) {
+                    double error = Math.exp(lnErrors[j]);
+                    assertTrue(error < maxErrorThreshold,
+                            String.format("%s (%s): error %20.6e should be <= %20.6e for point %s",
+                                    className, stateName, error, maxErrorThreshold, pointNames[idx]));
+
+                }
+            }
         }
 
         System.out.println();
@@ -374,7 +387,6 @@ public class HarmonicOscillatorConvergenceVerifier {
 
         return baseTolerance;
     }
-
 
 
 }

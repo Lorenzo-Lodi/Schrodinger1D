@@ -7,9 +7,7 @@ public final class CFMagnus6e5Opt extends CFMagnusAbstract implements Integrator
     // 6th order with 4 Gauss-Legendre nodes and 5 exponentials
     private static final int NODES = 3;
     private static final int EXPONENTIALS = 5;
-
     private static final double[] C = new double[NODES];
-
     private static final double[] A1W = new double[EXPONENTIALS];
     private static final double[][] W = new double[EXPONENTIALS][NODES];
 
@@ -55,29 +53,7 @@ public final class CFMagnus6e5Opt extends CFMagnusAbstract implements Integrator
             F[4 - i][3] = -F[i][3]; // Odd parity flips
         }
 
-        // 5. Precompute effective node weights using exact polynomials
-        for (int i = 0; i < EXPONENTIALS; i++) {
-            A1W[i] = F[i][0];
-
-            for (int k = 0; k < NODES; k++) {
-                double x = C[k];
-
-                // shifted Legendre polynomials on [0,1]
-                double p0 = 1.0;
-                double p1 = 2.0 * x - 1.0;
-                double p2 = 6.0 * x * x - 6.0 * x + 1.0;
-                double p3 = 20.0 * x * x * x - 30.0 * x * x + 12.0 * x - 1.0;
-
-                // Eq. (25): A_n has factor (2n - 1) -> 1, 3, 5, 7
-                W[i][k] = GW[k] * (
-                        F[i][0] * p0
-                                + 3.0 * F[i][1] * p1
-                                + 5.0 * F[i][2] * p2
-                                + 7.0 * F[i][3] * p3
-                );
-            }
-        }
-
+        computeW(F, C, GW, W, A1W, EXPONENTIALS, NODES);
     }
 
     public CFMagnus6e5Opt() {

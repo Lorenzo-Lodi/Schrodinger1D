@@ -2,16 +2,12 @@ package schrodinger.integrator.rungekutta;
 
 import schrodinger.integrator.Integrator;
 
-import java.util.function.DoubleUnaryOperator;
-
 public final class CFMagnus6e4 extends CFMagnusAbstract implements Integrator {
 
     // 6th order requires 3 Gauss-Legendre nodes and 4 exponentials
     private static final int NODES = 3;
     private static final int EXPONENTIALS = 4;
-
     private static final double[] C = new double[NODES];
-
     private static final double[] A1W = new double[EXPONENTIALS];
     private static final double[][] W = new double[EXPONENTIALS][NODES];
 
@@ -48,28 +44,7 @@ public final class CFMagnus6e4 extends CFMagnusAbstract implements Integrator {
             F[3 - i][2] = F[i][2]; // Even parity
         }
 
-        // 5. Precompute effective node weights using exact polynomials
-        for (int i = 0; i < EXPONENTIALS; i++) {
-            A1W[i] = F[i][0];
-
-            for (int k = 0; k < NODES; k++) {
-                double c = C[k];
-
-                // shifted Legendre polynomials on [0,1]
-                double p0 = 1.0;
-                double p1 = 2.0 * c - 1.0;
-                double p2 = 6.0 * c * c - 6.0 * c + 1.0;
-
-
-                // Eq. (25): A_n has factor (2n - 1) -> 1, 3, 5, 7
-                W[i][k] = GW[k] * (
-                        F[i][0] * p0
-                                + 3.0 * F[i][1] * p1
-                                + 5.0 * F[i][2] * p2
-                );
-            }
-        }
-
+        computeW(F, C, GW, W, A1W, EXPONENTIALS, NODES);
     }
 
     public CFMagnus6e4() {

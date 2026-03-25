@@ -22,14 +22,23 @@ public abstract class AbstractIntegratorTest {
 
     @Test
     void harmonic_oscillator_ground_state() {
-        HarmonicOscillatorConvergenceVerifier ho = new HarmonicOscillatorConvergenceVerifier(getIntegrator());
+        HarmonicOscillatorConvergenceVerifier ho = new HarmonicOscillatorConvergenceVerifier(getIntegrator(),
+                error_threshold_harmonic_oscillator(0));
         ho.verify_harmonic_oscillator(0);
     }
 
     @Test
     void harmonic_oscillator_10th_excited_state() {
-        HarmonicOscillatorConvergenceVerifier ho = new HarmonicOscillatorConvergenceVerifier(getIntegrator());
+        HarmonicOscillatorConvergenceVerifier ho = new HarmonicOscillatorConvergenceVerifier(getIntegrator(),
+                error_threshold_harmonic_oscillator(10));
         ho.verify_harmonic_oscillator(10);
+    }
+
+    // If set to non-null, it's a simple threshold (for all numbers of points and all positions) to satisfy
+    // It is used for some super-accurate methods which reach numerical noise for this test...
+    // such methods can override this method.
+    protected Double error_threshold_harmonic_oscillator(int quantumNumber) {
+        return null;
     }
     // =================================================================================================================
 
@@ -104,6 +113,7 @@ public abstract class AbstractIntegratorTest {
         verifier.propagate(direction, convergence_params_exp_to_cos_x());
     }
 
+
     abstract protected ConvergenceParams convergence_params_exp_to_cos_x();
 
     // =================================================================================================================
@@ -126,6 +136,7 @@ public abstract class AbstractIntegratorTest {
     protected ConvergenceParams convergence_params_exp_to_cos_x_minus_x() {
         return new ConvergenceParams(1, 0.001);
     }
+
     // =================================================================================================================
     @Test
     void propagate_forward_tanh_x() {
