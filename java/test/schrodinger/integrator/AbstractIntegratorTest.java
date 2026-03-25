@@ -169,6 +169,27 @@ public abstract class AbstractIntegratorTest {
     protected ConvergenceParams convergence_params_cos_x() {
         return new ConvergenceParams(1, 0.001);
     }
+
+    // =================================================================================================================
+    @Test
+    void propagate_forward_mathieuS() {
+        propagate_mathieuS(Integrator.Direction.FORWARD);
+    }
+
+    @Test
+    void propagate_backward_mathieuS() {
+        propagate_mathieuS(Integrator.Direction.BACKWARD);
+    }
+
+    private void propagate_mathieuS(Integrator.Direction direction) {
+        MathieuSVerifier verifier = new MathieuSVerifier(getIntegrator());
+        verifier.propagate(direction, convergence_params_mathieuS());
+    }
+
+    // Make abstract at the end
+    protected ConvergenceParams convergence_params_mathieuS() {
+        return new ConvergenceParams(1, 0.001);
+    }
 // =================================================================================================================
 
 
