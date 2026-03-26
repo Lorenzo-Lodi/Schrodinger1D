@@ -37,9 +37,8 @@ public abstract class ManufacturedSolutionVerifier {
     static int[] gridParamsToArray(int nPointsStart, int nPointsEnd, int nPointsStep) {
         int size = 1 + (nPointsEnd - nPointsStart) / nPointsStep;
         int[] points = new int[size];
-        int i = 0;
-        for (int np = nPointsStart; np <= nPointsEnd; np += nPointsStep) {
-            points[i++] = np;
+        for (int i = 0; i < size; i++) {
+            points[i] = nPointsStart + nPointsStep * i;
         }
         return points;
     }

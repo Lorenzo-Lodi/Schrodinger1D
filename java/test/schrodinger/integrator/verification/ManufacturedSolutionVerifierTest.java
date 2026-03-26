@@ -36,5 +36,14 @@ public class ManufacturedSolutionVerifierTest {
         assertEquals(100, points[0]);
     }
 
+    @Test
+    void test_gridParamsToArray_basic_test05() {
+        int[] points = ManufacturedSolutionVerifier.gridParamsToArray(100, 1234, 75);
+        assertEquals(16, points.length);
+        assertEquals(100, points[0]);
+        assertEquals(175, points[1]);
+        assertEquals(1225, points[15]);
+    }
+
 
 }
