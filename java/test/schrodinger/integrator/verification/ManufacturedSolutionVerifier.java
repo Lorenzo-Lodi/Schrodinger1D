@@ -30,6 +30,21 @@ public abstract class ManufacturedSolutionVerifier {
     }
 
     public void propagate(double xmin, double xmax, int nPointsStart, int nPointsEnd, int nPointsStep, Integrator.Direction direction, ConvergenceParams params) {
+        int[] points = gridParamsToArray(nPointsStart, nPointsEnd, nPointsStep);
+        propagate(xmin, xmax, points, direction, params);
+    }
+
+    static int[] gridParamsToArray(int nPointsStart, int nPointsEnd, int nPointsStep) {
+        int size = 1 + (nPointsEnd - nPointsStart) / nPointsStep;
+        int[] points = new int[size];
+        int i = 0;
+        for (int np = nPointsStart; np <= nPointsEnd; np += nPointsStep) {
+            points[i++] = np;
+        }
+        return points;
+    }
+
+    public void propagate(double xmin, double xmax, int[] points, Integrator.Direction direction, ConvergenceParams params) {
         int d = direction.getValue();
         double t0 = System.nanoTime();
         String className = integrator.getClass().getSimpleName();
@@ -40,7 +55,7 @@ public abstract class ManufacturedSolutionVerifier {
         }
 
         double maxRatio = 0.;
-        for (int np = nPointsStart; np <= nPointsEnd; np += nPointsStep) {
+        for (int np : points) {
             double[] psi = new double[np];
             double[] currentPsiPrime = new double[1];
             double step = (xmax - xmin) / (np - 1);
