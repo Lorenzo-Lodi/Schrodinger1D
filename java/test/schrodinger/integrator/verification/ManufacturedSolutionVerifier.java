@@ -107,8 +107,8 @@ public abstract class ManufacturedSolutionVerifier {
         }
 
         System.out.printf("Max ratio MAX_ERROR / ACTUAL_ERROR = %20.4f\n", maxRatio);
-        double elapsedMicros = (System.nanoTime() - t0) * 0.001;
-        System.out.printf("Elapsed time for %s in ms = %10.3f\n", className, elapsedMicros);
+        double elapsedMs = (System.nanoTime() - t0) * 1e-6;
+        System.out.printf("Elapsed time for %s in ms = %10.3f\n", className, elapsedMs);
 
         double maxRatioThreshold = 25000;
         if (maxRatio > maxRatioThreshold) {
