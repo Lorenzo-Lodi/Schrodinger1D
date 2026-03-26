@@ -191,6 +191,26 @@ public abstract class AbstractIntegratorTest {
         return new ConvergenceParams(1, 1e-35);
     }
 // =================================================================================================================
+    @Test
+    void propagate_forward_AiryAi() {
+        propagate_AiryAi(Integrator.Direction.FORWARD);
+    }
+
+    @Test
+    void propagate_backward_AiryAi() {
+        propagate_AiryAi(Integrator.Direction.BACKWARD);
+    }
+
+    private void propagate_AiryAi(Integrator.Direction direction) {
+        AiryAiVerifier verifier = new AiryAiVerifier(getIntegrator());
+        verifier.propagate(direction, convergence_params_mathieuS());
+    }
+
+    // Make abstract at the end
+    protected ConvergenceParams convergence_params_AiryAi() {
+        return new ConvergenceParams(1, 1e-35);
+    }
+// =================================================================================================================
 
 
 }

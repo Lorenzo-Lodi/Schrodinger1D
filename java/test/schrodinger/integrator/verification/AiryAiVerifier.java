@@ -7,16 +7,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class MathieuSVerifier extends ManufacturedSolutionVerifier {
-    // Solution of y''[x] == -(100 - 60 Cos[2 x]) y[x]
-    // The solution is MathieuS[100, 30, x]
+public class AiryAiVerifier extends ManufacturedSolutionVerifier {
+    // Solution of y''[x] == x y[x]
+    // The solution is AiryAi[x]
 
-    private static final double XMIN = 0.;
-    private static final double XMAX = 10.;
+    private static final double XMIN = -20.;
+    private static final double XMAX = 5.;
 
     // *****************************************************************************************************************
     private static final int N_OF_SAMPLED_GRID_POINTS = 3025;
-    private static final Path file = Path.of("test", "resources", "MathieuS_reference_values_3025.csv");
+    private static final Path file = Path.of("test", "resources", "AiryAi_reference_values_3025.csv");
     private static final int[] points = new int[]{
             43, 49, 55, 57, 64, 73, 85, 109, 113, 127, 145, 169, 190, 217, 253, 337, 379, 433, 505, 757, 1009, 1513, 3025
     };
@@ -26,8 +26,8 @@ public class MathieuSVerifier extends ManufacturedSolutionVerifier {
     private static final double STEP = (XMAX - XMIN) / (N_OF_SAMPLED_GRID_POINTS - 1);
 
     private static final double[] sampledx = new double[N_OF_SAMPLED_GRID_POINTS];
-    private static final double[] sampledMathieuS = new double[N_OF_SAMPLED_GRID_POINTS];
-    private static final double[] sampledmathieuSPrime = new double[N_OF_SAMPLED_GRID_POINTS];
+    private static final double[] sampledAiryAi = new double[N_OF_SAMPLED_GRID_POINTS];
+    private static final double[] sampledAiryAiPrime = new double[N_OF_SAMPLED_GRID_POINTS];
 
     static {
         try (BufferedReader br = Files.newBufferedReader(file)) {
@@ -38,11 +38,11 @@ public class MathieuSVerifier extends ManufacturedSolutionVerifier {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
                 double x = Double.parseDouble(parts[0].trim());
-                double mathieuS = Double.parseDouble(parts[1].trim());
-                double mathieuSPrime = Double.parseDouble(parts[2].trim());
+                double airyAi = Double.parseDouble(parts[1].trim());
+                double airyAiPrime = Double.parseDouble(parts[2].trim());
                 sampledx[i] = x;
-                sampledMathieuS[i] = mathieuS;
-                sampledmathieuSPrime[i] = mathieuSPrime;
+                sampledAiryAi[i] = airyAi;
+                sampledAiryAiPrime[i] = airyAiPrime;
                 i++;
             }
         } catch (IOException e) {
@@ -52,13 +52,13 @@ public class MathieuSVerifier extends ManufacturedSolutionVerifier {
     }
 
 
-    public MathieuSVerifier(Integrator integrator) {
+    public AiryAiVerifier(Integrator integrator) {
 
-        super(MathieuSVerifier::MathieuS,
-                MathieuSVerifier::MathieuSPrime,
-                x -> 100. - 60. * Math.cos(2. * x),
-                x -> 120. * Math.sin(2. * x),
-                x -> 240. * Math.cos(2. * x),
+        super(AiryAiVerifier::AiryAi,
+                AiryAiVerifier::AiryAiPrime,
+                x -> -x,
+                x -> -1.,
+                x -> 0.,
                 integrator);
     }
 
@@ -66,14 +66,14 @@ public class MathieuSVerifier extends ManufacturedSolutionVerifier {
         super.propagate(XMIN, XMAX, points, direction, params);
     }
 
-    private static double MathieuS(double x) {
+    private static double AiryAi(double x) {
         int i = Utils.computeIndex(x, XMIN, STEP, N_OF_SAMPLED_GRID_POINTS, sampledx);
-        return sampledMathieuS[i];
+        return sampledAiryAi[i];
     }
 
-    private static double MathieuSPrime(double x) {
+    private static double AiryAiPrime(double x) {
         int i = Utils.computeIndex(x, XMIN, STEP, N_OF_SAMPLED_GRID_POINTS, sampledx);
-        return sampledmathieuSPrime[i];
+        return sampledAiryAiPrime[i];
     }
 
 }
