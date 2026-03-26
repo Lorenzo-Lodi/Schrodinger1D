@@ -3,12 +3,9 @@ package schrodinger.integrator.verification;
 import schrodinger.integrator.Integrator;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MathieuSVerifier extends ManufacturedSolutionVerifier {
     // Solution of y''[x] == -(100 - 60 Cos[2 x]) y[x]
@@ -16,7 +13,21 @@ public class MathieuSVerifier extends ManufacturedSolutionVerifier {
 
     private static final double XMIN = 0.;
     private static final double XMAX = 10.;
-    private static final int N_OF_SAMPLED_GRID_POINTS = 2561;
+
+    // *****************************************************************************************************************
+//    private static final int N_OF_SAMPLED_GRID_POINTS = 2561;
+//    private static final Path file = Path.of("test", "resources", "MathieuS_reference_values_2561.csv");
+//    private static final int[] points = new int[]{
+//            81, 161, 321, 641, 1281, 2561
+//    };
+    // *****************************************************************************************************************
+    private static final int N_OF_SAMPLED_GRID_POINTS = 3025;
+    private static final Path file = Path.of("test", "resources", "MathieuS_reference_values_3025.csv");
+    private static final int[] points = new int[]{
+            43, 49, 55, 57, 64, 73, 85, 109, 113, 127, 145, 169, 190, 217, 253, 337, 379, 433, 505, 757, 1009, 1513, 3025
+    };
+    // *****************************************************************************************************************
+
 
     private static final double STEP = (XMAX - XMIN) / (N_OF_SAMPLED_GRID_POINTS - 1);
 
@@ -25,8 +36,6 @@ public class MathieuSVerifier extends ManufacturedSolutionVerifier {
     private static final double[] sampledmathieuSPrime = new double[N_OF_SAMPLED_GRID_POINTS];
 
     static {
-        Path file = Path.of("test", "resources", "MathieuS_reference_values.csv");
-
         try (BufferedReader br = Files.newBufferedReader(file)) {
             br.readLine(); // skip header row
 
@@ -60,9 +69,6 @@ public class MathieuSVerifier extends ManufacturedSolutionVerifier {
     }
 
     public void propagate(Integrator.Direction direction, ConvergenceParams params) {
-        int[] points = new int[]{
-                81, 161, 321, 641, 1281, 2561
-        };
         super.propagate(XMIN, XMAX, points, direction, params);
     }
 
@@ -79,10 +85,11 @@ public class MathieuSVerifier extends ManufacturedSolutionVerifier {
     private static int computeIndex(double x) {
         double index = (x - XMIN) / STEP;
         int i = (int) Math.round(index);
-        double residual = Math.abs(i - index);
-        if (index < 0. || index > N_OF_SAMPLED_GRID_POINTS - 1 || residual > 1e-16 || Math.abs(x - sampledx[i])
-                > 1.e-16) {
-            String msg = String.format("Illegal value x = %20.6f. This leads to i = %d and an expected x = %20.6f", x, i, sampledx[i]);
+        double residualIndex = Math.abs(i - index);
+        double residualX = Math.abs(x - sampledx[i]);
+        if (index < 0. || index > N_OF_SAMPLED_GRID_POINTS - 1 || residualIndex > 5e-13 || residualX > 2.e-15) {
+            String msg = String.format("Illegal value x = %25.16f. This leads to i = %d and an expected x = %25.16f; "
+                    + "residualIndex = %20.4e, residualX = %20.4e ", x, i, sampledx[i], residualIndex, residualX);
             throw new RuntimeException(msg);
         }
         return i;
