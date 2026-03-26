@@ -67,20 +67,26 @@ public class MathieuSVerifier extends ManufacturedSolutionVerifier {
     }
 
     private static double MathieuS(double x) {
+        int i = computeIndex(x);
+        return sampledMathieuS[i];
+    }
+
+    private static double MathieuSPrime(double x) {
+        int i = computeIndex(x);
+        return sampledmathieuSPrime[i];
+    }
+
+    private static int computeIndex(double x) {
         double index = (x - XMIN) / STEP;
         int i = (int) Math.round(index);
         double residual = Math.abs(i - index);
         if (index < 0. || index > N_OF_SAMPLED_GRID_POINTS - 1 || residual > 1e-16 || Math.abs(x - sampledx[i])
                 > 1.e-16) {
-            String msg = String.format("Illegal value for x = %20.6f, i = %d, expected x = %20.6f", x, i, sampledx[i]);
+            String msg = String.format("Illegal value x = %20.6f. This leads to i = %d and an expected x = %20.6f", x, i, sampledx[i]);
             throw new RuntimeException(msg);
         }
-//        System.out.println("called for x = " + x + "  index=" + index + " residual = " + residual);
-        return 0.; // TODO: implement MathieuS[100, 30, x]
-    }
+        return i;
 
-    private static double MathieuSPrime(double x) {
-        return 0.; // TODO: implement MathieuSPrime[100, 30, x]
     }
 
 
