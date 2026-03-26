@@ -94,7 +94,9 @@ public abstract class ManufacturedSolutionVerifier {
             }
 
             double error = isBackward ? f.applyAsDouble(xmin) - psi[0] : f.applyAsDouble(xmax) - psi[np - 1];
-            System.out.printf("%10d %27.18f %27.20f %27.20f\n", np, step, error, rmsError);
+            String fmtErrorExtreme = (Math.abs(error) < 1000.) ? "%27.20f" : "%27.10e";
+            String fmtErrorRMS = (Math.abs(rmsError) < 1000.) ? "%27.20f" : "%27.10e";
+            System.out.printf("%10d %27.18f " + fmtErrorExtreme + " " + fmtErrorRMS + "\n", np, step, error, rmsError);
 
             double errorBound = params.calculateMaxError(step);
             assertTrue(Math.abs(error) < errorBound,
