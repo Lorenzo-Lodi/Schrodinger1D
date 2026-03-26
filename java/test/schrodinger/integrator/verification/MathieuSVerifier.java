@@ -61,11 +61,8 @@ public class MathieuSVerifier extends ManufacturedSolutionVerifier {
 
     public void propagate(Integrator.Direction direction, ConvergenceParams params) {
         int[] points = new int[]{
-                2561
+                81, 161, 321, 641, 1281, 2561
         };
-//        int[] points = new int[]{
-//                81, 161, 321, 641, 1281, 2561
-//        };
         super.propagate(XMIN, XMAX, points, direction, params);
     }
 

@@ -188,7 +188,7 @@ public abstract class AbstractIntegratorTest {
 
     // Make abstract at the end
     protected ConvergenceParams convergence_params_mathieuS() {
-        return new ConvergenceParams(1, 0.001);
+        return new ConvergenceParams(1, 1e-30);
     }
 // =================================================================================================================
 
