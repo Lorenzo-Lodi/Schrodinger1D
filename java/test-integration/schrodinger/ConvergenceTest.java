@@ -8,6 +8,7 @@ import schrodinger.integrator.IntegratorFactory;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.SchrodingerSystem;
+import schrodinger.solver.RefinementStrategy;
 import schrodinger.solver.ShootingSolver;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class ConvergenceTest {
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
         int nOfDesidedNodes = 15;
         List<Integrator> integrators = IntegratorFactory.getAll();
-        integrators = integrators.stream().filter((x) -> x.minHistoryLength() <= 2).collect(Collectors.toList());
+        integrators = integrators.stream().filter((x) -> x.minHistoryLength() <= 8).collect(Collectors.toList());
 
         for (Integrator integrator : integrators) {
             System.out.print(integrator.getClass().getSimpleName() + " ");
@@ -39,16 +40,17 @@ public class ConvergenceTest {
             for (Integrator integrator : integrators) {
                 solvers.add(new ShootingSolver(system, integrator));
             }
-            double exactEnergy = 0.5 + nOfDesidedNodes;
+
             List<Double> energies = new ArrayList<>();
             for (ShootingSolver s : solvers) {
-                double energy = s.findEigenvalue(nOfDesidedNodes).energy;
+                double energy = s.findEigenvalue(nOfDesidedNodes, RefinementStrategy.BISECTION_THEN_SECANT).energy;
                 energies.add(energy);
             }
 
             System.out.print(padInt(nOfPoints) + " ");
-            for (Double error : energies) {
-                System.out.print(padFloat(error) + " ");
+            double exactEnergy = 0.5 + nOfDesidedNodes;
+            for (Double energy : energies) {
+                System.out.print(padFloat(energy) + " ");
             }
             System.out.println();
         }
@@ -56,7 +58,7 @@ public class ConvergenceTest {
     }
 
     private static String padFloat(double number) {
-        return padFloat(number, 15, 18);
+        return padFloat(number, 15, 25);
     }
 
     private static String padInt(int number) {
