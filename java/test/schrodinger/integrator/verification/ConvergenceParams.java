@@ -9,11 +9,6 @@ public class ConvergenceParams {
         this.characteristicStepSize = characteristicStepSize;
     }
 
-    @Deprecated
-    public double calculateMaxError(int np) {
-        return 1e-10;
-    }
-
     public double calculateMaxError(double stepSize) {
         return Math.pow(stepSize / characteristicStepSize, convergenceOrder);
     }

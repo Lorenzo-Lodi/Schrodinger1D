@@ -203,7 +203,7 @@ public abstract class AbstractIntegratorTest {
 
     private void propagate_AiryAi(Integrator.Direction direction) {
         AiryAiVerifier verifier = new AiryAiVerifier(getIntegrator());
-        verifier.propagate(direction, convergence_params_mathieuS());
+        verifier.propagate(direction, convergence_params_AiryAi());
     }
 
     // Make abstract at the end
