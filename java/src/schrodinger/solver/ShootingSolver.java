@@ -2,6 +2,7 @@ package schrodinger.solver;
 
 import schrodinger.OutputManager;
 import schrodinger.QuantumLevel;
+import schrodinger.integrator.IntegratorFactory;
 import schrodinger.pt_correction.PTCorrector;
 import schrodinger.grid.Grid;
 import schrodinger.integrator.Integrator;
@@ -18,6 +19,8 @@ public class ShootingSolver {
     private final PTCorrector correction;
     private final SchrodingerSystem system;
     private RefinementStrategy strategy;
+
+    private final Integrator integratorBest = IntegratorFactory.getBestOneStepIntegrator();
 
     public ShootingSolver(SchrodingerSystem system, Integrator integrator, PTCorrector correction) {
         this.system = system;
@@ -375,18 +378,23 @@ public class ShootingSolver {
     }
 
     private int initialize(double[] psi, double[] psiPrime, Integrator.Direction direction) {
-        if (direction.equals(Integrator.Direction.FORWARD)) {
-            psi[0] = 0.;
-            psi[1] = 1e-16;
-            psiPrime[0] = 1e-16;
-            return 1;
-        } else {
-            int np = system.getGrid().getNumberOfPoints();
-            psi[np - 1] = 0.0;
-            psi[np - 2] = 1.e-16;
-            psiPrime[0] = -1e-16;
-            return np - 2;
+        int d = direction.getValue();
+        int i = (d == 1) ? 0 : psi.length - 1;
+        psi[i] = 0.;
+        psiPrime[0] = d * 1.e-16;
+
+        if (integrator.minHistoryLength() == 1) {
+            return i;
         }
+
+        i += d;
+        psi[i] = 1e-16;
+        if (integrator.minHistoryLength() == 2) {
+            return i;
+        }
+
+        throw new RuntimeException(" Integrators with minHistoryLength() >= 3 not yet supported! Offender is: " + integrator.getClass().getSimpleName());
+
     }
 
 }

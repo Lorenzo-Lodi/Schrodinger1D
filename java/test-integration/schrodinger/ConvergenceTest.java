@@ -32,7 +32,7 @@ public class ConvergenceTest {
         }
         System.out.println();
 
-        for (int nOfPoints = 50; nOfPoints <= 1000; nOfPoints += 50) {
+        for (int nOfPoints = 40; nOfPoints <= 500; nOfPoints += 10) {
             Grid grid = GridFactory.generateUniformGrid(14.0d, 26.0d, nOfPoints);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             List<ShootingSolver> solvers = new ArrayList<>();

@@ -91,6 +91,11 @@ public class IntegratorFactory {
         return new CFMagnus8();
     }
 
+    public static Integrator getBestOneStepIntegrator() {
+        return new CFMagnus8();
+    }
+
+
     public static List<Integrator> getAll() {
         List<Integrator> list = new ArrayList<>();
         list.add(getTaylorThreePoints());
