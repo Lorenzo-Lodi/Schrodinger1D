@@ -14,7 +14,7 @@ public class QuantumLevel {
     public double upperBound;
     public double lowerBound;
     public double[] psi;
-    public double[] currentPsiPrime; // Only used for RKN methods
+    public double[] currentPsiPrime; // Only by one-step methods such as RKN and CFMagnus
     public double perturbativeCorrectionToEnergy;
     public List<ConvergenceInfo> convergenceInfo = new ArrayList<>();
 
@@ -22,6 +22,7 @@ public class QuantumLevel {
     public QuantumLevel(SchrodingerSystem system) {
         this.system = system;
         this.psi = new double[system.getGrid().getNumberOfPoints()];
+        this.currentPsiPrime = new double[1];
     }
 
     /**

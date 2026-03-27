@@ -285,6 +285,8 @@ public class ShootingSolver {
         Arrays.fill(level.psi, 0.0d); // Let us zero the wave function for clarity (not necessary).
         level.psi[0] = 0.0;
         level.psi[1] = 1e-16;
+        level.currentPsiPrime[0] = 1e-16;
+
         for (int n = 1; n < matchIndex + 1; n++) {
             level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy, qTildeFunction,
                     level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
@@ -307,6 +309,7 @@ public class ShootingSolver {
         int np = system.getGrid().getNumberOfPoints();
         level.psi[np - 1] = 0.0;
         level.psi[np - 2] = 1.e-16;
+        level.currentPsiPrime[0] = 1e-16;
 
         for (int n = np - 2; n > matchIndex - 1; n--) {
             level.psi[n - 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy,
@@ -345,6 +348,7 @@ public class ShootingSolver {
         // --- Shoot Forward
         level.psi[0] = 0.0;
         level.psi[1] = 1e-16;
+        level.currentPsiPrime[0] = 1e-16;
 
         int nodes = 0;
         for (int n = 1; n < nPoints - 1; n++) {
