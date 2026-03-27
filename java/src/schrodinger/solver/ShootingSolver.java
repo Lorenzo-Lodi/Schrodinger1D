@@ -383,21 +383,24 @@ public class ShootingSolver {
         level.psi[i] = 0.;
         level.currentPsiPrime[0] = d * 1.e-16;
 
-        if (integrator.minHistoryLength() == 1) {
+        int minHistory = integrator.minHistoryLength();
+        if (minHistory == 1) {
             return i;
         }
 
         i += d;
         level.psi[i] = 1e-16;
-        if (integrator.minHistoryLength() == 2) {
+        if (minHistory == 2) {
             return i;
         }
 
-        // The following is completely UNTESTED / POSSIBLY BROKEN!
+        // Initialize additional points for multi-step integrators
         double hy = system.getGrid().getStepSizeYCoordinate();
-        for (int k = 3; k <= integrator.minHistoryLength(); k++) {
-            level.psi[i += d] = integratorBest.propagate(level.psi, level.currentPsiPrime, i, hy, level::QTildeAtGridPoint,
+        for (int k = 3; k <= minHistory; k++) {
+            double nextValue = integratorBest.propagate(level.psi, level.currentPsiPrime, i, hy, level::QTildeAtGridPoint,
                     level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint, direction);
+            i += d;
+            level.psi[i] = nextValue;
         }
 
         return i;
