@@ -1,5 +1,10 @@
 package schrodinger.integrator.verification;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class Utils {
 
     private Utils() {
@@ -17,6 +22,27 @@ public class Utils {
         }
         return i;
 
+    }
+
+    static void loadReferenceValuesFromFile(Path file, double[] xArray, double[] fArray, double[] fPrimeArray) {
+        try (BufferedReader br = Files.newBufferedReader(file)) {
+            br.readLine(); // skip header row
+
+            String line;
+            int i = 0;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                double x = Double.parseDouble(parts[0].trim());
+                double mathieuS = Double.parseDouble(parts[1].trim());
+                double mathieuSPrime = Double.parseDouble(parts[2].trim());
+                xArray[i] = x;
+                fArray[i] = mathieuS;
+                fPrimeArray[i] = mathieuSPrime;
+                i++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

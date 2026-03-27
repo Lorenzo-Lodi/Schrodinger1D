@@ -106,7 +106,10 @@ public abstract class ManufacturedSolutionVerifier {
             if (ratio > maxRatio) maxRatio = ratio;
         }
 
-        System.out.printf("Max ratio MAX_ERROR / ACTUAL_ERROR = %20.4f\n", maxRatio);
+        {
+            String fmt = (maxRatio < 1e5) ? "%20.4f" : "%20.6e";
+            System.out.printf("Max ratio MAX_ERROR / ACTUAL_ERROR = " + fmt + "\n", maxRatio);
+        }
         double elapsedMs = (System.nanoTime() - t0) * 1e-6;
         System.out.printf("Elapsed time for %s in ms = %10.3f\n", className, elapsedMs);
 

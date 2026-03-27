@@ -30,27 +30,8 @@ public class AiryAiVerifier extends ManufacturedSolutionVerifier {
     private static final double[] sampledAiryAiPrime = new double[N_OF_SAMPLED_GRID_POINTS];
 
     static {
-        try (BufferedReader br = Files.newBufferedReader(file)) {
-            br.readLine(); // skip header row
-
-            String line;
-            int i = 0;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                double x = Double.parseDouble(parts[0].trim());
-                double airyAi = Double.parseDouble(parts[1].trim());
-                double airyAiPrime = Double.parseDouble(parts[2].trim());
-                sampledx[i] = x;
-                sampledAiryAi[i] = airyAi;
-                sampledAiryAiPrime[i] = airyAiPrime;
-                i++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        Utils.loadReferenceValuesFromFile(file, sampledx, sampledAiryAi, sampledAiryAiPrime);
     }
-
 
     public AiryAiVerifier(Integrator integrator) {
 

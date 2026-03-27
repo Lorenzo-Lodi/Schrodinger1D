@@ -30,25 +30,7 @@ public class MathieuSVerifier extends ManufacturedSolutionVerifier {
     private static final double[] sampledmathieuSPrime = new double[N_OF_SAMPLED_GRID_POINTS];
 
     static {
-        try (BufferedReader br = Files.newBufferedReader(file)) {
-            br.readLine(); // skip header row
-
-            String line;
-            int i = 0;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                double x = Double.parseDouble(parts[0].trim());
-                double mathieuS = Double.parseDouble(parts[1].trim());
-                double mathieuSPrime = Double.parseDouble(parts[2].trim());
-                sampledx[i] = x;
-                sampledMathieuS[i] = mathieuS;
-                sampledmathieuSPrime[i] = mathieuSPrime;
-                i++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        Utils.loadReferenceValuesFromFile(file, sampledx, sampledMathieuS, sampledmathieuSPrime);
     }
 
 
