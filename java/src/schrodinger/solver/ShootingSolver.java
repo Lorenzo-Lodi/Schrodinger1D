@@ -283,11 +283,9 @@ public class ShootingSolver {
 
         // --- Shoot Forward
         Arrays.fill(level.psi, 0.0d); // Let us zero the wave function for clarity (not necessary).
-        level.psi[0] = 0.0;
-        level.psi[1] = 1e-16;
-        level.currentPsiPrime[0] = 1e-16;
+        int startIndex = initialize(level.psi, level.currentPsiPrime, Integrator.Direction.FORWARD);
 
-        for (int n = 1; n < matchIndex + 1; n++) {
+        for (int n = startIndex; n < matchIndex + 1; n++) {
             level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy, qTildeFunction,
                     level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
                     Integrator.Direction.FORWARD);
@@ -307,11 +305,9 @@ public class ShootingSolver {
 
         // --- Shoot Backward
         int np = system.getGrid().getNumberOfPoints();
-        level.psi[np - 1] = 0.0;
-        level.psi[np - 2] = 1.e-16;
-        level.currentPsiPrime[0] = 1e-16;
+        startIndex = initialize(level.psi, level.currentPsiPrime, Integrator.Direction.BACKWARD);
 
-        for (int n = np - 2; n > matchIndex - 1; n--) {
+        for (int n = startIndex; n > matchIndex - 1; n--) {
             level.psi[n - 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy,
                     qTildeFunction, level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
                     Integrator.Direction.BACKWARD);
@@ -346,12 +342,10 @@ public class ShootingSolver {
         DoubleUnaryOperator qTildeFunction = level::QTildeAtGridPoint;
 
         // --- Shoot Forward
-        level.psi[0] = 0.0;
-        level.psi[1] = 1e-16;
-        level.currentPsiPrime[0] = 1e-16;
+        int startIndex = initialize(level.psi, level.currentPsiPrime, Integrator.Direction.FORWARD);
 
         int nodes = 0;
-        for (int n = 1; n < nPoints - 1; n++) {
+        for (int n = startIndex; n < nPoints - 1; n++) {
             level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy, qTildeFunction,
                     level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
                     Integrator.Direction.FORWARD);
@@ -378,6 +372,21 @@ public class ShootingSolver {
 
         // Fallback to midpoint if always classically forbidden
         return grid.getNumberOfPoints() / 2;
+    }
+
+    private int initialize(double[] psi, double[] psiPrime, Integrator.Direction direction) {
+        if (direction.equals(Integrator.Direction.FORWARD)) {
+            psi[0] = 0.;
+            psi[1] = 1e-16;
+            psiPrime[0] = 1e-16;
+            return 1;
+        } else {
+            int np = system.getGrid().getNumberOfPoints();
+            psi[np - 1] = 0.0;
+            psi[np - 2] = 1.e-16;
+            psiPrime[0] = -1e-16;
+            return np - 2;
+        }
     }
 
 }
