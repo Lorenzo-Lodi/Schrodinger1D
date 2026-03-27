@@ -286,7 +286,7 @@ public class ShootingSolver {
 
         // --- Shoot Forward
         Arrays.fill(level.psi, 0.0d); // Let us zero the wave function for clarity (not necessary).
-        int startIndex = initialize(level.psi, level.currentPsiPrime, Integrator.Direction.FORWARD);
+        int startIndex = initialize(level, Integrator.Direction.FORWARD);
 
         for (int n = startIndex; n < matchIndex + 1; n++) {
             level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy, qTildeFunction,
@@ -308,7 +308,7 @@ public class ShootingSolver {
 
         // --- Shoot Backward
         int np = system.getGrid().getNumberOfPoints();
-        startIndex = initialize(level.psi, level.currentPsiPrime, Integrator.Direction.BACKWARD);
+        startIndex = initialize(level, Integrator.Direction.BACKWARD);
 
         for (int n = startIndex; n > matchIndex - 1; n--) {
             level.psi[n - 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy,
@@ -345,7 +345,7 @@ public class ShootingSolver {
         DoubleUnaryOperator qTildeFunction = level::QTildeAtGridPoint;
 
         // --- Shoot Forward
-        int startIndex = initialize(level.psi, level.currentPsiPrime, Integrator.Direction.FORWARD);
+        int startIndex = initialize(level, Integrator.Direction.FORWARD);
 
         int nodes = 0;
         for (int n = startIndex; n < nPoints - 1; n++) {
@@ -377,23 +377,30 @@ public class ShootingSolver {
         return grid.getNumberOfPoints() / 2;
     }
 
-    private int initialize(double[] psi, double[] psiPrime, Integrator.Direction direction) {
+    private int initialize(QuantumLevel level, Integrator.Direction direction) {
         int d = direction.getValue();
-        int i = (d == 1) ? 0 : psi.length - 1;
-        psi[i] = 0.;
-        psiPrime[0] = d * 1.e-16;
+        int i = (d == 1) ? 0 : level.psi.length - 1;
+        level.psi[i] = 0.;
+        level.currentPsiPrime[0] = d * 1.e-16;
 
         if (integrator.minHistoryLength() == 1) {
             return i;
         }
 
         i += d;
-        psi[i] = 1e-16;
+        level.psi[i] = 1e-16;
         if (integrator.minHistoryLength() == 2) {
             return i;
         }
 
-        throw new RuntimeException(" Integrators with minHistoryLength() >= 3 not yet supported! Offender is: " + integrator.getClass().getSimpleName());
+        // The following is completely UNTESTED / POSSIBLY BROKEN!
+        double hy = system.getGrid().getStepSizeYCoordinate();
+        for (int k = 3; k <= integrator.minHistoryLength(); k++) {
+            level.psi[i += d] = integratorBest.propagate(level.psi, level.currentPsiPrime, i, hy, level::QTildeAtGridPoint,
+                    level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint, direction);
+        }
+
+        return i;
 
     }
 
