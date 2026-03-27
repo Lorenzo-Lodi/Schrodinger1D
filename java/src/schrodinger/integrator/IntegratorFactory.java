@@ -6,8 +6,7 @@ import schrodinger.integrator.numerovlike.EFNFixedBeta;
 import schrodinger.integrator.predcorr.PredictorCorrector6;
 import schrodinger.integrator.predcorr.PredictorCorrector8i1;
 import schrodinger.integrator.predcorr.PredictorCorrector8i2;
-import schrodinger.integrator.rungekutta.RK45DP;
-import schrodinger.integrator.rungekutta.RKN4;
+import schrodinger.integrator.rungekutta.*;
 import schrodinger.integrator.stormer.Stormer5;
 import schrodinger.integrator.stormer.Stormer6;
 import schrodinger.integrator.stormer.Stormer8;
@@ -76,6 +75,22 @@ public class IntegratorFactory {
         return new RK45DP();
     }
 
+    public static Integrator getCFMagnus4() {
+        return new CFMagnus4();
+    }
+
+    public static Integrator getCFMagnus6e4() {
+        return new CFMagnus6e4();
+    }
+
+    public static Integrator getCFMagnus6e5Opt() {
+        return new CFMagnus6e5Opt();
+    }
+
+    public static Integrator getCFMagnus8() {
+        return new CFMagnus8();
+    }
+
     public static List<Integrator> getAll() {
         List<Integrator> list = new ArrayList<>();
         list.add(getTaylorThreePoints());
@@ -92,6 +107,10 @@ public class IntegratorFactory {
         list.add(getPredictorCorrector8i2());
         list.add(getRKN4());
         list.add(getRK45DP());
+        list.add(getCFMagnus4());
+        list.add(getCFMagnus6e4());
+        list.add(getCFMagnus6e5Opt());
+        list.add(getCFMagnus8());
         return list;
     }
 
