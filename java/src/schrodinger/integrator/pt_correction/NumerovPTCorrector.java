@@ -1,4 +1,4 @@
-package schrodinger.pt_correction;
+package schrodinger.integrator.pt_correction;
 
 import schrodinger.QuantumLevel;
 
@@ -8,7 +8,7 @@ import schrodinger.QuantumLevel;
 public class NumerovPTCorrector implements PTCorrector {
 
     @Override
-    public void compute(QuantumLevel level) {
+    public void computeAndSet(QuantumLevel level) {
         double result = 0;
         for (int i = 1; i < level.getGrid().getNumberOfPoints() - 1; i++) {
             result += Math.pow(level.QTildeAtGridPoint(i + 1) * level.psi[i + 1] - level.QTildeAtGridPoint(i - 1) * level.psi[i - 1], 2);

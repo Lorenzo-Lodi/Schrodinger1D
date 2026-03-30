@@ -1,6 +1,9 @@
 package schrodinger.integrator.misc;
 
 import schrodinger.integrator.Integrator;
+import schrodinger.integrator.pt_correction.NumerovPTCorrector;
+import schrodinger.integrator.pt_correction.PTCorrector;
+import schrodinger.integrator.pt_correction.TaylorThreePointsPTCorrector;
 
 import java.util.function.DoubleUnaryOperator;
 
@@ -18,6 +21,11 @@ public class TaylorThreePoints implements Integrator {
     @Override
     public int globalConvergenceOrder() {
         return 2;
+    }
+
+    @Override
+    public PTCorrector getPertubativeCorrector() {
+        return new TaylorThreePointsPTCorrector();
     }
 
     @Override

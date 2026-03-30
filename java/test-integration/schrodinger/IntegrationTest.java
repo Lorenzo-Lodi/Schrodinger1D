@@ -8,9 +8,9 @@ import schrodinger.integrator.IntegratorFactory;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.SchrodingerSystem;
-import schrodinger.pt_correction.NumerovPTCorrector;
-import schrodinger.pt_correction.PTCorrector;
-import schrodinger.pt_correction.TaylorThreePointsPTCorrector;
+import schrodinger.integrator.pt_correction.NumerovPTCorrector;
+import schrodinger.integrator.pt_correction.PTCorrector;
+import schrodinger.integrator.pt_correction.TaylorThreePointsPTCorrector;
 import schrodinger.solver.ShootingSolver;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,7 +36,7 @@ public class IntegrationTest {
 
         double refPerturbative = 2.270604341323613E-4;
         PTCorrector pt = new TaylorThreePointsPTCorrector();
-        pt.compute(ek);
+        pt.computeAndSet(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
 
@@ -59,7 +59,7 @@ public class IntegrationTest {
 
         double refPerturbative = 0.050063577379135055;
         PTCorrector pt = new TaylorThreePointsPTCorrector();
-        pt.compute(ek);
+        pt.computeAndSet(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
 
@@ -82,7 +82,7 @@ public class IntegrationTest {
 
         double refPerturbative = 2.0485571986324924E-7;
         PTCorrector pt = new NumerovPTCorrector();
-        pt.compute(ek);
+        pt.computeAndSet(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
 
@@ -105,7 +105,7 @@ public class IntegrationTest {
 
         double refPerturbative = 3.0814906265290394E-4;
         PTCorrector pt = new NumerovPTCorrector();
-        pt.compute(ek);
+        pt.computeAndSet(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
 
@@ -169,7 +169,7 @@ public class IntegrationTest {
 
         double refPerturbative = 3.1895686240242146E-4;
         PTCorrector pt = new NumerovPTCorrector();
-        pt.compute(ek);
+        pt.computeAndSet(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
 
@@ -192,7 +192,7 @@ public class IntegrationTest {
 
         double refPerturbative = 3.11832250753927E-4;
         PTCorrector pt = new NumerovPTCorrector();
-        pt.compute(ek);
+        pt.computeAndSet(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
 
@@ -215,7 +215,7 @@ public class IntegrationTest {
 
         double refPerturbative = 3.424279849395494E-4;
         PTCorrector pt = new NumerovPTCorrector();
-        pt.compute(ek);
+        pt.computeAndSet(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
 

@@ -1,6 +1,6 @@
 package schrodinger.integrator;
 
-import schrodinger.pt_correction.PTCorrector;
+import schrodinger.integrator.pt_correction.PTCorrector;
 
 import java.util.function.DoubleUnaryOperator;
 

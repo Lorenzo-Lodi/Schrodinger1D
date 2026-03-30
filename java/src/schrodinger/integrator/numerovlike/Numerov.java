@@ -1,6 +1,8 @@
 package schrodinger.integrator.numerovlike;
 
 import schrodinger.integrator.Integrator;
+import schrodinger.integrator.pt_correction.NumerovPTCorrector;
+import schrodinger.integrator.pt_correction.PTCorrector;
 
 import java.util.function.DoubleUnaryOperator;
 
@@ -18,6 +20,11 @@ public class Numerov implements Integrator {
     @Override
     public int globalConvergenceOrder() {
         return 4;
+    }
+
+    @Override
+    public PTCorrector getPertubativeCorrector() {
+        return new NumerovPTCorrector();
     }
 
     @Override

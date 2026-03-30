@@ -1,4 +1,4 @@
-package schrodinger.pt_correction;
+package schrodinger.integrator.pt_correction;
 
 import schrodinger.QuantumLevel;
 
@@ -13,5 +13,5 @@ public interface PTCorrector {
      * 
      * @param level The quantum state for which to compute the correction
      */
-    void compute(QuantumLevel level);
+    void computeAndSet(QuantumLevel level);
 }

@@ -3,7 +3,7 @@ package schrodinger.solver;
 import schrodinger.OutputManager;
 import schrodinger.QuantumLevel;
 import schrodinger.integrator.IntegratorFactory;
-import schrodinger.pt_correction.PTCorrector;
+import schrodinger.integrator.pt_correction.PTCorrector;
 import schrodinger.grid.Grid;
 import schrodinger.integrator.Integrator;
 import schrodinger.potential.SchrodingerSystem;
@@ -18,21 +18,16 @@ public class ShootingSolver {
     private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
     private static final double PSI_MAX = 1e30; // stop integrating forward if wave function exceeds this value
     private final Integrator integrator;
-    private final PTCorrector correction;
     private final SchrodingerSystem system;
+    private final PTCorrector corrector;
     private RefinementStrategy strategy;
 
     private final Integrator integratorBest = IntegratorFactory.getBestOneStepIntegrator();
 
-    public ShootingSolver(SchrodingerSystem system, Integrator integrator, PTCorrector correction) {
+    public ShootingSolver(SchrodingerSystem system, Integrator integrator) {
         this.system = system;
         this.integrator = integrator;
-        this.correction = correction;
-    }
-
-    // Backward-compatible constructor (correction set to null)
-    public ShootingSolver(SchrodingerSystem system, Integrator integrator) {
-        this(system, integrator, null);
+        this.corrector = integrator.getPertubativeCorrector();
     }
 
     /**
@@ -43,6 +38,7 @@ public class ShootingSolver {
         QuantumLevel level = new QuantumLevel(system);
 
         double energyScale = estimateEnergyScaleAndLowerBound(level);
+        OutputManager.write(String.format("Energy scale set to %23.14f (%25.6f cm-1)", energyScale, toInverseCm(energyScale)));
 
         // 3. Exponential Scan to find upper bound to the energy
         double currentEnergy = level.energy;
@@ -126,8 +122,8 @@ public class ShootingSolver {
         QuantumLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
         refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR, 0);
         level.normalizePsi();
-        if (correction != null) {
-            correction.compute(level);
+        if (corrector != null) {
+            corrector.computeAndSet(level);
         }
 
         return level;
@@ -173,7 +169,7 @@ public class ShootingSolver {
     }
 
     public QuantumLevel findEigenvalue(int nOfDesiredNodes, RefinementStrategy refinementStrategy) {
-        OutputManager.writeBlankLine();
+        OutputManager.write("************************************************************************************");
         OutputManager.write(String.format("Finding eigenvalue with %d nodes, strategy %s", nOfDesiredNodes, refinementStrategy.toString()));
         this.strategy = refinementStrategy;
         switch (strategy) {
@@ -198,8 +194,8 @@ public class ShootingSolver {
         OutputManager.write(String.format("Initial UPPER energy is: %23.14f (%25.6f cm-1)", l.upperBound, toInverseCm(l.upperBound)));
         refineByBidirectionalMatching(l);
         l.normalizePsi();
-        if (correction != null) {
-            correction.compute(l);
+        if (corrector != null) {
+            corrector.computeAndSet(l);
         }
         return l;
     }
@@ -258,7 +254,7 @@ public class ShootingSolver {
             OutputManager.writeBlankLine();
             OutputManager.write(String.format("Energy refinement stage. iterations = %d", info.iterations));
             OutputManager.write(String.format("Current energy is: %25.12f (%25.8f cm-1)", x2, toInverseCm(x2)));
-            OutputManager.write(String.format("Derivative mismatch for  current energy: %25.12f (%25.8f cm-1/a0)", f2, toInverseCm(x2)));
+            OutputManager.write(String.format("Derivative mismatch for  current energy: %25.12f (%25.8f cm-1/a0)", f2, toInverseCm(f2)));
 
             // Check for convergence
             if (Math.abs(f2) < tol) {

@@ -29,7 +29,8 @@ public class DissociationTest {
         Integrator integrator = IntegratorFactory.getEFN();
         double mass = 16.85762920 * UMA_TO_ELECTRON_MASS;
         int nOfPoints = 4000; // Adjusted so that the 14th state is weakly bound, needing an upper limit of around 50 or so
-        Grid grid = GridFactory.generateSqrtGrid(1.2d, 45., nOfPoints,5);
+//        Grid grid = GridFactory.generateSqrtGrid(1.2d, 45., nOfPoints,5);
+        Grid grid = GridFactory.generateUniformGrid(1.2d, 45., nOfPoints);
 
         // PROBLEMS:
         // * Often with BISECTION_THEN_REGULA_FALSI we get java.lang.IllegalArgumentException: The function values at the bounds must have opposite signs.
@@ -38,7 +39,8 @@ public class DissociationTest {
         ShootingSolver finder = new ShootingSolver(system, integrator);
         for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
             QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_SECANT);
-            System.out.println("Eigenvalue: " + nOfDesiredNodes + " " + (ek.energy * HARTREE_TO_INVERSE_CM - wellDepthInverseCm));
+
+            System.out.printf("Eigenvalue: %6d %25.14f (%25.14f)\n", nOfDesiredNodes, toInverseCm(ek.energy), (toInverseCm(ek.energy) - wellDepthInverseCm));
 
 //            if (nOfDesiredNodes == 14) {
 //                for (int i = 0; i < nOfPoints; i++) {
