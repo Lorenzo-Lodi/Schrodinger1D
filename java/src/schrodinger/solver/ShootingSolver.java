@@ -11,6 +11,8 @@ import schrodinger.potential.SchrodingerSystem;
 import java.util.Arrays;
 import java.util.function.DoubleUnaryOperator;
 
+import static schrodinger.PhysicalConstants.toInverseCm;
+
 public class ShootingSolver {
     private static final double TARGET_ABSOLUTE_ERROR = 1e-13;
     private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
@@ -133,7 +135,7 @@ public class ShootingSolver {
 
     private void refineByBisection(QuantumLevel level, int nOfDesiredNodes, double maxAbsError, int minBisections) {
         QuantumLevel.ConvergenceInfo info1 = new QuantumLevel.ConvergenceInfo();
-        info1.convergengeStage = "Bisection (to strick bracketing)";
+        info1.convergengeStage = "Bisection (to strict bracketing)";
         level.convergenceInfo.add(info1);
         QuantumLevel.ConvergenceInfo info2 = new QuantumLevel.ConvergenceInfo();
         info2.convergengeStage = "Bisection (after strict bracketing)";
@@ -171,6 +173,7 @@ public class ShootingSolver {
     }
 
     public QuantumLevel findEigenvalue(int nOfDesiredNodes, RefinementStrategy refinementStrategy) {
+        OutputManager.writeBlankLine();
         OutputManager.write(String.format("Finding eigenvalue with %d nodes, strategy %s", nOfDesiredNodes, refinementStrategy.toString()));
         this.strategy = refinementStrategy;
         switch (strategy) {
@@ -184,21 +187,21 @@ public class ShootingSolver {
     }
 
     private QuantumLevel findEigenvalueByHybridMethod(int nOfDesiredNodes) {
-        QuantumLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
-        OutputManager.write(String.format("Initial LOWER energy is: %23.14f ", level.lowerBound));
-        OutputManager.write(String.format("Initial GUESS energy is: %23.14f ", level.energy));
-        OutputManager.write(String.format("Initial UPPER energy is: %23.14f ", level.upperBound));
-        refineByBisection(level, nOfDesiredNodes, 1e-2, 3);
+        QuantumLevel l = this.findInitialEnergyBracket(nOfDesiredNodes);
+        OutputManager.write(String.format("Initial LOWER energy is: %23.14f (%25.6f cm-1)", l.lowerBound, toInverseCm(l.lowerBound)));
+        OutputManager.write(String.format("Initial GUESS energy is: %23.14f (%25.6f cm-1)", l.energy, toInverseCm(l.energy)));
+        OutputManager.write(String.format("Initial UPPER energy is: %23.14f (%25.6f cm-1)", l.upperBound, toInverseCm(l.upperBound)));
+        refineByBisection(l, nOfDesiredNodes, 1e-2, 3);
         OutputManager.write("Initial bisection steps finished. The new brackets are:");
-        OutputManager.write(String.format("Initial LOWER energy is: %23.14f ", level.lowerBound));
-        OutputManager.write(String.format("Initial GUESS energy is: %23.14f ", level.energy));
-        OutputManager.write(String.format("Initial UPPER energy is: %23.14f ", level.upperBound));
-        refineByBidirectionalMatching(level);
-        level.normalizePsi();
+        OutputManager.write(String.format("Initial LOWER energy is: %23.14f (%25.6f cm-1)", l.lowerBound, toInverseCm(l.lowerBound)));
+        OutputManager.write(String.format("Initial GUESS energy is: %23.14f (%25.6f cm-1)", l.energy, toInverseCm(l.energy)));
+        OutputManager.write(String.format("Initial UPPER energy is: %23.14f (%25.6f cm-1)", l.upperBound, toInverseCm(l.upperBound)));
+        refineByBidirectionalMatching(l);
+        l.normalizePsi();
         if (correction != null) {
-            correction.compute(level);
+            correction.compute(l);
         }
-        return level;
+        return l;
     }
 
     private void refineByBidirectionalMatching(QuantumLevel level) {
@@ -218,9 +221,10 @@ public class ShootingSolver {
         double diffLower = computeDerivativeMismatch(level, matchIndex);
         info.iterations++;
 
+        OutputManager.writeBlankLine();
         OutputManager.write(String.format("Energy refinement stage. iterations = %d", info.iterations));
-        OutputManager.write(String.format("Derivative mismatch for UPPER energy: %25.10f", diffUpper));
-        OutputManager.write(String.format("Derivative mismatch for LOWER energy: %25.10f", diffLower));
+        OutputManager.write(String.format("Derivative mismatch for UPPER energy: %25.12f (%25.8f cm-1/a0)", diffUpper, toInverseCm(diffUpper)));
+        OutputManager.write(String.format("Derivative mismatch for LOWER energy: %25.12f (%25.8f cm-1/a0)", diffLower, toInverseCm(diffLower)));
 
         // Regula falsi (false position) iteration
         double x0 = level.lowerBound;
@@ -250,6 +254,11 @@ public class ShootingSolver {
             level.energy = x2;
             f2 = computeDerivativeMismatch(level, matchIndex);
             info.iterations++;
+
+            OutputManager.writeBlankLine();
+            OutputManager.write(String.format("Energy refinement stage. iterations = %d", info.iterations));
+            OutputManager.write(String.format("Current energy is: %25.12f (%25.8f cm-1)", x2, toInverseCm(x2)));
+            OutputManager.write(String.format("Derivative mismatch for  current energy: %25.12f (%25.8f cm-1/a0)", f2, toInverseCm(x2)));
 
             // Check for convergence
             if (Math.abs(f2) < tol) {

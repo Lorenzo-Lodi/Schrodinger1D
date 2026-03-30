@@ -69,6 +69,10 @@ public class OutputManager {
         }
     }
 
+    public static synchronized void writeBlankLine() {
+        write("");
+    }
+
     /**
      * Write a raw line (no timestamp) to the common output – useful for CSV data.
      * Thread‑safe.

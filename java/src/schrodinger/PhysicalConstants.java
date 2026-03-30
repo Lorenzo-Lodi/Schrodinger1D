@@ -6,4 +6,9 @@ public class PhysicalConstants {
     public static final double HARTREE_TO_INVERSE_CM = 219474.63136314;
     public static final double BOHR_TO_ANG = 0.529177210544;
     public static final double UMA_TO_ELECTRON_MASS = 1822.8884862781415;
+
+    public static double toInverseCm(double energyHartree) {
+        return energyHartree * HARTREE_TO_INVERSE_CM;
+    }
+
 }
