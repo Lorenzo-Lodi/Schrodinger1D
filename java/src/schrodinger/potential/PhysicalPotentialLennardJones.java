@@ -10,11 +10,11 @@ public class PhysicalPotentialLennardJones implements PhysicalPotential {
         this.rmin = rmin;
         this.wellDepth = wellDepth;
         this.exponent = exponent;
-        this.sigma = rmin * Math.pow(2., -1. / 6.);
+        this.sigma = rmin * Math.pow(2., -1. / exponent);
     }
 
     public double value(double r) {
-        double x = Math.pow(sigma / r, 6);
+        double x = Math.pow(sigma / r, exponent);
         return 4. * wellDepth * x * (x - 1.) + wellDepth;
     }
 

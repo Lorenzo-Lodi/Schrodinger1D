@@ -10,3 +10,4 @@ java/DissociationTest.log
 java/.gitignore
 java/.project
 java/.classpath
+java/bin/
