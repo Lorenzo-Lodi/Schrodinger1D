@@ -300,9 +300,11 @@ public class ShootingSolver {
 
             // Check for potential overflow
             if (n % 16 == 0 && Math.abs(level.psi[n + 1]) > 1e100) {
+                double factor = level.psi[n + 1];
                 for (int i = startIndex; i <= n + 1; i++) { // Rescale computed points
-                    level.psi[i] /= 1e200;
+                    level.psi[i] /= factor;
                 }
+                level.currentPsiPrime[0] /= factor;
             }
 
         }
@@ -322,9 +324,11 @@ public class ShootingSolver {
 
             // Check for potential overflow
             if (n % 16 == 0 && Math.abs(level.psi[n - 1]) > 1e100) {
+                double factor = level.psi[n + 1];
                 for (int i = startIndex; i >= n - 1; i--) { // Rescale computed points
                     level.psi[i] /= 1e200;
                 }
+                level.currentPsiPrime[0] /= factor;
             }
 
         }
