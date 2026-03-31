@@ -83,11 +83,14 @@ public class ShootingSolver {
         }
         level.lowerBound = uMin;
         level.nodesLower = 0; // Should be always correct
+        OutputManager.write(String.format("I scanned the potential and found a minimum value %23.14f (%25.6f cm-1) for i = %d",
+                uMin, toInverseCm(uMin), minIndex));
 
         // 2. Estimate Step Size (Energy Scale)
         Double energyScale = null;
 
         // Attempt A: Harmonic Curvature of U_tilde on uniform y-grid
+        String energyScaleMethod = "";
         if (minIndex > 0 && minIndex < nPoints - 1) {
 
             // U_tilde values at minimum and neighbors
@@ -102,6 +105,7 @@ public class ShootingSolver {
             if (der2 > 1e-15) {
                 // Harmonic oscillator: omega = sqrt(K / M)
                 energyScale = Math.sqrt(der2 / system.getMass());
+                energyScaleMethod = "harmonic constant at equilibrium";
             }
         }
 
@@ -109,12 +113,14 @@ public class ShootingSolver {
         if (energyScale == null) {
             double L = grid.getLastYValue() - grid.getFirstYValue();
             energyScale = (Math.PI * Math.PI) / (2.0 * system.getMass() * L * L);
+            energyScaleMethod = "Particle-in-a-Box";
         }
 
+        OutputManager.write(String.format("The energy scale was set to %23.14f (%25.6f cm-1) using as method: %s",
+                energyScale, toInverseCm(energyScale), energyScaleMethod));
+
         level.energy = uMin + energyScale;
-
         return energyScale;
-
     }
 
     private QuantumLevel findEigenvalueByBisection(int nOfDesiredNodes) {
@@ -376,7 +382,8 @@ public class ShootingSolver {
     private int findMatchingIndex(double energy) {
         Grid grid = system.getGrid();
         // Scan from right to left until we reach the classically-allowed region
-        for (int i = grid.getNumberOfPoints() - 3; i >= 2; i--) {
+        int minIndex = Math.max(2, integrator.minHistoryLength());
+        for (int i = grid.getNumberOfPoints() - 3; i >= minIndex; i--) {
             if (system.UTildeAtGridPoint(i) <= energy) {
                 return i;
             }
