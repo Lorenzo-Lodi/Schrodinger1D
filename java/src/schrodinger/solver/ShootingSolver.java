@@ -16,7 +16,7 @@ import static schrodinger.PhysicalConstants.toInverseCm;
 public class ShootingSolver {
     private static final double TARGET_ABSOLUTE_ERROR = 1e-13;
     private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
-    private static final double PSI_MAX = 1e30; // stop integrating forward if wave function exceeds this value
+    private static final double PSI_MAX = 1e60; // rescale if psi exceeds this value
     private final Integrator integrator;
     private final SchrodingerSystem system;
     private final PTCorrector corrector;
@@ -35,10 +35,10 @@ public class ShootingSolver {
      * state with 'nOfDesiredNodes' nodes.
      */
     private QuantumLevel findInitialEnergyBracket(int nOfDesiredNodes) {
+        OutputManager.write(String.format("Trying to find initial energy bracketing for state with n = %d", nOfDesiredNodes));
         QuantumLevel level = new QuantumLevel(system);
 
         double energyScale = estimateEnergyScaleAndLowerBound(level);
-        OutputManager.write(String.format("Energy scale set to %23.14f (%25.6f cm-1)", energyScale, toInverseCm(energyScale)));
 
         // 3. Exponential Scan to find upper bound to the energy
         double currentEnergy = level.energy;
@@ -305,7 +305,7 @@ public class ShootingSolver {
                     Integrator.Direction.FORWARD);
 
             // Check for potential overflow
-            if (n % 16 == 0 && Math.abs(level.psi[n + 1]) > 1e100) {
+            if (n % 16 == 0 && Math.abs(level.psi[n + 1]) > PSI_MAX) {
                 double factor = level.psi[n + 1];
                 for (int i = startIndex; i <= n + 1; i++) { // Rescale computed points
                     level.psi[i] /= factor;
@@ -329,10 +329,10 @@ public class ShootingSolver {
                     Integrator.Direction.BACKWARD);
 
             // Check for potential overflow
-            if (n % 16 == 0 && Math.abs(level.psi[n - 1]) > 1e100) {
+            if (n % 16 == 0 && Math.abs(level.psi[n - 1]) > PSI_MAX) {
                 double factor = level.psi[n + 1];
                 for (int i = startIndex; i >= n - 1; i--) { // Rescale computed points
-                    level.psi[i] /= 1e200;
+                    level.psi[i] /= factor;
                 }
                 level.currentPsiPrime[0] /= factor;
             }
@@ -357,25 +357,33 @@ public class ShootingSolver {
     private int countNodes(QuantumLevel level) {
         int nPoints = system.getGrid().getNumberOfPoints();
         double hy = system.getGrid().getStepSizeYCoordinate();
-        DoubleUnaryOperator qTildeFunction = level::QTildeAtGridPoint;
 
         // --- Shoot Forward
         int startIndex = initialize(level, Integrator.Direction.FORWARD);
 
         int nodes = 0;
         for (int n = startIndex; n < nPoints - 1; n++) {
-            level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy, qTildeFunction,
+            level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy, level::QTildeAtGridPoint,
                     level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
                     Integrator.Direction.FORWARD);
             if (level.psi[n] * level.psi[n + 1] < 0.0) {
                 nodes++;
             }
 
-            // If we are deep in the classically-forbidden region and the wavefunction is blowing up, we can stop early
-            if (level.QTildeAtGridPoint(n) > 2.0 * level.energy && Math.abs(level.psi[n + 1]) > PSI_MAX) {
-                break;
+            // Check for potential overflow
+            if (n % 16 == 0 && Math.abs(level.psi[n + 1]) > PSI_MAX) {
+                double factor = level.psi[n + 1];
+                for (int i = startIndex; i <= n + 1; i++) { // Rescale computed points
+                    level.psi[i] /= factor;
+                }
+                level.currentPsiPrime[0] /= factor;
             }
+
         }
+
+
+
+
         return nodes;
     }
 
