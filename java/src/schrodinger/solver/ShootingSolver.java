@@ -382,8 +382,6 @@ public class ShootingSolver {
         }
 
 
-
-
         return nodes;
     }
 
@@ -391,7 +389,7 @@ public class ShootingSolver {
         Grid grid = system.getGrid();
         // Scan from right to left until we reach the classically-allowed region
         int minIndex = Math.max(2, integrator.minHistoryLength());
-        for (int i = grid.getNumberOfPoints() - 3; i >= minIndex; i--) {
+        for (int i = grid.getNumberOfPoints() - (minIndex + 1); i >= minIndex; i--) {
             if (system.UTildeAtGridPoint(i) <= energy) {
                 return i;
             }
