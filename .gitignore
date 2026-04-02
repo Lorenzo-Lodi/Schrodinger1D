@@ -11,3 +11,4 @@ java/.gitignore
 java/.project
 java/.classpath
 java/bin/
+*.log
