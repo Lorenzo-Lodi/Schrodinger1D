@@ -52,10 +52,12 @@ public class LennardJonesAllTest {
 
     @Test
     void testBisectionOnly() {
+        int nBad = 0;
+        int nGood = 0;
         RefinementStrategy strategy = RefinementStrategy.BISECTION_ONLY;
         List<Integrator> integrators = IntegratorFactory.getAll();
         for (Integrator integrator : integrators) {
-            for (int nOfPoints = 800; nOfPoints <= 800; nOfPoints += 200) {
+            for (int nOfPoints = 1000; nOfPoints <= 1000; nOfPoints += 200) {
                 for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                     String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
                     OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
@@ -72,12 +74,24 @@ public class LennardJonesAllTest {
                     ShootingSolver finder = new ShootingSolver(system, integrator);
                     QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, strategy);
                     double error = refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy);
-                    String goodOrBad = (Math.abs(error) <= 1e-1) ? "Good" : "Bad";
+                    String goodOrBad;
+                    if (Math.abs(error) <= 1e-1) {
+                        goodOrBad = "Good";
+                        nGood++;
+                    } else {
+                        goodOrBad = "Bad";
+                        nBad++;
+                    }
                     System.out.printf("%22s %15s %8d %8d %10s %20.4f %20.4f \n", className, strategy, nOfPoints, nOfDesiredNodes,
                             goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes));
                 }
             }
         }
+
+        double nTotal = (nBad + nGood);
+        nTotal = nTotal / 1000.;
+        System.out.printf("%10s, %10d -- %10.2f%s\n", "nGood: ", nGood, nGood / nTotal, "%");
+        System.out.printf("%10s, %10d -- %10.2f%s\n", "nBad", nBad, nBad / nTotal, "%");
 
     }
 }
