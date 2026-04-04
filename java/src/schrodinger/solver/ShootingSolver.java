@@ -35,6 +35,7 @@ public class ShootingSolver {
      * state with 'nOfDesiredNodes' nodes.
      */
     private QuantumLevel findInitialEnergyBracket(int nOfDesiredNodes) {
+        OutputManager.writeBlankLine();
         OutputManager.write(String.format("Trying to find initial energy bracketing for state with n = %d", nOfDesiredNodes));
         QuantumLevel level = new QuantumLevel(system);
 
@@ -43,15 +44,28 @@ public class ShootingSolver {
         // 3. Exponential Scan to find upper bound to the energy
         double currentEnergy = level.energy;
 
+        QuantumLevel.ConvergenceInfo info = new QuantumLevel.ConvergenceInfo();
+        info.convergengeStage = "Initial energy bracketing (find upper bound)";
+        info.iterations = 0;
+
+        OutputManager.writeBlankLine();
         for (int i = 0; i < MAXIMUM_NUMBER_OF_BISECTIONS; i++) {
             // Update the energy in the system
             level.energy = currentEnergy;
             int nodes = countNodes(level);
+            info.iterations++;
+            OutputManager.write(String.format("Iteration = %8d, current energy is = %s and has %8d nodes",
+                    i, fmtEnergy(level.energy), nodes));
+
+            for (int k = 0; k < level.psi.length; k++) {
+                OutputManager.writeData(String.format("%8d %20.6e", k, level.psi[k]));
+            }
 
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = currentEnergy;
                 level.nodesUpper = nodes;
                 level.energy = 0.5 * (level.lowerBound + level.upperBound);
+                OutputManager.write(String.format("Upper bound found, current energy set to %s", fmtEnergy(level.energy)));
                 return level;
             } else {
                 level.lowerBound = currentEnergy;
@@ -81,8 +95,7 @@ public class ShootingSolver {
                 minIndex = i;
             }
         }
-        level.lowerBound = uMin;
-        level.nodesLower = 0; // Should be always correct
+
         OutputManager.write(String.format("I scanned the potential and found a minimum value %23.14f (%25.6f cm-1) for i = %d",
                 uMin, toInverseCm(uMin), minIndex));
 
@@ -118,6 +131,9 @@ public class ShootingSolver {
 
         OutputManager.write(String.format("The energy scale was set to %23.14f (%25.6f cm-1) using as method: %s",
                 energyScale, toInverseCm(energyScale), energyScaleMethod));
+
+        level.lowerBound = uMin - energyScale * 0.05; // Set minimum a bit lower than minimum of the potential on the grid.
+        level.nodesLower = 0; // Should be always correct
 
         level.energy = uMin + energyScale;
         return energyScale;
@@ -376,10 +392,7 @@ public class ShootingSolver {
             }
 
         }
-
-//        level.normalizePsi(); // Perhaps unnecessary, but shouldn't hurt
         return level.countNodes();
-
     }
 
     private int findMatchingIndex(double energy) {
@@ -424,6 +437,10 @@ public class ShootingSolver {
 
         return i;
 
+    }
+
+    private String fmtEnergy(double energy) {
+        return String.format("%25.14f (%25.6f cm-1)", energy, toInverseCm(energy));
     }
 
 }
