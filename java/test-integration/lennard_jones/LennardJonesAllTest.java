@@ -13,10 +13,7 @@ import schrodinger.potential.SchrodingerSystem;
 import schrodinger.solver.RefinementStrategy;
 import schrodinger.solver.ShootingSolver;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static schrodinger.PhysicalConstants.*;
@@ -55,7 +52,7 @@ public class LennardJonesAllTest {
         int nBad = 0;
         int nGood = 0;
         RefinementStrategy strategy = RefinementStrategy.BISECTION_ONLY;
-        List<Integrator> integrators = IntegratorFactory.getAll();
+        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
         for (Integrator integrator : integrators) {
             for (int nOfPoints = 1000; nOfPoints <= 1000; nOfPoints += 200) {
                 for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {

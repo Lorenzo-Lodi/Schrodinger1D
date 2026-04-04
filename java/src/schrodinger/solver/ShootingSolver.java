@@ -307,7 +307,7 @@ public class ShootingSolver {
             // Check for potential overflow
             if (n % 16 == 0 && Math.abs(level.psi[n + 1]) > PSI_MAX) {
                 double factor = level.psi[n + 1];
-                for (int i = startIndex; i <= n + 1; i++) { // Rescale computed points
+                for (int i = 0; i <= n + 1; i++) { // Rescale computed points
                     level.psi[i] /= factor;
                 }
                 level.currentPsiPrime[0] /= factor;
@@ -331,7 +331,7 @@ public class ShootingSolver {
             // Check for potential overflow
             if (n % 16 == 0 && Math.abs(level.psi[n - 1]) > PSI_MAX) {
                 double factor = level.psi[n + 1];
-                for (int i = startIndex; i >= n - 1; i--) { // Rescale computed points
+                for (int i = level.psi.length - 1; i >= n - 1; i--) { // Rescale computed points
                     level.psi[i] /= factor;
                 }
                 level.currentPsiPrime[0] /= factor;
@@ -361,19 +361,15 @@ public class ShootingSolver {
         // --- Shoot Forward
         int startIndex = initialize(level, Integrator.Direction.FORWARD);
 
-        int nodes = 0;
         for (int n = startIndex; n < nPoints - 1; n++) {
             level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy, level::QTildeAtGridPoint,
                     level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
                     Integrator.Direction.FORWARD);
-            if (level.psi[n] * level.psi[n + 1] < 0.0) {
-                nodes++;
-            }
 
             // Check for potential overflow
             if (n % 16 == 0 && Math.abs(level.psi[n + 1]) > PSI_MAX) {
                 double factor = level.psi[n + 1];
-                for (int i = startIndex; i <= n + 1; i++) { // Rescale computed points
+                for (int i = 0; i <= n + 1; i++) { // Rescale computed points
                     level.psi[i] /= factor;
                 }
                 level.currentPsiPrime[0] /= factor;
@@ -381,8 +377,9 @@ public class ShootingSolver {
 
         }
 
+//        level.normalizePsi(); // Perhaps unnecessary, but shouldn't hurt
+        return level.countNodes();
 
-        return nodes;
     }
 
     private int findMatchingIndex(double energy) {

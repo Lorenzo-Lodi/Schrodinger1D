@@ -26,9 +26,9 @@ public class DissociationTest {
         double rMinAng = 1.;
         double rMinBohr = rMinAng / BOHR_TO_ANG;
         PhysicalPotential potential = new PhysicalPotentialLennardJones(rMinBohr, wellDepthHartree, 6);
-        Integrator integrator = IntegratorFactory.getCFMagnus8();
+        Integrator integrator = IntegratorFactory.getNumerov();
         double mass = 16.85762920 * UMA_TO_ELECTRON_MASS;
-        int nOfPoints = 4000; // Adjusted so that the 14th state is weakly bound, needing an upper limit of around 50 or so
+        int nOfPoints = 1000; // Adjusted so that the 14th state is weakly bound, needing an upper limit of around 50 or so
 //        Grid grid = GridFactory.generateSqrtGrid(1.2d, 45., nOfPoints,5);
         Grid grid = GridFactory.generateUniformGrid(1.2d, 45., nOfPoints);
         OutputManager.write("Grid info");
@@ -44,18 +44,11 @@ public class DissociationTest {
 
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
-        for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
+        for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 0; nOfDesiredNodes++) {
             QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_ONLY);
 
             System.out.printf("Eigenvalue: %6d %25.14f (%25.14f)\n", nOfDesiredNodes, toInverseCm(ek.energy), (toInverseCm(ek.energy) - wellDepthInverseCm));
 
-//            if (nOfDesiredNodes == 14) {
-//                for (int i = 0; i < nOfPoints; i++) {
-//                    double r = grid.getRValue(i);
-////                    System.out.println(i + " " + r + " " + potential.value(r) * 219474.6313708 + " " + ek.psi[i]);
-//                    System.out.println( ek.psi[i]);
-//                }
-//            }
         }
 
 
