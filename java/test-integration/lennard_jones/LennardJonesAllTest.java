@@ -7,6 +7,7 @@ import schrodinger.grid.Grid;
 import schrodinger.grid.GridFactory;
 import schrodinger.integrator.Integrator;
 import schrodinger.integrator.IntegratorFactory;
+import schrodinger.integrator.stormer.Stormer8;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialLennardJones;
 import schrodinger.potential.SchrodingerSystem;
@@ -52,14 +53,18 @@ public class LennardJonesAllTest {
         int nBad = 0;
         int nGood = 0;
         RefinementStrategy strategy = RefinementStrategy.BISECTION_ONLY;
-        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
+//        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
+        List<Integrator> integrators = IntegratorFactory.getAll();
         for (Integrator integrator : integrators) {
-            for (int nOfPoints = 1000; nOfPoints <= 1000; nOfPoints += 200) {
+            if(integrator instanceof  Stormer8) {
+                continue;
+            }
+            for (int nOfPoints = 1800; nOfPoints <= 2600; nOfPoints += 200) {
                 for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                     String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
                     OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
                             nOfPoints + "_" + strategy.toString().toLowerCase() + ".log");
-                    Grid grid = GridFactory.generateUniformGrid(1.2d, 45., nOfPoints);
+                    Grid grid = GridFactory.generateUniformGrid(1.5d, 45., nOfPoints);
                     OutputManager.write("Grid info");
                     OutputManager.write(String.format("%10s %22s %22s %22s", "i", "r", "y", "V"));
                     for (int i = 0; i < grid.getNumberOfPoints(); i++) {
@@ -70,17 +75,17 @@ public class LennardJonesAllTest {
                     SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
                     ShootingSolver finder = new ShootingSolver(system, integrator);
                     QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, strategy);
-                    double error = refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy);
+                    double error = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy))/refEnergies.get(nOfDesiredNodes);
                     String goodOrBad;
-                    if (Math.abs(error) <= 1e-1) {
+                    if (Math.abs(error) <= 0.01) { // For now only a 1%
                         goodOrBad = "Good";
                         nGood++;
                     } else {
                         goodOrBad = "Bad";
                         nBad++;
                     }
-                    System.out.printf("%22s %15s %8d %8d %10s %20.4f %20.4f \n", className, strategy, nOfPoints, nOfDesiredNodes,
-                            goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes));
+                    System.out.printf("%22s %15s %8d %8d %10s %20.4f %20.4f %20.8e \n", className, strategy, nOfPoints, nOfDesiredNodes,
+                            goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes), error);
                 }
             }
         }

@@ -93,7 +93,7 @@ public class QuantumLevel {
         int nodes = 0;
         for (int n = 0; n < this.psi.length - 1; n++) {
             // Leave the "minus zero"
-            if (this.psi[n] * this.psi[n + 1] < 0.0) {
+            if (this.psi[n] * this.psi[n + 1] < -0.0) {
                 nodes++;
             }
         }
