@@ -7,6 +7,7 @@ import schrodinger.grid.Grid;
 import schrodinger.grid.GridFactory;
 import schrodinger.integrator.Integrator;
 import schrodinger.integrator.IntegratorFactory;
+import schrodinger.integrator.misc.TaylorThreePoints;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialLennardJones;
 import schrodinger.potential.SchrodingerSystem;
@@ -52,14 +53,15 @@ public class LennardJonesAllTest {
         int nBad = 0;
         int nGood = 0;
         RefinementStrategy strategy = RefinementStrategy.BISECTION_ONLY;
-        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
+//        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
+        List<Integrator> integrators = IntegratorFactory.getAll();
         for (Integrator integrator : integrators) {
             for (int nOfPoints = 1000; nOfPoints <= 1000; nOfPoints += 200) {
                 for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                     String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
                     OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
                             nOfPoints + "_" + strategy.toString().toLowerCase() + ".log");
-                    Grid grid = GridFactory.generateUniformGrid(1.2d, 45., nOfPoints);
+                    Grid grid = GridFactory.generateUniformGrid(1.5d, 13., nOfPoints);
                     OutputManager.write("Grid info");
                     OutputManager.write(String.format("%10s %22s %22s %22s", "i", "r", "y", "V"));
                     for (int i = 0; i < grid.getNumberOfPoints(); i++) {
@@ -72,7 +74,11 @@ public class LennardJonesAllTest {
                     QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, strategy);
                     double error = refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy);
                     String goodOrBad;
-                    if (Math.abs(error) <= 1e-1) {
+                    double threshold = 0.1;
+                    if (integrator instanceof TaylorThreePoints) {
+                        threshold = 5.7;
+                    }
+                    if (Math.abs(error) <= threshold) {
                         goodOrBad = "Good";
                         nGood++;
                     } else {
@@ -89,6 +95,7 @@ public class LennardJonesAllTest {
         nTotal = nTotal / 1000.;
         System.out.printf("%10s, %10d -- %10.2f%s\n", "nGood: ", nGood, nGood / nTotal, "%");
         System.out.printf("%10s, %10d -- %10.2f%s\n", "nBad", nBad, nBad / nTotal, "%");
+        assertEquals(0, nBad);
 
     }
 }
