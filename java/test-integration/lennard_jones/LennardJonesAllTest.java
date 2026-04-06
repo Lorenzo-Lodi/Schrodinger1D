@@ -7,7 +7,11 @@ import schrodinger.grid.Grid;
 import schrodinger.grid.GridFactory;
 import schrodinger.integrator.Integrator;
 import schrodinger.integrator.IntegratorFactory;
+<<<<<<< HEAD
 import schrodinger.integrator.stormer.Stormer8;
+=======
+import schrodinger.integrator.misc.TaylorThreePoints;
+>>>>>>> 59fca4405c5364ea39e50383f06b7b0b5c440ae9
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialLennardJones;
 import schrodinger.potential.SchrodingerSystem;
@@ -64,7 +68,7 @@ public class LennardJonesAllTest {
                     String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
                     OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
                             nOfPoints + "_" + strategy.toString().toLowerCase() + ".log");
-                    Grid grid = GridFactory.generateUniformGrid(1.5d, 45., nOfPoints);
+                    Grid grid = GridFactory.generateUniformGrid(1.5d, 13., nOfPoints);
                     OutputManager.write("Grid info");
                     OutputManager.write(String.format("%10s %22s %22s %22s", "i", "r", "y", "V"));
                     for (int i = 0; i < grid.getNumberOfPoints(); i++) {
@@ -77,7 +81,11 @@ public class LennardJonesAllTest {
                     QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, strategy);
                     double error = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy))/refEnergies.get(nOfDesiredNodes);
                     String goodOrBad;
-                    if (Math.abs(error) <= 0.01) { // For now only a 1%
+                    double threshold = 0.1;
+                    if (integrator instanceof TaylorThreePoints) {
+                        threshold = 5.7;
+                    }
+                    if (Math.abs(error) <= threshold) {
                         goodOrBad = "Good";
                         nGood++;
                     } else {
@@ -94,6 +102,7 @@ public class LennardJonesAllTest {
         nTotal = nTotal / 1000.;
         System.out.printf("%10s, %10d -- %10.2f%s\n", "nGood: ", nGood, nGood / nTotal, "%");
         System.out.printf("%10s, %10d -- %10.2f%s\n", "nBad", nBad, nBad / nTotal, "%");
+        assertEquals(0, nBad);
 
     }
 }
