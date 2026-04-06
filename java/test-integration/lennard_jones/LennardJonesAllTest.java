@@ -7,11 +7,8 @@ import schrodinger.grid.Grid;
 import schrodinger.grid.GridFactory;
 import schrodinger.integrator.Integrator;
 import schrodinger.integrator.IntegratorFactory;
-<<<<<<< HEAD
 import schrodinger.integrator.stormer.Stormer8;
-=======
 import schrodinger.integrator.misc.TaylorThreePoints;
->>>>>>> 59fca4405c5364ea39e50383f06b7b0b5c440ae9
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialLennardJones;
 import schrodinger.potential.SchrodingerSystem;
@@ -57,12 +54,8 @@ public class LennardJonesAllTest {
         int nBad = 0;
         int nGood = 0;
         RefinementStrategy strategy = RefinementStrategy.BISECTION_ONLY;
-//        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
         List<Integrator> integrators = IntegratorFactory.getAll();
         for (Integrator integrator : integrators) {
-            if(integrator instanceof  Stormer8) {
-                continue;
-            }
             for (int nOfPoints = 1800; nOfPoints <= 2600; nOfPoints += 200) {
                 for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                     String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
