@@ -61,5 +61,9 @@ public interface Integrator {
         return null;
     }
 
+    default boolean needsPotentialCapping() {
+        return false;
+    }
+
 
 }

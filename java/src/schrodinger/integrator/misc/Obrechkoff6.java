@@ -16,6 +16,10 @@ public class Obrechkoff6 implements Integrator {
         return 6;
     }
 
+    @Override
+    public boolean needsPotentialCapping() {
+        return true;
+    }
 
     // https://www.perplexity.ai/search/can-an-adams-moulton-method-be-4iA7wTxyTHOyelu30RUUGA#2254f9eb-2c6a-49ad-86e3-c5fbae55a1b0
     @Override

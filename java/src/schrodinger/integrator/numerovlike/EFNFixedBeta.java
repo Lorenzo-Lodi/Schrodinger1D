@@ -3,6 +3,11 @@ package schrodinger.integrator.numerovlike;
 // Exponentially-Fitted Numerov Method with Fixed β
 public class EFNFixedBeta extends ExponentiallyFittedAbstract {
 
+    @Override
+    public boolean needsPotentialCapping() {
+        return true;
+    }
+
     public double getBeta(double Z) {
         return 1.0 / 12.0;
     }

@@ -26,6 +26,10 @@ public class Stormer5 implements Integrator {
         return 5;
     }
 
+    @Override
+    public boolean needsPotentialCapping() {
+        return true;
+    }
 
     // ── order 5, LTE = O(h^7) ──────────────────────────────────────
     // β: {+1: 19/240,  0: 17/20,  -1: 7/120,  -2: 1/60,  -3: -1/240}

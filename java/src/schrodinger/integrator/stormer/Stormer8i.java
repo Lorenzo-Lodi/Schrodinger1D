@@ -16,6 +16,11 @@ public class Stormer8i implements Integrator {
         return 8;
     }
 
+    @Override
+    public boolean needsPotentialCapping() {
+        return true;
+    }
+
     // 8th-order implicit Cowell coefficients
     private final static double c_next = 275.0 / 4032.0;
     private final static double c_curr = 13831.0 / 15120.0;

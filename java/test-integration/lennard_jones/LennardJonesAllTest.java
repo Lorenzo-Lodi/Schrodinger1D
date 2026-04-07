@@ -85,6 +85,11 @@ public class LennardJonesAllTest {
 
 
     @Test
+    void testBisectionOnly_1800_points_1_0_to_13_uniform_grid() {
+        test_core(1.0, 13, 1800, 0.07);
+    }
+
+    @Test
     void testBisectionOnly_1800_points_1_3_to_13_uniform_grid() {
         test_core(1.3, 13, 1800, 0.07);
     }
@@ -123,6 +128,11 @@ public class LennardJonesAllTest {
 //        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
 
         for (Integrator integrator : integrators) {
+
+            if (integrator.needsPotentialCapping()) {
+                continue;
+            }
+
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
                 OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +

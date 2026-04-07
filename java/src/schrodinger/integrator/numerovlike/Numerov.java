@@ -28,6 +28,11 @@ public class Numerov implements Integrator {
     }
 
     @Override
+    public boolean needsPotentialCapping() {
+        return true;
+    }
+
+    @Override
     public double propagate(double[] psi, double[] currentPsiPrime, int n, double step,
                             DoubleUnaryOperator qTilde,
                             DoubleUnaryOperator qTildePrime,

@@ -90,4 +90,9 @@ public abstract class PredictorCorrectorBase implements Integrator {
         }
         return result;
     }
+
+    @Override
+    public boolean needsPotentialCapping() {
+        return true;
+    }
 }
