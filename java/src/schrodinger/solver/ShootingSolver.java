@@ -38,7 +38,19 @@ public class ShootingSolver {
         OutputManager.writeBlankLine();
         OutputManager.write(String.format("Trying to find initial energy bracketing for state with n = %d", nOfDesiredNodes));
         QuantumLevel level = new QuantumLevel(system);
-        level.setCapPotential(integrator.needsPotentialCapping());
+
+        if (integrator.needsPotentialCapping()) {
+            double Umax = -system.getQMin() / (2. * system.getMass());
+            OutputManager.write(String.format("Integrator is set to %s, and this integrator needs potential capping.", integrator.getClass().getSimpleName()));
+            OutputManager.write(String.format("The potential Q(x) = 2m [E-U(r)] will be capped from below to %15.4e.", system.getQMin()));
+            OutputManager.write(String.format("This means U(r) < E + %15.4e Eh (%15.4e cm-1)", Umax, toInverseCm(Umax)));
+            OutputManager.writeBlankLine();
+            level.setCapPotential(true);
+        } else {
+            OutputManager.write(String.format("Integrator is set to %s, and this integrator does NOT needs potential capping.",
+                    integrator.getClass().getSimpleName()));
+        }
+
 
         double energyScale = estimateEnergyScaleAndLowerBound(level);
 
@@ -55,8 +67,7 @@ public class ShootingSolver {
             level.energy = currentEnergy;
             int nodes = countNodes(level);
             info.iterations++;
-            OutputManager.write(String.format("Iteration = %8d, current energy is = %s and has %8d nodes",
-                    i, fmtEnergy(level.energy), nodes));
+            ;
 
             for (int k = 0; k < level.psi.length; k++) {
                 OutputManager.writeData(String.format("%8d %20.6e", k, level.psi[k]));

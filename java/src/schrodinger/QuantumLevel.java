@@ -44,9 +44,6 @@ public class QuantumLevel {
         double gy = getGrid().gAtGridPoint(i);
         double qTilde = gy * gy * 2. * system.getMass() * (energy - system.UTildeAtGridPoint(i));
         if (isCapPotential) {
-            if(qTilde < system.getQMin()) {
-                System.out.println(qTilde + " " + system.getQMin() + " " + system.getQMin());
-            }
             qTilde = Math.max(qTilde, system.getQMin());
         }
         return qTilde;
