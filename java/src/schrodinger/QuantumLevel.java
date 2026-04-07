@@ -17,7 +17,7 @@ public class QuantumLevel {
     public double[] currentPsiPrime; // Only by one-step methods such as RKN and CFMagnus
     public double perturbativeCorrectionToEnergy;
     public List<ConvergenceInfo> convergenceInfo = new ArrayList<>();
-
+    private boolean isCapPotential;
 
     public QuantumLevel(SchrodingerSystem system) {
         this.system = system;
@@ -28,7 +28,7 @@ public class QuantumLevel {
     /**
      * Q-function Q(r) for the equation: ψ''(r) = -Q(r)ψ(r)
      */
-    public double Q(double r) {
+    private double Q(double r) {
         return 2.d * system.getMass() * (energy - system.U(r));
     }
 
@@ -42,7 +42,14 @@ public class QuantumLevel {
 
     public double QTildeAtGridPoint(double i) {
         double gy = getGrid().gAtGridPoint(i);
-        return gy * gy * 2. * system.getMass() * (energy - system.UTildeAtGridPoint(i));
+        double qTilde = gy * gy * 2. * system.getMass() * (energy - system.UTildeAtGridPoint(i));
+        if (isCapPotential) {
+            if(qTilde < system.getQMin()) {
+                System.out.println(qTilde + " " + system.getQMin() + " " + system.getQMin());
+            }
+            qTilde = Math.max(qTilde, system.getQMin());
+        }
+        return qTilde;
     }
 
     public double QTildePrimeAtGridPoint(double i) {
@@ -114,6 +121,14 @@ public class QuantumLevel {
     public static class ConvergenceInfo {
         public String convergengeStage;
         public int iterations;
+    }
+
+    public boolean isCapPotential() {
+        return isCapPotential;
+    }
+
+    public void setCapPotential(boolean capPotential) {
+        isCapPotential = capPotential;
     }
 
 }

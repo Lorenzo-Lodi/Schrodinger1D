@@ -8,7 +8,6 @@ public class SchrodingerSystem {
     private final Grid grid;
     private final double qMin;
     private final static double hCritical = 2.5;
-    private boolean isCapPotential;
 
     public SchrodingerSystem(PhysicalPotential physicalPotential, double mass, Grid grid) {
         this.physicalPotential = physicalPotential;
@@ -46,14 +45,6 @@ public class SchrodingerSystem {
 
     public double getQMin() {
         return qMin;
-    }
-
-    public boolean isCapPotential() {
-        return isCapPotential;
-    }
-
-    public void setCapPotential(boolean capPotential) {
-        isCapPotential = capPotential;
     }
 
 }

@@ -38,6 +38,7 @@ public class ShootingSolver {
         OutputManager.writeBlankLine();
         OutputManager.write(String.format("Trying to find initial energy bracketing for state with n = %d", nOfDesiredNodes));
         QuantumLevel level = new QuantumLevel(system);
+        level.setCapPotential(integrator.needsPotentialCapping());
 
         double energyScale = estimateEnergyScaleAndLowerBound(level);
 

@@ -129,7 +129,7 @@ public class LennardJonesAllTest {
 
         for (Integrator integrator : integrators) {
 
-            if (integrator.needsPotentialCapping()) {
+            if (!integrator.needsPotentialCapping()) {
                 continue;
             }
 
