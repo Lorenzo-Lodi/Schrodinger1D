@@ -7,6 +7,21 @@ public class SchrodingerSystem {
     private final double mass;
     private final Grid grid;
     private final double qMin;
+
+    // For now we use a unique hCritical for all integrators. In reality some integrators are very sensitive
+    // (PC6 is the most sensitive and requires hCritical=2.5) and some much less (Obrechkoff6 requires hCritical=5.5)
+    // That said, this corresponds to a factor (5.5/2.5)^2 = 4.84 in the capping value, which is not huge.
+    // These are the critical values (tested with Lennard-Jones potential) with 0.5 accuracy (only for integrators
+    // which need capping):
+//    Obrechkoff6            5.5
+//    Stormer5               3.5
+//    Stormer6               3.5
+//    Stormer8i              3.5
+//    PredictorCorrector8i2  3.5
+//    Numerov                3.0
+//    EFNFixedBeta           3.0
+//    PredictorCorrector8i1  3.0
+//    PredictorCorrector6    2.5
     private final static double hCritical = 2.5;
 
     public SchrodingerSystem(PhysicalPotential physicalPotential, double mass, Grid grid) {
