@@ -131,17 +131,16 @@ public class LennardJonesAllTest {
     }
 
 
-    // WIP this FAILS! I don't know why exactly!
     @Test
     void testBisectionOnly_1800_points_1_5_to_20_uniform_grid() {
         int nBad = 0;
         int nGood = 0;
         RefinementStrategy strategy = RefinementStrategy.BISECTION_ONLY;
-//        List<Integrator> integrators = IntegratorFactory.getAll();
-        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
+        List<Integrator> integrators = IntegratorFactory.getAll();
+//        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
         for (Integrator integrator : integrators) {
             int nOfPoints = 1800;
-            for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 0; nOfDesiredNodes++) {
+            for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
                 OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
                         nOfPoints + "_" + strategy.toString().toLowerCase() + ".log");
@@ -159,7 +158,7 @@ public class LennardJonesAllTest {
                 double error = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy)) / refEnergies.get(nOfDesiredNodes);
                 double threshold = thresholds1800pts.get(integrator.getClass());
                 if(nOfDesiredNodes == 14) {
-                    threshold = 0.07 ; // Special rule for the highest level, as it is not completely converged because of grid
+                    threshold = 0.001 ; // Special rule for the highest level, as it is not completely converged because of grid
                 }
                 String goodOrBad;
                 if (Math.abs(error) <= threshold) {

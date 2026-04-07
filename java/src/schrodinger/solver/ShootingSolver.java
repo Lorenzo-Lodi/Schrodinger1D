@@ -16,7 +16,7 @@ import static schrodinger.PhysicalConstants.toInverseCm;
 public class ShootingSolver {
     private static final double TARGET_ABSOLUTE_ERROR = 1e-13;
     private static final int MAXIMUM_NUMBER_OF_BISECTIONS = 60; // reduces error by 2**n
-    private static final double PSI_MAX = 1e60; // rescale if psi exceeds this value
+    private static final double PSI_MAX = 1e140; // rescale if psi exceeds this value
     private final Integrator integrator;
     private final SchrodingerSystem system;
     private final PTCorrector corrector;
