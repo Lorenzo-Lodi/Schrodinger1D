@@ -6,11 +6,22 @@ public class SchrodingerSystem {
     private final PhysicalPotential physicalPotential;
     private final double mass;
     private final Grid grid;
+    private final double qMin;
+    private final static double hCritical = 2.5;
+    private final boolean isCapPotential;
 
     public SchrodingerSystem(PhysicalPotential physicalPotential, double mass, Grid grid) {
+        this(physicalPotential, mass, grid, true);
+    }
+
+    public SchrodingerSystem(PhysicalPotential physicalPotential, double mass, Grid grid, boolean isCapPotential) {
         this.physicalPotential = physicalPotential;
         this.mass = mass;
         this.grid = grid;
+
+        this.isCapPotential = isCapPotential;
+        double h = grid.getStepSizeYCoordinate();
+        qMin = -Math.pow(hCritical / h, 2);
     }
 
     /**
@@ -38,6 +49,14 @@ public class SchrodingerSystem {
 
     public Grid getGrid() {
         return grid;
+    }
+
+    public double getQMin() {
+        return qMin;
+    }
+
+    public boolean isCapPotential() {
+        return isCapPotential;
     }
 
 }
