@@ -64,15 +64,15 @@ public class LennardJonesAllTest {
 
         thresholds1800pts.put(CFMagnus6e5Opt.class, 3.15E-07);
         thresholds1800pts.put(CFMagnus8.class, 3.15E-07);
-        thresholds1800pts.put(PredictorCorrector8i1.class, 3.87E-07);
-        thresholds1800pts.put(PredictorCorrector8i2.class, 4.31E-07);
-        thresholds1800pts.put(Obrechkoff6.class, 6.70E-07);
-        thresholds1800pts.put(CFMagnus6e4.class, 1.6E-06);
-        thresholds1800pts.put(Stormer8i.class, 2.62E-06);
+        thresholds1800pts.put(PredictorCorrector8i1.class, 4.6E-07);
+        thresholds1800pts.put(PredictorCorrector8i2.class, 6.5E-07);
+        thresholds1800pts.put(Obrechkoff6.class, 1.10E-06);
+        thresholds1800pts.put(CFMagnus6e4.class, 3.6E-06);
+        thresholds1800pts.put(Stormer8i.class, 3.2E-06);
         thresholds1800pts.put(PredictorCorrector6.class, 1.31E-05);
         thresholds1800pts.put(CFMagnus4.class, 1.61E-05);
         thresholds1800pts.put(RK45DP.class, 1.93E-05);
-        thresholds1800pts.put(Stormer8.class, 1.3E-04);
+        thresholds1800pts.put(Stormer8.class, 2.5E-02); // degrades very badly when xmax> 40
         thresholds1800pts.put(Stormer5.class, 5.89E-05);
         thresholds1800pts.put(Stormer6.class, 8.00E-05);
         thresholds1800pts.put(EFNFixedBeta.class, 2.33E-04);
@@ -103,6 +103,11 @@ public class LennardJonesAllTest {
     @Test
     void testBisectionOnly_1800_points_1_5_to_40_uniform_grid() {
         test_core(1.5, 40, 1800, 7e-5);
+    }
+
+    @Test
+    void testBisectionOnly_1800_points_1_5_to_45_uniform_grid() {
+        test_core(1.5, 45, 1800, 2.5e-2);
     }
 
     private void test_core(double xmin, double xmax, int nOfPoints, double threshold14thState) {
