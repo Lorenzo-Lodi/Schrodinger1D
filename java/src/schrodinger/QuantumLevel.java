@@ -120,12 +120,16 @@ public class QuantumLevel {
         public int iterations;
     }
 
-    public boolean isCapPotential() {
-        return isCapPotential;
-    }
-
     public void setCapPotential(boolean capPotential) {
         isCapPotential = capPotential;
+    }
+
+    public int countTotalScans() {
+        int scans = 0;
+        for (ConvergenceInfo c : this.convergenceInfo) {
+            scans += c.iterations;
+        }
+        return scans;
     }
 
 }

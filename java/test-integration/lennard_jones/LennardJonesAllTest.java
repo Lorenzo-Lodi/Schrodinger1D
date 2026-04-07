@@ -43,7 +43,6 @@ public class LennardJonesAllTest {
     private static final double mass = 16.85762920 * UMA_TO_ELECTRON_MASS;
     private static final Map<Integer, Double> refEnergies = new HashMap<>();
     private static final Map<Class<?>, Double> thresholds1800pts = new HashMap<>();
-    private boolean isPrintOnlyBad = false;
 
     static {
         // There were obtained with Magnus8, 4000 points and [1.2 - 45.0] uniform grid
@@ -88,50 +87,60 @@ public class LennardJonesAllTest {
     // ******************************************************************************************************************
     // TESTS  BISECTION_ONLY
     @Test
-    void testBisectionOnly_1800_points_1_0_to_13_uniform_grid() {
+    void bisectionOnly_1800_points_1_0_to_13_uniform_grid() {
         test_core(1.0, 13, 1800, 0.07, RefinementStrategy.BISECTION_ONLY);
     }
 
     @Test
-    void testBisectionOnly_1800_points_1_3_to_13_uniform_grid() {
+    void bisectionOnly_1800_points_1_3_to_13_uniform_grid() {
         test_core(1.3, 13, 1800, 0.07, RefinementStrategy.BISECTION_ONLY);
     }
 
     @Test
-    void testBisectionOnly_1800_points_1_5_to_13_uniform_grid() {
+    void bisectionOnly_1800_points_1_5_to_13_uniform_grid() {
         test_core(1.5, 13, 1800, 0.07, RefinementStrategy.BISECTION_ONLY);
     }
 
     @Test
-    void testBisectionOnly_1800_points_1_5_to_20_uniform_grid() {
+    void bisectionOnly_1800_points_1_5_to_20_uniform_grid() {
         test_core(1.5, 20, 1800, 1.5e-5, RefinementStrategy.BISECTION_ONLY);
     }
 
     @Test
-    void testBisectionOnly_1800_points_1_5_to_30_uniform_grid() {
+    void bisectionOnly_1800_points_1_5_to_30_uniform_grid() {
         test_core(1.5, 30, 1800, 4e-5, RefinementStrategy.BISECTION_ONLY);
     }
 
     @Test
-    void testBisectionOnly_1800_points_1_5_to_40_uniform_grid() {
+    void bisectionOnly_1800_points_1_5_to_40_uniform_grid() {
         test_core(1.5, 40, 1800, 7e-5, RefinementStrategy.BISECTION_ONLY);
     }
 
     @Test
-    void testBisectionOnly_1800_points_1_5_to_45_uniform_grid() {
+    void bisectionOnly_1800_points_1_5_to_45_uniform_grid() {
         test_core(1.5, 45, 1800, 2.5e-2, RefinementStrategy.BISECTION_ONLY);
     }
 
     // ******************************************************************************************************************
     // TESTS BISECTION_THEN_SECANT
     @Test
-    void testBisectionThenSecant_1800_points_1_5_to_13_uniform_grid() {
-        isPrintOnlyBad = true;
+    void bisectionThenSecant_1800_points_1_5_to_13_uniform_grid() {
         test_core(1.5, 13, 1800, 0.07, RefinementStrategy.BISECTION_THEN_SECANT);
+    }
+
+    @Test
+    void bisectionThenSecant_1800_points_1_5_to_45_uniform_grid() {
+        test_core(1.5, 45, 1800, 2.5e-2, RefinementStrategy.BISECTION_THEN_SECANT, true);
     }
 
     // ******************************************************************************************************************
     private void test_core(double xmin, double xmax, int nOfPoints, double threshold14thState, RefinementStrategy strategy) {
+        test_core(xmin, xmax, nOfPoints, threshold14thState, strategy, false);
+    }
+
+
+    private void test_core(double xmin, double xmax, int nOfPoints, double threshold14thState, RefinementStrategy strategy,
+                           boolean isPrintOnlyBad) {
         int nBad = 0;
         int nGood = 0;
         List<Integrator> integrators = IntegratorFactory.getAll();
@@ -168,9 +177,10 @@ public class LennardJonesAllTest {
                     goodOrBad = "Bad";
                     nBad++;
                 }
-                if(!(isPrintOnlyBad && goodOrBad.equals("Good"))) {
-                    System.out.printf("%22s %15s %8d %8d %10s %20.4f %20.4f %20.8e \n", className, strategy, nOfPoints, nOfDesiredNodes,
-                            goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes), error);
+
+                if (!(isPrintOnlyBad && goodOrBad.equals("Good"))) {
+                    System.out.printf("%22s %15s %8d %8d %10s %20.4f %20.4f %20.8e %10d\n", className, strategy, nOfPoints, nOfDesiredNodes,
+                            goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes), error, ek.countTotalScans());
                 }
             }
         }
