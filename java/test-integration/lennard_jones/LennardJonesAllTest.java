@@ -26,7 +26,9 @@ import schrodinger.potential.SchrodingerSystem;
 import schrodinger.solver.RefinementStrategy;
 import schrodinger.solver.ShootingSolver;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static schrodinger.PhysicalConstants.*;
@@ -96,6 +98,11 @@ public class LennardJonesAllTest {
     @Test
     void testBisectionOnly_1800_points_1_5_to_30_uniform_grid() {
         test_core(1.5, 30, 1800, 4e-5);
+    }
+
+    @Test
+    void testBisectionOnly_1800_points_1_5_to_40_uniform_grid() {
+        test_core(1.5, 40, 1800, 7e-5);
     }
 
     private void test_core(double xmin, double xmax, int nOfPoints, double threshold14thState) {
