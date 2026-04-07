@@ -131,4 +131,55 @@ public class LennardJonesAllTest {
     }
 
 
+    // WIP this FAILS! I don't know why exactly!
+    @Test
+    void testBisectionOnly_1800_points_1_5_to_20_uniform_grid() {
+        int nBad = 0;
+        int nGood = 0;
+        RefinementStrategy strategy = RefinementStrategy.BISECTION_ONLY;
+//        List<Integrator> integrators = IntegratorFactory.getAll();
+        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
+        for (Integrator integrator : integrators) {
+            int nOfPoints = 1800;
+            for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 0; nOfDesiredNodes++) {
+                String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
+                OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
+                        nOfPoints + "_" + strategy.toString().toLowerCase() + ".log");
+                Grid grid = GridFactory.generateUniformGrid(1.5d, 20., nOfPoints);
+                OutputManager.write("Grid info");
+                OutputManager.write(String.format("%10s %22s %22s %22s", "i", "r", "y", "V"));
+//                for (int i = 0; i < grid.getNumberOfPoints(); i++) {
+//                    double v = potential.value(grid.rAtGridPoint(i));
+//                    OutputManager.write(String.format("%10d %22.8f %22.8f %25.6f",
+//                            i, grid.rAtGridPoint(i), grid.yAtGridPoint(i), toInverseCm(v)));
+//                }
+                SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
+                ShootingSolver finder = new ShootingSolver(system, integrator);
+                QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, strategy);
+                double error = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy)) / refEnergies.get(nOfDesiredNodes);
+                double threshold = thresholds1800pts.get(integrator.getClass());
+                if(nOfDesiredNodes == 14) {
+                    threshold = 0.07 ; // Special rule for the highest level, as it is not completely converged because of grid
+                }
+                String goodOrBad;
+                if (Math.abs(error) <= threshold) {
+                    goodOrBad = "Good";
+                    nGood++;
+                } else {
+                    goodOrBad = "Bad";
+                    nBad++;
+                }
+                System.out.printf("%22s %15s %8d %8d %10s %20.4f %20.4f %20.8e \n", className, strategy, nOfPoints, nOfDesiredNodes,
+                        goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes), error);
+            }
+        }
+
+        double nTotal = (nBad + nGood);
+        nTotal = nTotal / 1000.;
+        System.out.printf("%10s, %10d -- %10.2f%s\n", "nGood: ", nGood, nGood / nTotal, "%");
+        System.out.printf("%10s, %10d -- %10.2f%s\n", "nBad", nBad, nBad / nTotal, "%");
+        assertEquals(0, nBad);
+    }
+
+
 }
