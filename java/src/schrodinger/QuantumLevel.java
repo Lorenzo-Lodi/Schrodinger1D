@@ -92,11 +92,12 @@ public class QuantumLevel {
     public int countNodes() {
         int nodes = 0;
         for (int n = 0; n < this.psi.length - 1; n++) {
-            // Using signum should be more robust than using multiplication;
             // if psi is very small, we risk underflowing when we perfom the multiplication.
-            if (Math.signum(this.psi[n]) * Math.signum(this.psi[n + 1]) < 0.0) {
+            // Use this trick to get the sign bit; works also for 0.0 vs -0.0
+            if ((Double.doubleToRawLongBits(psi[n]) ^ Double.doubleToRawLongBits(psi[n + 1])) < 0L) {
                 nodes++;
             }
+
         }
 
         return nodes;

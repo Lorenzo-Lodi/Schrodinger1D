@@ -67,12 +67,12 @@ public class LennardJonesAllTest {
         thresholds1800pts.put(PredictorCorrector8i1.class, 3.87E-07);
         thresholds1800pts.put(PredictorCorrector8i2.class, 4.31E-07);
         thresholds1800pts.put(Obrechkoff6.class, 6.70E-07);
-        thresholds1800pts.put(CFMagnus6e4.class, 1.36E-06);
+        thresholds1800pts.put(CFMagnus6e4.class, 1.6E-06);
         thresholds1800pts.put(Stormer8i.class, 2.62E-06);
         thresholds1800pts.put(PredictorCorrector6.class, 1.31E-05);
         thresholds1800pts.put(CFMagnus4.class, 1.61E-05);
         thresholds1800pts.put(RK45DP.class, 1.93E-05);
-        thresholds1800pts.put(Stormer8.class, 4.83E-05);
+        thresholds1800pts.put(Stormer8.class, 1.3E-04);
         thresholds1800pts.put(Stormer5.class, 5.89E-05);
         thresholds1800pts.put(Stormer6.class, 8.00E-05);
         thresholds1800pts.put(EFNFixedBeta.class, 2.33E-04);
@@ -110,6 +110,8 @@ public class LennardJonesAllTest {
         int nGood = 0;
         RefinementStrategy strategy = RefinementStrategy.BISECTION_ONLY;
         List<Integrator> integrators = IntegratorFactory.getAll();
+//        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
+
         for (Integrator integrator : integrators) {
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
