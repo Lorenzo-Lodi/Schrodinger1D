@@ -85,6 +85,11 @@ public class LennardJonesAllTest {
 
 
     @Test
+    void testBisectionOnly_1800_points_1_3_to_13_uniform_grid() {
+        test_core(1.3, 13, 1800, 0.07);
+    }
+
+    @Test
     void testBisectionOnly_1800_points_1_5_to_13_uniform_grid() {
         test_core(1.5, 13, 1800, 0.07);
     }
