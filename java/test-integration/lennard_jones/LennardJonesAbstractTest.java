@@ -44,6 +44,7 @@ public abstract class LennardJonesAbstractTest {
     private static final Map<Integer, Double> refEnergies = new HashMap<>();
     private static final Map<Class<?>, Double> thresholds1800pts = new HashMap<>();
     private final RefinementStrategy strategy;
+    private final boolean isPrintOnlyBad;
 
     static {
         // There were obtained with Magnus8, 4000 points and [1.2 - 45.0] uniform grid
@@ -84,8 +85,9 @@ public abstract class LennardJonesAbstractTest {
 
     }
 
-    public LennardJonesAbstractTest(RefinementStrategy strategy) {
+    public LennardJonesAbstractTest(RefinementStrategy strategy, boolean isPrintOnlyBad) {
         this.strategy = strategy;
+        this.isPrintOnlyBad = isPrintOnlyBad;
     }
 
 
@@ -126,31 +128,27 @@ public abstract class LennardJonesAbstractTest {
 
 
     private void test_core(double xmin, double xmax, int nOfPoints, double threshold14thState) {
-        test_core(xmin, xmax, nOfPoints, threshold14thState, false);
-    }
-
-
-    private void test_core(double xmin, double xmax, int nOfPoints, double threshold14thState, boolean isPrintOnlyBad) {
         int nBad = 0;
         int nGood = 0;
         List<Integrator> integrators = IntegratorFactory.getAll();
 //        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
 
         for (Integrator integrator : integrators) {
-            for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
-                String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
-                OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
-                        nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log");
-                Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
-                OutputManager.write("Grid info");
-                OutputManager.write(String.format("%10s %22s %22s %22s", "i", "r", "y", "V"));
+            String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
+            OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
+                    nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log");
+            Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
+//                OutputManager.write("Grid info");
+//                OutputManager.write(String.format("%10s %22s %22s %22s", "i", "r", "y", "V"));
 //                for (int i = 0; i < grid.getNumberOfPoints(); i++) {
 //                    double v = potential.value(grid.rAtGridPoint(i));
 //                    OutputManager.write(String.format("%10d %22.8f %22.8f %25.6f",
 //                            i, grid.rAtGridPoint(i), grid.yAtGridPoint(i), toInverseCm(v)));
 //                }
-                SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
-                ShootingSolver finder = new ShootingSolver(system, integrator);
+            SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
+            ShootingSolver finder = new ShootingSolver(system, integrator);
+
+            for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, this.strategy);
                 double error = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy)) / refEnergies.get(nOfDesiredNodes);
                 double threshold = thresholds1800pts.get(integrator.getClass());
