@@ -43,6 +43,8 @@ public abstract class LennardJonesAbstractTest {
     private static final double mass = 16.85762920 * UMA_TO_ELECTRON_MASS;
     private static final Map<Integer, Double> refEnergies = new HashMap<>();
     private static final Map<Class<?>, Double> thresholds1800pts = new HashMap<>();
+
+    List<Integrator> integrators;
     private final RefinementStrategy strategy;
     private final boolean isPrintOnlyBad;
 
@@ -86,6 +88,7 @@ public abstract class LennardJonesAbstractTest {
     }
 
     public LennardJonesAbstractTest(RefinementStrategy strategy, boolean isPrintOnlyBad) {
+        this.integrators = IntegratorFactory.getAll();
         this.strategy = strategy;
         this.isPrintOnlyBad = isPrintOnlyBad;
     }
@@ -130,10 +133,8 @@ public abstract class LennardJonesAbstractTest {
     private void test_core(double xmin, double xmax, int nOfPoints, double threshold14thState) {
         int nBad = 0;
         int nGood = 0;
-        List<Integrator> integrators = IntegratorFactory.getAll();
-//        List<Integrator> integrators = List.of(IntegratorFactory.getNumerov());
 
-        for (Integrator integrator : integrators) {
+        for (Integrator integrator : this.integrators) {
             String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
             OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
                     nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log");
