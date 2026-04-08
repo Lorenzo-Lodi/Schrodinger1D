@@ -33,7 +33,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static schrodinger.PhysicalConstants.*;
 
-public class LennardJonesAllTest {
+public abstract class LennardJonesAbstractTest {
 
     private static final double wellDepthInverseCm = 4050;
     private static final double wellDepthHartree = wellDepthInverseCm / HARTREE_TO_INVERSE_CM;
@@ -43,6 +43,7 @@ public class LennardJonesAllTest {
     private static final double mass = 16.85762920 * UMA_TO_ELECTRON_MASS;
     private static final Map<Integer, Double> refEnergies = new HashMap<>();
     private static final Map<Class<?>, Double> thresholds1800pts = new HashMap<>();
+    private final RefinementStrategy strategy;
 
     static {
         // There were obtained with Magnus8, 4000 points and [1.2 - 45.0] uniform grid
@@ -83,64 +84,53 @@ public class LennardJonesAllTest {
 
     }
 
+    public LennardJonesAbstractTest(RefinementStrategy strategy) {
+        this.strategy = strategy;
+    }
 
-    // ******************************************************************************************************************
-    // TESTS  BISECTION_ONLY
+
     @Test
     void bisectionOnly_1800_points_1_0_to_13_uniform_grid() {
-        test_core(1.0, 13, 1800, 0.07, RefinementStrategy.BISECTION_ONLY);
+        test_core(1.0, 13, 1800, 0.07);
     }
 
     @Test
     void bisectionOnly_1800_points_1_3_to_13_uniform_grid() {
-        test_core(1.3, 13, 1800, 0.07, RefinementStrategy.BISECTION_ONLY);
+        test_core(1.3, 13, 1800, 0.07);
     }
 
     @Test
     void bisectionOnly_1800_points_1_5_to_13_uniform_grid() {
-        test_core(1.5, 13, 1800, 0.07, RefinementStrategy.BISECTION_ONLY);
+        test_core(1.5, 13, 1800, 0.07);
     }
 
     @Test
     void bisectionOnly_1800_points_1_5_to_20_uniform_grid() {
-        test_core(1.5, 20, 1800, 1.5e-5, RefinementStrategy.BISECTION_ONLY);
+        test_core(1.5, 20, 1800, 1.5e-5);
     }
 
     @Test
     void bisectionOnly_1800_points_1_5_to_30_uniform_grid() {
-        test_core(1.5, 30, 1800, 4e-5, RefinementStrategy.BISECTION_ONLY);
+        test_core(1.5, 30, 1800, 4e-5);
     }
 
     @Test
     void bisectionOnly_1800_points_1_5_to_40_uniform_grid() {
-        test_core(1.5, 40, 1800, 7e-5, RefinementStrategy.BISECTION_ONLY);
+        test_core(1.5, 40, 1800, 7e-5);
     }
 
     @Test
     void bisectionOnly_1800_points_1_5_to_45_uniform_grid() {
-        test_core(1.5, 45, 1800, 2.5e-2, RefinementStrategy.BISECTION_ONLY);
-    }
-
-    // ******************************************************************************************************************
-    // TESTS BISECTION_THEN_SECANT
-    @Test
-    void bisectionThenSecant_1800_points_1_5_to_13_uniform_grid() {
-        test_core(1.5, 13, 1800, 0.07, RefinementStrategy.BISECTION_THEN_SECANT);
-    }
-
-    @Test
-    void bisectionThenSecant_1800_points_1_5_to_45_uniform_grid() {
-        test_core(1.5, 45, 1800, 2.5e-2, RefinementStrategy.BISECTION_THEN_SECANT, true);
-    }
-
-    // ******************************************************************************************************************
-    private void test_core(double xmin, double xmax, int nOfPoints, double threshold14thState, RefinementStrategy strategy) {
-        test_core(xmin, xmax, nOfPoints, threshold14thState, strategy, false);
+        test_core(1.5, 45, 1800, 2.5e-2);
     }
 
 
-    private void test_core(double xmin, double xmax, int nOfPoints, double threshold14thState, RefinementStrategy strategy,
-                           boolean isPrintOnlyBad) {
+    private void test_core(double xmin, double xmax, int nOfPoints, double threshold14thState) {
+        test_core(xmin, xmax, nOfPoints, threshold14thState, false);
+    }
+
+
+    private void test_core(double xmin, double xmax, int nOfPoints, double threshold14thState, boolean isPrintOnlyBad) {
         int nBad = 0;
         int nGood = 0;
         List<Integrator> integrators = IntegratorFactory.getAll();
@@ -150,7 +140,7 @@ public class LennardJonesAllTest {
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
                 OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
-                        nOfPoints + "_" + strategy.toString().toLowerCase() + ".log");
+                        nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log");
                 Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
                 OutputManager.write("Grid info");
                 OutputManager.write(String.format("%10s %22s %22s %22s", "i", "r", "y", "V"));
@@ -161,7 +151,7 @@ public class LennardJonesAllTest {
 //                }
                 SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
                 ShootingSolver finder = new ShootingSolver(system, integrator);
-                QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, strategy);
+                QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, this.strategy);
                 double error = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy)) / refEnergies.get(nOfDesiredNodes);
                 double threshold = thresholds1800pts.get(integrator.getClass());
 
@@ -186,7 +176,7 @@ public class LennardJonesAllTest {
         }
 
         double nTotal = (nBad + nGood);
-        nTotal = nTotal / 1000.;
+        nTotal = nTotal / 100.;
         System.out.printf("%10s, %10d -- %10.2f%s\n", "nGood: ", nGood, nGood / nTotal, "%");
         System.out.printf("%10s, %10d -- %10.2f%s\n", "nBad", nBad, nBad / nTotal, "%");
         assertEquals(0, nBad);
