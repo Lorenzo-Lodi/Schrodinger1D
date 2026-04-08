@@ -149,6 +149,9 @@ public abstract class LennardJonesAbstractTest {
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
 
+            System.out.printf("%22s %15s %8s %8s %10s %20s %20s %20s %10s\n", "className", "strategy", "nOfPoints", "nOfDesiredNodes",
+                    "goodOrBad", "energy", "energy_ref", "error_rel", "TotalScans");
+
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, this.strategy);
                 double error = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy)) / refEnergies.get(nOfDesiredNodes);
