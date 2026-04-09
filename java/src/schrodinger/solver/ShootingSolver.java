@@ -30,6 +30,26 @@ public class ShootingSolver {
         this.corrector = integrator.getPertubativeCorrector();
     }
 
+    public QuantumLevel findEigenvalue(int nOfDesiredNodes, RefinementStrategy refinementStrategy) {
+        OutputManager.write("************************************************************************************");
+        OutputManager.write(String.format("Finding eigenvalue with %d nodes, strategy %s", nOfDesiredNodes, refinementStrategy.toString()));
+        this.strategy = refinementStrategy;
+        QuantumLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
+
+        switch (strategy) {
+            case BISECTION_ONLY:
+                return findEigenvalueByBisection(level, nOfDesiredNodes);
+            case BISECTION_THEN_SECANT:
+            case BISECTION_THEN_REGULA_FALSI:
+                return findEigenvalueByHybridMethod(level, nOfDesiredNodes);
+        }
+        return null;
+    }
+
+    public QuantumLevel findEigenvalue(int nOfDesiredNodes) {
+        return findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
+    }
+
     /**
      * Locates the energy interval [lowerBound, upperBound] containing the
      * state with 'nOfDesiredNodes' nodes.
@@ -51,8 +71,7 @@ public class ShootingSolver {
                     integrator.getClass().getSimpleName()));
         }
 
-
-        double energyScale = estimateEnergyScaleAndLowerBound(level);
+        double energyScale = level.estimateEnergyScaleAndLowerBound();
 
         // 3. Exponential Scan to find upper bound to the energy
         double currentEnergy = level.energy;
@@ -90,70 +109,7 @@ public class ShootingSolver {
         throw new RuntimeException("Failed to bracket energy level.");
     }
 
-    private Double estimateEnergyScaleAndLowerBound(QuantumLevel level) {
-        Grid grid = system.getGrid();
-
-        // 1. Scan the *Effective Potential* U_tilde(y) for the minimum
-        int minIndex = 0;
-        double uMin = Double.MAX_VALUE;
-
-        // We scan the uniform y-grid
-        int nPoints = grid.getNumberOfPoints();
-        for (int i = 1; i < nPoints - 1; i++) {
-            // Use the effective potential that includes mapping corrections
-            double val = system.UTildeAtGridPoint(i);
-            if (val < uMin) {
-                uMin = val;
-                minIndex = i;
-            }
-        }
-
-        OutputManager.write(String.format("I scanned the potential and found a minimum value %23.14f (%25.6f cm-1) for i = %d",
-                uMin, toInverseCm(uMin), minIndex));
-
-        // 2. Estimate Step Size (Energy Scale)
-        Double energyScale = null;
-
-        // Attempt A: Harmonic Curvature of U_tilde on uniform y-grid
-        String energyScaleMethod = "";
-        if (minIndex > 0 && minIndex < nPoints - 1) {
-
-            // U_tilde values at minimum and neighbors
-            double u0 = system.UTildeAtGridPoint(minIndex);
-            double uL = system.UTildeAtGridPoint(minIndex - 1);
-            double uR = system.UTildeAtGridPoint(minIndex + 1);
-
-            // second derivative  d^2(U_tilde)/dy^2
-            double hy = grid.getStepSizeYCoordinate();
-            double der2 = (uR - 2.0 * u0 + uL) / (hy * hy);
-
-            if (der2 > 1e-15) {
-                // Harmonic oscillator: omega = sqrt(K / M)
-                energyScale = Math.sqrt(der2 / system.getMass());
-                energyScaleMethod = "harmonic constant at equilibrium";
-            }
-        }
-
-        // Attempt B: Particle-in-a-Box (Fallback)
-        if (energyScale == null) {
-            double L = grid.getLastYValue() - grid.getFirstYValue();
-            energyScale = (Math.PI * Math.PI) / (2.0 * system.getMass() * L * L);
-            energyScaleMethod = "Particle-in-a-Box";
-        }
-
-        OutputManager.write(String.format("The energy scale was set to %23.14f (%25.6f cm-1) using as method: %s",
-                energyScale, toInverseCm(energyScale), energyScaleMethod));
-
-        level.lowerBound = uMin - energyScale * 0.05; // Set minimum a bit lower than minimum of the potential on the grid.
-        level.nodesLower = 0; // Should be always correct
-
-        level.energy = uMin + energyScale;
-        return energyScale;
-    }
-
-    private QuantumLevel findEigenvalueByBisection(int nOfDesiredNodes) {
-
-        QuantumLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
+    private QuantumLevel findEigenvalueByBisection(QuantumLevel level, int nOfDesiredNodes) {
         refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR, 0);
         level.normalizePsi();
         if (corrector != null) {
@@ -198,26 +154,7 @@ public class ShootingSolver {
         level.energy = (level.lowerBound + level.upperBound) * 0.5;
     }
 
-    public QuantumLevel findEigenvalue(int nOfDesiredNodes) {
-        return findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
-    }
-
-    public QuantumLevel findEigenvalue(int nOfDesiredNodes, RefinementStrategy refinementStrategy) {
-        OutputManager.write("************************************************************************************");
-        OutputManager.write(String.format("Finding eigenvalue with %d nodes, strategy %s", nOfDesiredNodes, refinementStrategy.toString()));
-        this.strategy = refinementStrategy;
-        switch (strategy) {
-            case BISECTION_ONLY:
-                return findEigenvalueByBisection(nOfDesiredNodes);
-            case BISECTION_THEN_SECANT:
-            case BISECTION_THEN_REGULA_FALSI:
-                return findEigenvalueByHybridMethod(nOfDesiredNodes);
-        }
-        return null;
-    }
-
-    private QuantumLevel findEigenvalueByHybridMethod(int nOfDesiredNodes) {
-        QuantumLevel l = this.findInitialEnergyBracket(nOfDesiredNodes);
+    private QuantumLevel findEigenvalueByHybridMethod(QuantumLevel l, int nOfDesiredNodes) {
         OutputManager.write(String.format("Initial LOWER energy is: %23.14f (%25.6f cm-1)", l.lowerBound, toInverseCm(l.lowerBound)));
         OutputManager.write(String.format("Initial GUESS energy is: %23.14f (%25.6f cm-1)", l.energy, toInverseCm(l.energy)));
         OutputManager.write(String.format("Initial UPPER energy is: %23.14f (%25.6f cm-1)", l.upperBound, toInverseCm(l.upperBound)));
