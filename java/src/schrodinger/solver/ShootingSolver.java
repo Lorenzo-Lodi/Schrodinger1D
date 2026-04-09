@@ -235,24 +235,30 @@ public class ShootingSolver {
     }
 
     private void refineByBidirectionalMatching(QuantumLevel level) {
-        QuantumLevel.ConvergenceInfo info = new QuantumLevel.ConvergenceInfo();
-        info.convergengeStage = "Refinement by regula falsi or secant";
-        info.iterations = 0;
-        level.convergenceInfo.add(info);
+
+        boolean isFalsePosition = (strategy == RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
+        QuantumLevel.ConvergenceInfo info3 = new QuantumLevel.ConvergenceInfo();
+        if (isFalsePosition) {
+            info3.convergengeStage = "Refinement by regula falsi";
+        } else {
+            info3.convergengeStage = "Refinement by secant";
+        }
+        info3.iterations = 0;
+        level.convergenceInfo.add(info3);
 
         // It seems preferable to compute the matching index once and for all
         int matchIndex = findMatchingIndex(level.energy);
 
         level.energy = level.upperBound;
         double diffUpper = computeDerivativeMismatch(level, matchIndex);
-        info.iterations++;
+        info3.iterations++;
 
         level.energy = level.lowerBound;
         double diffLower = computeDerivativeMismatch(level, matchIndex);
-        info.iterations++;
+        info3.iterations++;
 
         OutputManager.writeBlankLine();
-        OutputManager.write(String.format("Energy refinement stage. iterations = %d", info.iterations));
+        OutputManager.write(String.format("Energy refinement stage. iterations = %d", info3.iterations));
         OutputManager.write(String.format("Derivative mismatch for UPPER energy: %25.12f (%25.8f cm-1/a0)", diffUpper, toInverseCm(diffUpper)));
         OutputManager.write(String.format("Derivative mismatch for LOWER energy: %25.12f (%25.8f cm-1/a0)", diffLower, toInverseCm(diffLower)));
 
@@ -262,12 +268,14 @@ public class ShootingSolver {
         double x1 = level.upperBound;
         double f1 = diffUpper;
 
-        boolean isFalsePosition = (strategy == RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
 
-        // Ensure the bracket is valid (f0 and f1 have opposite signs)
-        if (isFalsePosition && f0 * f1 > 0) {
-            // Handle error: the function does not bracket a root
-            throw new IllegalArgumentException("The function values at the bounds must have opposite signs.");
+        if (f0 * f1 > 0) {
+            OutputManager.write(String.format("WARNING: The function values at the bounds must have opposite signs. f0 = %20.6e, f1 = %20.6e", f0, f1));
+            if (isFalsePosition) {
+                // Ensure the bracket is valid (f0 and f1 have opposite signs)
+//                return; // Don't throw, just return whatever we've got
+                throw new IllegalArgumentException("The function values at the bounds must have opposite signs.");
+            }
         }
 
         double x2 = x0; // initialize
@@ -283,10 +291,10 @@ public class ShootingSolver {
             // Evaluate function at x2
             level.energy = x2;
             f2 = computeDerivativeMismatch(level, matchIndex);
-            info.iterations++;
+            info3.iterations++;
 
             OutputManager.writeBlankLine();
-            OutputManager.write(String.format("Energy refinement stage. iterations = %d", info.iterations));
+            OutputManager.write(String.format("Energy refinement stage. iterations = %d", info3.iterations));
             OutputManager.write(String.format("Current energy is: %25.12f (%25.8f cm-1)", x2, toInverseCm(x2)));
             OutputManager.write(String.format("Derivative mismatch for  current energy: %25.12f (%25.8f cm-1/a0)", f2, toInverseCm(f2)));
 
