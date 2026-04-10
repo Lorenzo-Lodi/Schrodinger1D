@@ -77,7 +77,7 @@ public abstract class LennardJonesAbstractTest {
         thresholds1800pts.put(PredictorCorrector6.class, 1.32E-05);
         thresholds1800pts.put(CFMagnus4.class, 1.61E-05);
         thresholds1800pts.put(RK45DP.class, 1.93E-05);
-        thresholds1800pts.put(Stormer8.class, 2.5E-02); // degrades very badly when xmax> 40
+        thresholds1800pts.put(Stormer8.class, 6.63E-05);
         thresholds1800pts.put(Stormer5.class, 5.90E-05);
         thresholds1800pts.put(Stormer6.class, 8.01E-05);
         thresholds1800pts.put(EFNFixedBeta.class, 2.33E-04);
@@ -150,8 +150,8 @@ public abstract class LennardJonesAbstractTest {
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
 
-            System.out.printf("%22s %15s %8s %8s %10s %20s %20s %20s %10s\n", "className", "strategy", "nOfPoints", "nOfDesiredNodes",
-                    "goodOrBad", "energy", "energy_ref", "error_rel", "TotalScans");
+            System.out.printf("%22s %20s %12s %20s %10s %20s %20s %20s %12s %s\n", "className", "strategy", "nOfPoints", "nOfDesiredNodes",
+                    "goodOrBad", "energy", "energy_ref", "error_rel", "TotalScans", "<- of which...");
 
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, this.strategy);
@@ -173,8 +173,13 @@ public abstract class LennardJonesAbstractTest {
                 }
 
                 if (!(isPrintOnlyBad && goodOrBad.equals("Good"))) {
-                    System.out.printf("%22s %15s %8d %8d %10s %20.4f %20.4f %20.8e %10d\n", className, strategy, nOfPoints, nOfDesiredNodes,
-                            goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes), error, ek.countTotalScans());
+                    String iterInfo = "";
+                    for (QuantumLevel.ConvergenceInfo info : ek.convergenceInfo) {
+                        iterInfo += String.format("%4d", +info.iterations);
+                    }
+
+                    System.out.printf("%22s %20s %12d %20d %10s %20.4f %20.4f %20.8e %12d %s\n", className, strategy, nOfPoints, nOfDesiredNodes,
+                            goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes), error, ek.countTotalScans(), iterInfo);
                 }
             }
         }
