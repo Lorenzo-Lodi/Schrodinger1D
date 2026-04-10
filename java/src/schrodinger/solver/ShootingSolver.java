@@ -86,7 +86,6 @@ public class ShootingSolver {
             level.energy = currentEnergy;
             int nodes = countNodes(level);
             info.iterations++;
-            ;
 
             for (int k = 0; k < level.psi.length; k++) {
                 OutputManager.writeData(String.format("%8d %20.6e", k, level.psi[k]));

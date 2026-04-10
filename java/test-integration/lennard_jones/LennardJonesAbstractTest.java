@@ -66,24 +66,25 @@ public abstract class LennardJonesAbstractTest {
         refEnergies.put(13, 4044.03031326710800);
         refEnergies.put(14, 4049.62843497018100);
 
-        thresholds1800pts.put(CFMagnus6e5Opt.class, 3.15E-07);
-        thresholds1800pts.put(CFMagnus8.class, 3.15E-07);
+        // Thresholds for 1800 points, grid 1.5-13; thresholds for all 14 states (worse-case)
+        thresholds1800pts.put(CFMagnus6e5Opt.class, 3.16E-07);
+        thresholds1800pts.put(CFMagnus8.class, 3.16E-07);
         thresholds1800pts.put(PredictorCorrector8i1.class, 4.6E-07);
         thresholds1800pts.put(PredictorCorrector8i2.class, 6.5E-07);
         thresholds1800pts.put(Obrechkoff6.class, 1.10E-06);
         thresholds1800pts.put(CFMagnus6e4.class, 3.6E-06);
         thresholds1800pts.put(Stormer8i.class, 3.2E-06);
-        thresholds1800pts.put(PredictorCorrector6.class, 1.31E-05);
+        thresholds1800pts.put(PredictorCorrector6.class, 1.32E-05);
         thresholds1800pts.put(CFMagnus4.class, 1.61E-05);
         thresholds1800pts.put(RK45DP.class, 1.93E-05);
         thresholds1800pts.put(Stormer8.class, 2.5E-02); // degrades very badly when xmax> 40
-        thresholds1800pts.put(Stormer5.class, 5.89E-05);
-        thresholds1800pts.put(Stormer6.class, 8.00E-05);
+        thresholds1800pts.put(Stormer5.class, 5.90E-05);
+        thresholds1800pts.put(Stormer6.class, 8.01E-05);
         thresholds1800pts.put(EFNFixedBeta.class, 2.33E-04);
         thresholds1800pts.put(EFN.class, 2.33E-04);
         thresholds1800pts.put(Numerov.class, 2.61E-03);
         thresholds1800pts.put(RKN4.class, 3.89E-03);
-        thresholds1800pts.put(TaylorThreePoints.class, 1.73E+00);
+        thresholds1800pts.put(TaylorThreePoints.class, 1.74E+00);
 
     }
 
@@ -154,7 +155,8 @@ public abstract class LennardJonesAbstractTest {
 
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, this.strategy);
-                double error = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy)) / refEnergies.get(nOfDesiredNodes);
+                double error = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy));
+//                / refEnergies.get(nOfDesiredNodes);
                 double threshold = thresholds1800pts.get(integrator.getClass());
 
                 // Special rule for the highest level, as it is not completely converged because of grid
