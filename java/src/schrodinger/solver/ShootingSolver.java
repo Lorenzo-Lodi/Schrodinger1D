@@ -19,7 +19,6 @@ public class ShootingSolver {
     private static final double PSI_MAX = 1e140; // rescale if psi exceeds this value
     private final Integrator integrator;
     private final SchrodingerSystem system;
-    private final PTCorrector corrector;
     private RefinementStrategy strategy;
 
     private final Integrator integratorBest = IntegratorFactory.getBestOneStepIntegrator();
@@ -27,7 +26,6 @@ public class ShootingSolver {
     public ShootingSolver(SchrodingerSystem system, Integrator integrator) {
         this.system = system;
         this.integrator = integrator;
-        this.corrector = integrator.getPertubativeCorrector();
     }
 
     public QuantumLevel findEigenvalue(int nOfDesiredNodes, RefinementStrategy refinementStrategy) {
@@ -38,12 +36,21 @@ public class ShootingSolver {
 
         switch (strategy) {
             case BISECTION_ONLY:
-                return findEigenvalueByBisection(level, nOfDesiredNodes);
+                findEigenvalueByBisection(level, nOfDesiredNodes);
+                break;
             case BISECTION_THEN_SECANT:
             case BISECTION_THEN_REGULA_FALSI:
-                return findEigenvalueByHybridMethod(level, nOfDesiredNodes);
+                findEigenvalueByHybridMethod(level, nOfDesiredNodes);
+                break;
         }
-        return null;
+
+        level.normalizePsi();
+        PTCorrector corrector  = integrator.getPertubativeCorrector();
+        if (corrector != null) {
+            corrector.computeAndSet(level);
+        }
+
+        return level;
     }
 
     public QuantumLevel findEigenvalue(int nOfDesiredNodes) {
@@ -108,14 +115,8 @@ public class ShootingSolver {
         throw new RuntimeException("Failed to bracket energy level.");
     }
 
-    private QuantumLevel findEigenvalueByBisection(QuantumLevel level, int nOfDesiredNodes) {
+    private void findEigenvalueByBisection(QuantumLevel level, int nOfDesiredNodes) {
         refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR, 0);
-        level.normalizePsi();
-        if (corrector != null) {
-            corrector.computeAndSet(level);
-        }
-
-        return level;
     }
 
     private void refineByBisection(QuantumLevel level, int nOfDesiredNodes, double maxAbsError, int minBisections) {
@@ -153,21 +154,19 @@ public class ShootingSolver {
         level.energy = (level.lowerBound + level.upperBound) * 0.5;
     }
 
-    private QuantumLevel findEigenvalueByHybridMethod(QuantumLevel l, int nOfDesiredNodes) {
+    private void findEigenvalueByHybridMethod(QuantumLevel l, int nOfDesiredNodes) {
         OutputManager.write(String.format("Initial LOWER energy is: %23.14f (%25.6f cm-1)", l.lowerBound, toInverseCm(l.lowerBound)));
         OutputManager.write(String.format("Initial GUESS energy is: %23.14f (%25.6f cm-1)", l.energy, toInverseCm(l.energy)));
         OutputManager.write(String.format("Initial UPPER energy is: %23.14f (%25.6f cm-1)", l.upperBound, toInverseCm(l.upperBound)));
-        refineByBisection(l, nOfDesiredNodes, 1e-2, 3);
+
+        refineByBisection(l, nOfDesiredNodes, 1e-3, 4);
+
         OutputManager.write("Initial bisection steps finished. The new brackets are:");
         OutputManager.write(String.format("Initial LOWER energy is: %23.14f (%25.6f cm-1)", l.lowerBound, toInverseCm(l.lowerBound)));
         OutputManager.write(String.format("Initial GUESS energy is: %23.14f (%25.6f cm-1)", l.energy, toInverseCm(l.energy)));
         OutputManager.write(String.format("Initial UPPER energy is: %23.14f (%25.6f cm-1)", l.upperBound, toInverseCm(l.upperBound)));
+
         refineByBidirectionalMatching(l);
-        l.normalizePsi();
-        if (corrector != null) {
-            corrector.computeAndSet(l);
-        }
-        return l;
     }
 
     private void refineByBidirectionalMatching(QuantumLevel level) {
@@ -217,7 +216,7 @@ public class ShootingSolver {
         double x2 = x0; // initialize
         double f2;
         int maxIter = 50;   // prevent infinite loops
-        double tol = 1e-12;  // tolerance on function value
+        double tol = 2e-12;  // tolerance on function value
 
         for (int iter = 0; iter < maxIter; iter++) {
             // Compute the false position point (secant line crossing zero)
