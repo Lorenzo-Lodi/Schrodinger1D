@@ -66,7 +66,7 @@ public abstract class LennardJonesAbstractTest {
         refEnergies.put(13, 4044.03031326710800);
         refEnergies.put(14, 4049.62843497018100);
 
-        // Thresholds for 1800 points, grid 1.5-13; thresholds for all 14 states (worse-case)
+        // Thresholds for 1800 points, grid 1.5-13; thresholds for all 14 states (worse-case), ABSOLUTE ERRORS
         thresholds1800pts.put(CFMagnus6e5Opt.class, 3.16E-07);
         thresholds1800pts.put(CFMagnus8.class, 3.16E-07);
         thresholds1800pts.put(PredictorCorrector8i1.class, 4.6E-07);
@@ -150,15 +150,16 @@ public abstract class LennardJonesAbstractTest {
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
 
+            double threshold = thresholds1800pts.get(integrator.getClass());
+            System.out.printf(String.format("For class %22s threshold is currently set to: %22.3e cm-1\n", className, threshold));
+            threshold = 1.25 * threshold * Math.pow((xmax - xmin) / (13. - 1.5), integrator.globalConvergenceOrder());
+            System.out.printf(String.format("For class %22s threshold is currently set to: %22.3e cm-1\n", className, threshold));
             System.out.printf("%22s %20s %12s %20s %10s %20s %20s %20s %12s %s\n", "className", "strategy", "nOfPoints", "nOfDesiredNodes",
                     "goodOrBad", "energy", "energy_ref", "error_rel", "TotalScans", "<- of which...");
 
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, this.strategy);
-                double error = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy));
-//                / refEnergies.get(nOfDesiredNodes);
-                double threshold = thresholds1800pts.get(integrator.getClass());
-
+                double error = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy)) / refEnergies.get(nOfDesiredNodes);
                 // Special rule for the highest level, as it is not completely converged because of grid
                 if (nOfDesiredNodes == 14) {
                     threshold = threshold14thState;
