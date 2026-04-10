@@ -11,4 +11,8 @@ public class PhysicalConstants {
         return energyHartree * HARTREE_TO_INVERSE_CM;
     }
 
+    public static double toHartree(double energyInverseCm) {
+        return energyInverseCm / HARTREE_TO_INVERSE_CM;
+    }
+
 }

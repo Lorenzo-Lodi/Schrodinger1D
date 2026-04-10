@@ -11,6 +11,7 @@ import schrodinger.potential.SchrodingerSystem;
 import java.util.Arrays;
 import java.util.function.DoubleUnaryOperator;
 
+import static schrodinger.PhysicalConstants.toHartree;
 import static schrodinger.PhysicalConstants.toInverseCm;
 
 public class ShootingSolver {
@@ -45,7 +46,7 @@ public class ShootingSolver {
         }
 
         level.normalizePsi();
-        PTCorrector corrector  = integrator.getPertubativeCorrector();
+        PTCorrector corrector = integrator.getPertubativeCorrector();
         if (corrector != null) {
             corrector.computeAndSet(level);
         }
@@ -119,17 +120,18 @@ public class ShootingSolver {
         refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR, 0);
     }
 
-    private void refineByBisection(QuantumLevel level, int nOfDesiredNodes, double maxAbsError, int minBisections) {
+    private void refineByBisection(QuantumLevel level, int nOfDesiredNodes, double maxAbsError, int extraBisections) {
         QuantumLevel.ConvergenceInfo info1 = new QuantumLevel.ConvergenceInfo();
-        info1.convergengeStage = "Bisection (to strict bracketing)";
+        info1.convergengeStage = "Bisections (to strict bracketing)";
+        info1.iterations = 0;
         level.convergenceInfo.add(info1);
         QuantumLevel.ConvergenceInfo info2 = new QuantumLevel.ConvergenceInfo();
-        info2.convergengeStage = "Bisection (after strict bracketing)";
+        info2.convergengeStage = "Bisections (after strict bracketing)";
         info2.iterations = 0;
         level.convergenceInfo.add(info2);
 
         for (int i = 1; i <= MAXIMUM_NUMBER_OF_BISECTIONS; i++) {
-            info1.iterations = i;
+
             level.energy = (level.lowerBound + level.upperBound) * 0.5;
             int nodes = countNodes(level);
 
@@ -142,11 +144,13 @@ public class ShootingSolver {
             }
 
             if (level.nodesLower == nOfDesiredNodes && level.nodesUpper == nOfDesiredNodes + 1) {
-                info2.iterations++;
+                info2.iterations++; // We have only one state (the desired one) in the energy bracket
+            } else {
+                info1.iterations++;
             }
 
             if (Math.abs(level.upperBound - level.lowerBound) < maxAbsError &&
-                    info2.iterations >= minBisections) {
+                    info2.iterations >= extraBisections) {
                 break;
             }
 
@@ -159,7 +163,8 @@ public class ShootingSolver {
         OutputManager.write(String.format("Initial GUESS energy is: %23.14f (%25.6f cm-1)", l.energy, toInverseCm(l.energy)));
         OutputManager.write(String.format("Initial UPPER energy is: %23.14f (%25.6f cm-1)", l.upperBound, toInverseCm(l.upperBound)));
 
-        refineByBisection(l, nOfDesiredNodes, 1e-3, 4);
+
+        refineByBisection(l, nOfDesiredNodes, toHartree(1.0), 4);
 
         OutputManager.write("Initial bisection steps finished. The new brackets are:");
         OutputManager.write(String.format("Initial LOWER energy is: %23.14f (%25.6f cm-1)", l.lowerBound, toInverseCm(l.lowerBound)));
@@ -216,7 +221,7 @@ public class ShootingSolver {
         double x2 = x0; // initialize
         double f2;
         int maxIter = 50;   // prevent infinite loops
-        double tol = 2e-12;  // tolerance on function value
+        double tol = 5e-12;  // tolerance on function value
 
         for (int iter = 0; iter < maxIter; iter++) {
             // Compute the false position point (secant line crossing zero)

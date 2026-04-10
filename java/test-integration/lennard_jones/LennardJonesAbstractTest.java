@@ -96,37 +96,37 @@ public abstract class LennardJonesAbstractTest {
 
 
     @Test
-    void bisectionOnly_1800_points_1_0_to_13_uniform_grid() {
+    void test_1800_points_1_0_to_13_uniform_grid() {
         test_core(1.0, 13, 1800, 0.07);
     }
 
     @Test
-    void bisectionOnly_1800_points_1_3_to_13_uniform_grid() {
+    void test_1800_points_1_3_to_13_uniform_grid() {
         test_core(1.3, 13, 1800, 0.07);
     }
 
     @Test
-    void bisectionOnly_1800_points_1_5_to_13_uniform_grid() {
+    void test_1800_points_1_5_to_13_uniform_grid() {
         test_core(1.5, 13, 1800, 0.07);
     }
 
     @Test
-    void bisectionOnly_1800_points_1_5_to_20_uniform_grid() {
+    void test_1800_points_1_5_to_20_uniform_grid() {
         test_core(1.5, 20, 1800, 1.5e-5);
     }
 
     @Test
-    void bisectionOnly_1800_points_1_5_to_30_uniform_grid() {
+    void test_1800_points_1_5_to_30_uniform_grid() {
         test_core(1.5, 30, 1800, 4e-5);
     }
 
     @Test
-    void bisectionOnly_1800_points_1_5_to_40_uniform_grid() {
+    void test_1800_points_1_5_to_40_uniform_grid() {
         test_core(1.5, 40, 1800, 7e-5);
     }
 
     @Test
-    void bisectionOnly_1800_points_1_5_to_45_uniform_grid() {
+    void test_1800_points_1_5_to_45_uniform_grid() {
         test_core(1.5, 45, 1800, 2.5e-2);
     }
 

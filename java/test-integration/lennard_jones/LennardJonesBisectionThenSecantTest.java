@@ -9,10 +9,7 @@ import java.util.List;
 public class LennardJonesBisectionThenSecantTest extends LennardJonesAbstractTest {
 
     public LennardJonesBisectionThenSecantTest() {
-        super(RefinementStrategy.BISECTION_THEN_SECANT, true);
-
-        // For now focus on Obrechkoff6, one of the more problematic, especially for large xmax
-        this.integrators = List.of(IntegratorFactory.getObrechkoff6());
+        super(RefinementStrategy.BISECTION_THEN_SECANT, false);
     }
 
 }
