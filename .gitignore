@@ -12,3 +12,5 @@ java/.project
 java/.classpath
 java/bin/
 *.log
+java/build.xml
+java/nbproject/
