@@ -68,7 +68,7 @@ public class ShootingSolver {
         QuantumLevel level = new QuantumLevel(system);
 
         if (integrator.needsPotentialCapping()) {
-            double Umax = -system.getQMin() / (2. * system.getMass());
+            double Umax = system.Ucapped();
             OutputManager.write(String.format("Integrator is set to %s, and this integrator needs potential capping.", integrator.getClass().getSimpleName()));
             OutputManager.write(String.format("The potential Q(x) = 2m [E-U(r)] will be capped from below to %15.4e.", system.getQMin()));
             OutputManager.write(String.format("This means U(r) < E + %15.4e Eh (%15.4e cm-1)", Umax, toInverseCm(Umax)));
