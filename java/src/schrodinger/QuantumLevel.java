@@ -166,7 +166,7 @@ public class QuantumLevel {
         this.lowerBound = uMin - energyScale * 0.05; // Set minimum a bit lower than minimum of the potential on the grid.
         this.nodesLower = 0; // Should be always correct
 
-        this.energy = uMin + energyScale;
+//        this.energy = uMin + energyScale;
         return energyScale;
     }
 

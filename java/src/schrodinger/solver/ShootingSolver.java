@@ -82,11 +82,12 @@ public class ShootingSolver {
         double energyScale = level.estimateEnergyScaleAndLowerBound();
 
         // 3. Exponential Scan to find upper bound to the energy
-        double currentEnergy = level.energy;
+        double currentEnergy = level.lowerBound + energyScale * (nOfDesiredNodes + 1);
 
         QuantumLevel.ConvergenceInfo info = new QuantumLevel.ConvergenceInfo();
         info.convergengeStage = "Initial energy bracketing (find upper bound)";
         info.iterations = 0;
+        level.convergenceInfo.add(info);
 
         OutputManager.writeBlankLine();
         for (int i = 0; i < MAXIMUM_NUMBER_OF_BISECTIONS; i++) {
