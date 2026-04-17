@@ -17,13 +17,13 @@ public class Stormer8 implements Integrator {
     }
 
     private final static double b_curr = 22081.0 / 15120.0;
-    private final static double b_prev = 4511.0 / 2240.0;
+    private final static double b_prev = -4511.0 / 2240.0;
     private final static double b_prev2 = 40933.0 / 10080.0;
-    private final static double b_prev3 = 300227.0 / 60480.0;
+    private final static double b_prev3 = -300227.0 / 60480.0;
     private final static double b_prev4 = 9857.0 / 2520.0;
-    private final static double b_prev5 = 39017.0 / 20160.0;
+    private final static double b_prev5 = -39017.0 / 20160.0;
     private final static double b_prev6 = 3319.0 / 6048.0;
-    private final static double b_prev7 = 275.0 / 4032;
+    private final static double b_prev7 = -275.0 / 4032;
 
     @Override
     public double propagate(double[] psi, double[] currentPsiPrime, int n, double step,
@@ -53,13 +53,13 @@ public class Stormer8 implements Integrator {
 
         return 2.0 * psi[n0] - psi[n1]
                 - h2 * (b_curr * Q_curr * psi[n0]
-                - b_prev * Q_prev * psi[n1]
+                + b_prev * Q_prev * psi[n1]
                 + b_prev2 * Q_prev2 * psi[n2]
-                - b_prev3 * Q_prev3 * psi[n3]
+                + b_prev3 * Q_prev3 * psi[n3]
                 + b_prev4 * Q_prev4 * psi[n4]
-                - b_prev5 * Q_prev5 * psi[n5]
+                + b_prev5 * Q_prev5 * psi[n5]
                 + b_prev6 * Q_prev6 * psi[n6]
-                - b_prev7 * Q_prev7 * psi[n7]);
+                + b_prev7 * Q_prev7 * psi[n7]);
     }
 
 
