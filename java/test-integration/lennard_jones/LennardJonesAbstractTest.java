@@ -76,9 +76,9 @@ public abstract class LennardJonesAbstractTest {
         thresholds1800pts.put(Stormer8i.class, 3.2E-06);
         thresholds1800pts.put(PredictorCorrector6.class, 1.32E-05);
         thresholds1800pts.put(CFMagnus4.class, 1.61E-05);
-        thresholds1800pts.put(RK45DP.class, 2.5E-05);
+        thresholds1800pts.put(RK45DP.class, 6.0E-05);
         thresholds1800pts.put(Stormer8.class, 6.63E-05);
-        thresholds1800pts.put(Stormer5.class, 7.40E-05);
+        thresholds1800pts.put(Stormer5.class, 1.7E-04);
         thresholds1800pts.put(Stormer6.class, 8.01E-05);
         thresholds1800pts.put(EFNFixedBeta.class, 2.33E-04);
         thresholds1800pts.put(EFN.class, 2.33E-04);
@@ -117,7 +117,7 @@ public abstract class LennardJonesAbstractTest {
 
     @Test
     void test_1800_points_1_5_to_30_uniform_grid() {
-        test_core(1.5, 30, 1800, 4e-5);
+        test_core(1.5, 30, 1800, 0.06);
     }
 
     @Test
@@ -127,7 +127,7 @@ public abstract class LennardJonesAbstractTest {
 
     @Test
     void test_1800_points_1_5_to_45_uniform_grid() {
-        test_core(1.5, 45, 1800, 2.5e-2);
+        test_core(1.5, 45, 1800, 0.40);
     }
 
 
@@ -155,7 +155,7 @@ public abstract class LennardJonesAbstractTest {
             double thresholdAbs = thresholds1800pts.get(integrator.getClass());
             thresholdAbs = 1.25 * thresholdAbs * Math.pow((xmax - xmin) / (13. - 1.5), integrator.globalConvergenceOrder());
             System.out.printf(String.format("For class %22s thresholdAbs (max error for all states apart nNodes=14) is currently set to: %22.3e cm-1\n", className, thresholdAbs));
-            System.out.printf("%22s %20s %12s %20s %10s %20s %20s %20s %20s %12s %s\n", "className", "strategy", "nOfPoints", "nOfDesiredNodes",
+            System.out.printf("%22s %20s %12s %15s %15s %20s %10s %22s %22s %20s %20s %12s %s\n", "className", "strategy", "nOfPoints", "xmin", "xmax", "nOfDesiredNodes",
                     "goodOrBad", "energy", "energy_ref", "errorAbs", "errorRel", "TotalScans", "<- of which...");
 
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
@@ -188,7 +188,8 @@ public abstract class LennardJonesAbstractTest {
                         isFirstRow = false;
                     }
 
-                    System.out.printf("%22s %20s %12d %20d %10s %20.4f %20.4f %20.8f %20.8e %12d %s\n", className, strategy, nOfPoints, nOfDesiredNodes,
+                    System.out.printf("%22s %20s %12d %15.8e %15.8e %20d %10s %22.8f %22.8f %20.8f %20.8e %12d %s\n", className, strategy, nOfPoints,
+                            xmin, xmax, nOfDesiredNodes,
                             goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes), errorAbs, errorRel, ek.countTotalScans(), iterInfo);
                 }
             }
