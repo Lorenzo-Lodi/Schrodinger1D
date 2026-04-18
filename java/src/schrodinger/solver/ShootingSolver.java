@@ -96,9 +96,9 @@ public class ShootingSolver {
             int nodes = countNodes(level);
             info.iterations++;
 
-            for (int k = 0; k < level.psi.length; k++) {
-                OutputManager.writeData(String.format("%8d %20.6e", k, level.psi[k]));
-            }
+//            for (int k = 0; k < level.psi.length; k++) {
+//                OutputManager.writeData(String.format("%8d %20.6e", k, level.psi[k]));
+//            }
 
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = currentEnergy;
@@ -136,6 +136,15 @@ public class ShootingSolver {
             level.energy = (level.lowerBound + level.upperBound) * 0.5;
             int nodes = countNodes(level);
 
+            OutputManager.write(String.format("Bisection refinement. i = %5d; nodes= %5d %22.10f %22.10f %22.10f", i, nodes,
+                    toInverseCm(level.lowerBound), toInverseCm(level.energy), toInverseCm(level.upperBound)));
+
+            OutputManager.writeBlankLine();
+            for (int k = 0; k < level.psi.length; k++) {
+                OutputManager.writeData(String.format("%8d %25.15e  %25.15e %25.15e", k, level.getGrid().yAtGridPoint(k), level.QTildeAtGridPoint(k), level.psi[k]));
+            }
+            OutputManager.writeBlankLine();
+
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = level.energy;
                 level.nodesUpper = nodes;
@@ -172,7 +181,15 @@ public class ShootingSolver {
         OutputManager.write(String.format("Initial GUESS energy is: %23.14f (%25.6f cm-1)", l.energy, toInverseCm(l.energy)));
         OutputManager.write(String.format("Initial UPPER energy is: %23.14f (%25.6f cm-1)", l.upperBound, toInverseCm(l.upperBound)));
 
-        refineByBidirectionalMatching(l);
+
+        try {
+            refineByBidirectionalMatching(l);
+        } catch (IllegalArgumentException e) {
+            OutputManager.write("Because the function values at the bounds doesnt have opposite signs, let us do some more bisection and try again");
+            refineByBisection(l, nOfDesiredNodes, toHartree(1.0), 4);
+            refineByBidirectionalMatching(l);
+        }
+
     }
 
     private void refineByBidirectionalMatching(QuantumLevel level) {

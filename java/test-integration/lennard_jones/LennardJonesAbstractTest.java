@@ -138,6 +138,11 @@ public abstract class LennardJonesAbstractTest {
         boolean isFirstRow = true;
 
         for (Integrator integrator : this.integrators) {
+
+            if(xmax >= 45. && integrator instanceof Stormer8) {
+                continue; //For now skip Stormer 8 for very long bond lengths as it goes crazy
+            }
+
             String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
             OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
                     nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log");

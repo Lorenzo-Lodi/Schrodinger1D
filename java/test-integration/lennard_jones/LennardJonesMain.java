@@ -46,14 +46,14 @@ public class LennardJonesMain {
     }
 
     public static void main(String[] args) {
-        double xmin = 1.5;
+        double xmin = 1.4;
         int nOfPoints = 1800;
         Integrator integrator = IntegratorFactory.getStormer8();
 
         int nOfDesiredNodes = 9;
         RefinementStrategy strategy = RefinementStrategy.BISECTION_ONLY;
         System.out.printf("%20s %20s %25s\n", "xmax", "ptDensity", "errorAbs");
-        for (int i = 45; i <= 45; i++) {
+        for (int i = 20; i <= 60; i++) {
             OutputManager.initCommonOutputFile("LennardJones_" + "Stormer8" + "_" +
                     nOfPoints + "_" + strategy.toString().toLowerCase() + ".log");
             double xmax = i;
