@@ -136,14 +136,14 @@ public class ShootingSolver {
             level.energy = (level.lowerBound + level.upperBound) * 0.5;
             int nodes = countNodes(level);
 
-            OutputManager.write(String.format("Bisection refinement. i = %5d; nodes= %5d %22.10f %22.10f %22.10f", i, nodes,
-                    toInverseCm(level.lowerBound), toInverseCm(level.energy), toInverseCm(level.upperBound)));
-
-            OutputManager.writeBlankLine();
-            for (int k = 0; k < level.psi.length; k++) {
-                OutputManager.writeData(String.format("%8d %25.15e  %25.15e %25.15e", k, level.getGrid().yAtGridPoint(k), level.QTildeAtGridPoint(k), level.psi[k]));
-            }
-            OutputManager.writeBlankLine();
+//            OutputManager.write(String.format("Bisection refinement. i = %5d; nodes= %5d %22.10f %22.10f %22.10f", i, nodes,
+//                    toInverseCm(level.lowerBound), toInverseCm(level.energy), toInverseCm(level.upperBound)));
+//
+//            OutputManager.writeBlankLine();
+//            for (int k = 0; k < level.psi.length; k++) {
+//                OutputManager.writeData(String.format("%8d %25.15e  %25.15e %25.15e", k, level.getGrid().yAtGridPoint(k), level.QTildeAtGridPoint(k), level.psi[k]));
+//            }
+//            OutputManager.writeBlankLine();
 
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = level.energy;
@@ -235,39 +235,16 @@ public class ShootingSolver {
         info.iterations = 0;
         level.convergenceInfo.add(info);
 
-//        level.energy = level.upperBound;
-//        double diffUpper = computeDerivativeMismatch(level, matchIndex);
-//        info.iterations++;
-//
-//        level.energy = level.lowerBound;
-//        double diffLower = computeDerivativeMismatch(level, matchIndex);
-//        info.iterations++;
-//
-//        OutputManager.writeBlankLine();
-//        OutputManager.write(String.format("Energy refinement stage. iterations = %d", info.iterations));
-//        OutputManager.write(String.format("Derivative mismatch for UPPER energy: %25.12f (%25.8f cm-1/a0)", diffUpper, toInverseCm(diffUpper)));
-//        OutputManager.write(String.format("Derivative mismatch for LOWER energy: %25.12f (%25.8f cm-1/a0)", diffLower, toInverseCm(diffLower)));
-
         // Regula falsi (false position) iteration
         double x0 = level.lowerBound;
         double x1 = level.upperBound;
         double f0 = diffLower;
         double f1 = diffUpper;
-
-//
-//        if (f0 * f1 > 0) {
-//            OutputManager.write(String.format("WARNING: The function values at the bounds must have opposite signs. f0 = %20.6e, f1 = %20.6e", f0, f1));
-//            if (isFalsePosition) {
-//                // Ensure the bracket is valid (f0 and f1 have opposite signs)
-////                return; // Don't throw, just return whatever we've got
-//                throw new IllegalArgumentException("The function values at the bounds must have opposite signs.");
-//            }
-//        }
-
         double x2 = x0; // initialize
         double f2;
+
         int maxIter = 50;   // prevent infinite loops
-        double tol = 5e-12;  // tolerance on function value
+        double tol = 1e-11;  // tolerance on function value
 
         for (int iter = 0; iter < maxIter; iter++) {
             // Compute the false position point (secant line crossing zero)
