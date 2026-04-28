@@ -211,39 +211,6 @@ public abstract class AbstractIntegratorTest {
     protected ConvergenceParams convergence_params_AiryAi() {
         return new ConvergenceParams(1, 1e-35);
     }
-// =================================================================================================================
-
-    @Test
-    void integrateDeeplyForbidded() {
-        Integrator integrator = getIntegrator();
-//        if (integrator.minHistoryLength() != 2) {
-//            return;
-//        }
-        String className = integrator.getClass().getSimpleName();
-        System.out.println(className);
-        int arraySize = 10;
-        double[] psi = new double[arraySize];
-        double[] currentPsiPrime = new double[1];
-        DoubleUnaryOperator q = i -> -1;
-        DoubleUnaryOperator q1 = i -> 0;
-        DoubleUnaryOperator q2 = i -> 0;
-
-        System.out.println(String.format("%20s %25s %25s", "h", "value", "exact"));
-
-        for (int k = 0; k <= 20; k++) {
-            double h = 2. + k / 10.;
-            for (int n = 0; n < integrator.minHistoryLength(); n++) {
-                psi[n] = Math.exp(n * h);
-                currentPsiPrime[0] = psi[n];
-            }
-            double value = integrator.propagate(psi, currentPsiPrime, integrator.minHistoryLength() - 1, h, q, q1, q2, Integrator.Direction.FORWARD);
-            double exact =  Math.exp(integrator.minHistoryLength() * h);
-            double ratio = value/exact;
-            System.out.println(String.format("%20.2f %25.6f %25.6f %25.6f", h, value, exact, ratio));
-        }
-
-
-    }
-
+    // =================================================================================================================
 
 }

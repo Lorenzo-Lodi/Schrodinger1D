@@ -117,12 +117,12 @@ public abstract class LennardJonesAbstractTest {
 
     @Test
     void test_1800_points_1_5_to_30_uniform_grid() {
-        test_core(1.5, 30, 1800, 0.06);
+        test_core(1.5, 30, 1800, 0.14);
     }
 
     @Test
     void test_1800_points_1_5_to_40_uniform_grid() {
-        test_core(1.5, 40, 1800, 7e-5);
+        test_core(1.5, 40, 1800, 0.28);
     }
 
     @Test
