@@ -7,16 +7,11 @@ import schrodinger.integrator.Integrator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * Test class for the TaylorThreePoints integrator.
- * Tests the convergence of the integrator by comparing numerical solutions
- * with the exact analytical solution for a harmonic oscillator potential.
- */
-public class TaylorThreePointsTest extends AbstractIntegratorTest {
+public class VerletTest extends AbstractIntegratorTest {
 
     @Override
     protected Integrator getIntegrator() {
-        return new TaylorThreePoints();
+        return new Verlet();
     }
 
     @Test

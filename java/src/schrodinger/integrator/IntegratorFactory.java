@@ -12,15 +12,18 @@ import schrodinger.integrator.stormer.Stormer6;
 import schrodinger.integrator.stormer.Stormer8;
 import schrodinger.integrator.stormer.Stormer8i;
 import schrodinger.integrator.misc.Obrechkoff6;
-import schrodinger.integrator.misc.TaylorThreePoints;
+import schrodinger.integrator.misc.Verlet;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class IntegratorFactory {
 
-    public static Integrator getTaylorThreePoints() {
-        return new TaylorThreePoints();
+    private IntegratorFactory() {
+    }
+
+    public static Integrator getVerlet() {
+        return new Verlet();
     }
 
     public static Integrator getNumerov() {
@@ -98,7 +101,7 @@ public class IntegratorFactory {
 
     public static List<Integrator> getAll() {
         List<Integrator> list = new ArrayList<>();
-        list.add(getTaylorThreePoints());
+        list.add(getVerlet());
         list.add(getNumerov());
         list.add(getEFNFixedBeta());
         list.add(getEFN());

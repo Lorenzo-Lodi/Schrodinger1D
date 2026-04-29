@@ -3,9 +3,9 @@ package schrodinger.integrator.pt_correction;
 import schrodinger.QuantumLevel;
 
 /**
- * Perturbative correction for the Taylor Three Points integration method.
+ * Perturbative correction for the Verlet integration method.
  */
-public class TaylorThreePointsPTCorrector implements PTCorrector {
+public class VerletPTCorrector implements PTCorrector {
 
     @Override
     public void computeAndSet(QuantumLevel level) {

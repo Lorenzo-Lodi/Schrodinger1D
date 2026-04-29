@@ -1,17 +1,16 @@
 package schrodinger.integrator.misc;
 
 import schrodinger.integrator.Integrator;
-import schrodinger.integrator.pt_correction.NumerovPTCorrector;
 import schrodinger.integrator.pt_correction.PTCorrector;
-import schrodinger.integrator.pt_correction.TaylorThreePointsPTCorrector;
+import schrodinger.integrator.pt_correction.VerletPTCorrector;
 
 import java.util.function.DoubleUnaryOperator;
 
 /**
- * Three-point Taylor expansion method for integrating the Schrödinger equation.
+ * Verlet method for integrating the Schrödinger equation.
  * Second-order accurate method.
  */
-public class TaylorThreePoints implements Integrator {
+public class Verlet implements Integrator {
 
     @Override
     public int minHistoryLength() {
@@ -25,7 +24,7 @@ public class TaylorThreePoints implements Integrator {
 
     @Override
     public PTCorrector getPertubativeCorrector() {
-        return new TaylorThreePointsPTCorrector();
+        return new VerletPTCorrector();
     }
 
     @Override

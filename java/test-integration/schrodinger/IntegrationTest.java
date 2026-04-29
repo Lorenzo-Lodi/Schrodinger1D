@@ -10,7 +10,7 @@ import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.SchrodingerSystem;
 import schrodinger.integrator.pt_correction.NumerovPTCorrector;
 import schrodinger.integrator.pt_correction.PTCorrector;
-import schrodinger.integrator.pt_correction.TaylorThreePointsPTCorrector;
+import schrodinger.integrator.pt_correction.VerletPTCorrector;
 import schrodinger.solver.ShootingSolver;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,7 +21,7 @@ public class IntegrationTest {
     @Test
     void test001() {
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
-        Integrator integrator = IntegratorFactory.getTaylorThreePoints();
+        Integrator integrator = IntegratorFactory.getVerlet();
         double mass = 2.0d;
         int nOfDesiredNodes = 0;
         int nOfPoints = 200;
@@ -35,7 +35,7 @@ public class IntegrationTest {
         assertTrue(ek.nodesLower < refEnergy);
 
         double refPerturbative = 2.270604341323613E-4;
-        PTCorrector pt = new TaylorThreePointsPTCorrector();
+        PTCorrector pt = new VerletPTCorrector();
         pt.computeAndSet(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }
@@ -43,7 +43,7 @@ public class IntegrationTest {
     @Test
     void test002() {
         PhysicalPotential potential = new PhysicalPotentialHarmonic(20, 1);
-        Integrator integrator = IntegratorFactory.getTaylorThreePoints();
+        Integrator integrator = IntegratorFactory.getVerlet();
         double mass = 2.0d;
         int nOfDesiredNodes = 10;
         int nOfPoints = 200;
@@ -58,7 +58,7 @@ public class IntegrationTest {
         assertTrue(ek.nodesLower < refEnergy);
 
         double refPerturbative = 0.050063577379135055;
-        PTCorrector pt = new TaylorThreePointsPTCorrector();
+        PTCorrector pt = new VerletPTCorrector();
         pt.computeAndSet(ek);
         assertEquals(refPerturbative, ek.perturbativeCorrectionToEnergy, 1e-12);
     }

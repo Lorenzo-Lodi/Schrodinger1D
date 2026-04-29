@@ -8,7 +8,7 @@ import schrodinger.grid.GridFactory;
 import schrodinger.integrator.Integrator;
 import schrodinger.integrator.IntegratorFactory;
 import schrodinger.integrator.misc.Obrechkoff6;
-import schrodinger.integrator.misc.TaylorThreePoints;
+import schrodinger.integrator.misc.Verlet;
 import schrodinger.integrator.numerovlike.EFN;
 import schrodinger.integrator.numerovlike.EFNFixedBeta;
 import schrodinger.integrator.numerovlike.Numerov;
@@ -84,7 +84,7 @@ public abstract class LennardJonesAbstractTest {
         thresholds1800pts.put(EFN.class, 2.33E-04);
         thresholds1800pts.put(Numerov.class, 2.61E-03);
         thresholds1800pts.put(RKN4.class, 3.89E-03);
-        thresholds1800pts.put(TaylorThreePoints.class, 1.74E+00);
+        thresholds1800pts.put(Verlet.class, 1.74E+00);
 
     }
 
