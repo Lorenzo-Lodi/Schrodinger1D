@@ -109,7 +109,7 @@ public class QuantumLevel {
         return nodes;
     }
 
-    public double estimateEnergyScaleAndLowerBound() {
+    public double estimateEnergyScale() {
         Grid grid = system.getGrid();
 
         // 1. Scan the *Effective Potential* U_tilde(y) for the minimum
@@ -126,6 +126,9 @@ public class QuantumLevel {
                 minIndex = i;
             }
         }
+        system.physicalPotentialMinimumGridIndex = minIndex;
+        system.physicalPotentialMinimumGridValue = uMin;
+
 
         OutputManager.write(String.format("I scanned the potential and found a minimum value %23.14f (%25.6f cm-1) for i = %d",
                 uMin, toInverseCm(uMin), minIndex));
@@ -163,10 +166,6 @@ public class QuantumLevel {
         OutputManager.write(String.format("The energy scale was set to %23.14f (%25.6f cm-1) using as method: %s",
                 energyScale, toInverseCm(energyScale), energyScaleMethod));
 
-        this.lowerBound = uMin - energyScale * 0.05; // Set minimum a bit lower than minimum of the potential on the grid.
-        this.nodesLower = 0; // Should be always correct
-
-//        this.energy = uMin + energyScale;
         return energyScale;
     }
 

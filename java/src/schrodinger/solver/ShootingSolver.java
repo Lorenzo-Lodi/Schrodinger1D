@@ -68,18 +68,20 @@ public class ShootingSolver {
         QuantumLevel level = new QuantumLevel(system);
 
         if (integrator.needsPotentialCapping()) {
-            double Umax = system.Ucapped();
             OutputManager.write(String.format("Integrator is set to %s, and this integrator needs potential capping.", integrator.getClass().getSimpleName()));
             OutputManager.write(String.format("The potential Q(x) = 2m [E-U(r)] will be capped from below to %15.4e.", system.getQMin()));
-            OutputManager.write(String.format("This means U(r) < E + %15.4e Eh (%15.4e cm-1)", Umax, toInverseCm(Umax)));
+            OutputManager.write(String.format("This means U(r) < E + %15.4e Eh (%15.4e cm-1)", system.Ucapped(), toInverseCm(system.Ucapped())));
             OutputManager.writeBlankLine();
             level.setCapPotential(true);
         } else {
             OutputManager.write(String.format("Integrator is set to %s, and this integrator does NOT needs potential capping.",
                     integrator.getClass().getSimpleName()));
         }
+        double energyScale = level.estimateEnergyScale();
 
-        double energyScale = level.estimateEnergyScaleAndLowerBound();
+        // Set minimum a bit lower than minimum of the potential on the grid
+        level.lowerBound = system.physicalPotentialMinimumGridValue - energyScale * 0.05;
+        level.nodesLower = 0; // Should be always correct
 
         // 3. Exponential Scan to find upper bound to the energy
         double currentEnergy = level.lowerBound + energyScale * (nOfDesiredNodes + 1);

@@ -7,6 +7,8 @@ public class SchrodingerSystem {
     private final double mass;
     private final Grid grid;
     private final double qMin;
+    public double physicalPotentialMinimumGridIndex;
+    public double physicalPotentialMinimumGridValue;
 
     // For now we use a unique hCritical for all integrators. In reality some integrators are very sensitive
     // (PC6 is the most sensitive and requires hCritical=2.5) and some much less (Obrechkoff6 requires hCritical=5.5)
