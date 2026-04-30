@@ -284,7 +284,7 @@ public class ShootingSolver {
         DoubleUnaryOperator qTildeFunction = level::QTildeAtGridPoint;
 
         // --- Shoot Forward
-        Arrays.fill(level.psi, 0.0d); // Let us zero the wave function for clarity (not necessary).
+        Arrays.fill(level.psi, 0.0); // Let us zero the wave function for clarity (not necessary).
         int startIndex = initialize(level, Integrator.Direction.FORWARD);
 
         for (int n = startIndex; n < matchIndex + 1; n++) {
@@ -348,7 +348,9 @@ public class ShootingSolver {
 
         // --- Shoot Forward
         int startIndex = initialize(level, Integrator.Direction.FORWARD);
+        int rightmostInversionPoint = findMatchingIndex(level.energy);
 
+        double gamma = 0.0; // To track how deep into the forbidden region we are
         for (int n = startIndex; n < nPoints - 1; n++) {
             level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy, level::QTildeAtGridPoint,
                     level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
@@ -361,6 +363,25 @@ public class ShootingSolver {
                     level.psi[i] /= factor;
                 }
                 level.currentPsiPrime[0] /= factor;
+            }
+
+            // When we start integrating into the final forbidden region, keep track of gamma
+            if (n > rightmostInversionPoint) {
+                gamma += hy * Math.sqrt(-level.QTildeAtGridPoint(n));
+            }
+
+            if (gamma > 16.0) { // Safety margin before the 18.4 wall
+                // Stop outward integration! The wavefunction has decayed by a factor of e^-16 (~1e-7)
+                // and numerical noise is about to take over.
+                // Let us fill the wavefunction with extrapolated values (maybe not necessary, but it could be useful
+                // for correct node-counting and for later computing matrix elements with this wavefunction.
+                OutputManager.write("I stopped integrating into the forbidden region because I reached the gamma threshold at n =" + n);
+                double decayFactor = level.psi[n] / level.psi[n + 1];
+                for (int k = n + 1; k < nPoints - 1; k++) {
+                    level.psi[k + 1] = level.psi[k] * decayFactor;
+                }
+                OutputManager.write("I extrapolated the remaining points using decayFactor = " + decayFactor);
+                break;
             }
 
         }
