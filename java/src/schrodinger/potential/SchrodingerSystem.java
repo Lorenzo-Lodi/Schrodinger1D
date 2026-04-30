@@ -19,11 +19,11 @@ public class SchrodingerSystem {
     //    Stormer5               3.5
     //    Stormer6               3.5
     //    Stormer8i              3.5
-    //    PredictorCorrector8i2  3.5
+    //    PC8i2                  3.5
     //    Numerov                3.0
     //    EFNFixedBeta           3.0
-    //    PredictorCorrector8i1  3.0
-    //    PredictorCorrector6    2.5
+    //    PC8i1                  3.0
+    //    PC6                    2.5
     private final static double hCritical = 2.5;
 
     public SchrodingerSystem(PhysicalPotential physicalPotential, double mass, Grid grid) {

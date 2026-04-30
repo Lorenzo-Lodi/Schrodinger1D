@@ -18,7 +18,7 @@ import java.util.function.DoubleUnaryOperator;
  * β: ±3→ 31/60480,  ±2→ -73/10080,  ±1→ 2171/20160,  0→ 12067/15120
  * Error constant: -289/3628800 ≈ -8.0e-5
  */
-public abstract class PredictorCorrector8Abstract extends PredictorCorrectorBase {
+public abstract class PC8Abstract extends PCBase {
 
     private static final double B3 = 31.0 / 60480.0;
     private static final double B2 = -73.0 / 10080.0;
@@ -27,7 +27,7 @@ public abstract class PredictorCorrector8Abstract extends PredictorCorrectorBase
 
     private final int maxIterations;
 
-    public PredictorCorrector8Abstract(Integrator predictor, int maxIterations) {
+    public PC8Abstract(Integrator predictor, int maxIterations) {
         super(predictor);
         this.maxIterations = maxIterations;
     }

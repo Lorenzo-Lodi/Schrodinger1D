@@ -59,9 +59,9 @@ public class IntegratorSpeedBenchmark {
 //        Time taken for integrating 1000000 points is     19.651 ns / point for EfnFixedBeta
 //        Time taken for integrating 1000000 points is     36.674 ns / point for ExponentiallyFitted
 //        Time taken for integrating 1000000 points is     29.706 ns / point for Numerov
-//        Time taken for integrating 1000000 points is     60.352 ns / point for PredictorCorrector6
-//        Time taken for integrating 1000000 points is     76.251 ns / point for PredictorCorrector8NumerovIter1
-//        Time taken for integrating 1000000 points is    102.563 ns / point for PredictorCorrector8NumerovIter2
+//        Time taken for integrating 1000000 points is     60.352 ns / point for PC6
+//        Time taken for integrating 1000000 points is     76.251 ns / point for PC8NumerovIter1
+//        Time taken for integrating 1000000 points is    102.563 ns / point for PC8NumerovIter2
 //        Time taken for integrating 1000000 points is     18.324 ns / point for Stormer5
 //        Time taken for integrating 1000000 points is     14.718 ns / point for Stormer6
 //        Time taken for integrating 1000000 points is     57.302 ns / point for Stormer8
@@ -72,9 +72,9 @@ public class IntegratorSpeedBenchmark {
 //        Time taken for integrating 1000000 points is     60.920 ns / point for EfnFixedBeta
 //        Time taken for integrating 1000000 points is     78.005 ns / point for ExponentiallyFitted
 //        Time taken for integrating 1000000 points is    104.782 ns / point for Numerov
-//        Time taken for integrating 1000000 points is    135.936 ns / point for PredictorCorrector6
-//        Time taken for integrating 1000000 points is    226.429 ns / point for PredictorCorrector8NumerovIter1
-//        Time taken for integrating 1000000 points is    315.115 ns / point for PredictorCorrector8NumerovIter2
+//        Time taken for integrating 1000000 points is    135.936 ns / point for PC6
+//        Time taken for integrating 1000000 points is    226.429 ns / point for PC8NumerovIter1
+//        Time taken for integrating 1000000 points is    315.115 ns / point for PC8NumerovIter2
 //        Time taken for integrating 1000000 points is     33.766 ns / point for Stormer5
 //        Time taken for integrating 1000000 points is     44.969 ns / point for Stormer6
 //        Time taken for integrating 1000000 points is    101.723 ns / point for Stormer8
@@ -86,18 +86,18 @@ public class IntegratorSpeedBenchmark {
 //        EfnFixedBeta	                     2.03	 3.65
 //        ExponentiallyFitted	             3.79	 4.67
 //        Numerov	                         3.07	 6.28
-//        PredictorCorrector6	             6.23	 8.14
-//        PredictorCorrector8NumerovIter1 	 7.87	13.56
-//        PredictorCorrector8NumerovIter2	10.59	18.87
+//        PC6	                             6.23	 8.14
+//        PC8NumerovIter1                  	 7.87	13.56
+//        PC8NumerovIter2	                10.59	18.87
 //        Stormer5	                         1.89	 2.02
 //        Stormer6	                         1.52	 2.69
 //        Stormer8	                         5.92	 6.09
 //        Verlet                         	 1.00	 1.00
 
 // These are the averages across the two machines, and sorted by speed:
-//        PredictorCorrector8NumerovIter2	14.73
-//        PredictorCorrector8NumerovIter1	10.72
-//        PredictorCorrector6	             7.19
+//        PC8NumerovIter2	                14.73
+//        PC8NumerovIter1	                10.72
+//        PC6	                             7.19
 //        Stormer8	                         6.00
 //        Numerov	                         4.67
 //        ExponentiallyFitted	             4.23

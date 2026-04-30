@@ -14,11 +14,11 @@ import java.util.function.DoubleUnaryOperator;
  * The dynamic sliding-window buffer supports any predictor regardless of its
  * history length, keyed off {@code predictor.minHistoryLength()}.
  */
-public abstract class PredictorCorrectorBase implements Integrator {
+public abstract class PCBase implements Integrator {
 
     protected final Integrator predictor;
 
-    protected PredictorCorrectorBase(Integrator predictor) {
+    protected PCBase(Integrator predictor) {
         this.predictor = predictor;
     }
 

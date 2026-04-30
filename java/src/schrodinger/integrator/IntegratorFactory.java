@@ -3,9 +3,9 @@ package schrodinger.integrator;
 import schrodinger.integrator.multi_step.numerovlike.EFN;
 import schrodinger.integrator.multi_step.numerovlike.Numerov;
 import schrodinger.integrator.multi_step.numerovlike.EFNFixedBeta;
-import schrodinger.integrator.multi_step.predcorr.PredictorCorrector6;
-import schrodinger.integrator.multi_step.predcorr.PredictorCorrector8i1;
-import schrodinger.integrator.multi_step.predcorr.PredictorCorrector8i2;
+import schrodinger.integrator.multi_step.predcorr.PC6;
+import schrodinger.integrator.multi_step.predcorr.PC8i1;
+import schrodinger.integrator.multi_step.predcorr.PC8I2;
 import schrodinger.integrator.one_step.*;
 import schrodinger.integrator.multi_step.Stormer5;
 import schrodinger.integrator.multi_step.Stormer6;
@@ -54,16 +54,16 @@ public class IntegratorFactory {
         return new Stormer8i();
     }
 
-    public static Integrator getPredictorCorrector6() {
-        return new PredictorCorrector6();
+    public static Integrator getPC6() {
+        return new PC6();
     }
 
-    public static Integrator getPredictorCorrector8i1() {
-        return new PredictorCorrector8i1();
+    public static Integrator getPC8i1() {
+        return new PC8i1();
     }
 
-    public static Integrator getPredictorCorrector8i2() {
-        return new PredictorCorrector8i2();
+    public static Integrator getPC8i2() {
+        return new PC8I2();
     }
 
     public static Integrator getObrechkoff6() {
@@ -110,9 +110,9 @@ public class IntegratorFactory {
         list.add(getStormer8());
         list.add(getStormer8i());
         list.add(getObrechkoff6());
-        list.add(getPredictorCorrector6());
-        list.add(getPredictorCorrector8i1());
-        list.add(getPredictorCorrector8i2());
+        list.add(getPC6());
+        list.add(getPC8i1());
+        list.add(getPC8i2());
         list.add(getRKN4());
         list.add(getRK45DP());
         list.add(getCFMagnus4());

@@ -7,16 +7,11 @@ import schrodinger.integrator.Integrator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * Test class for the PredictorCorrector8Abstract integrator.
- * Tests the convergence of the integrator by comparing numerical solutions
- * with the exact analytical solution for a harmonic oscillator potential.
- */
-public class PredictorCorrector8i1Test extends AbstractIntegratorTest {
+public class PC8I1Test extends AbstractIntegratorTest {
 
     @Override
     protected Integrator getIntegrator() {
-        return new PredictorCorrector8i1();
+        return new PC8i1();
     }
 
     @Test

@@ -12,9 +12,9 @@ import schrodinger.integrator.multi_step.Verlet;
 import schrodinger.integrator.multi_step.numerovlike.EFN;
 import schrodinger.integrator.multi_step.numerovlike.EFNFixedBeta;
 import schrodinger.integrator.multi_step.numerovlike.Numerov;
-import schrodinger.integrator.multi_step.predcorr.PredictorCorrector6;
-import schrodinger.integrator.multi_step.predcorr.PredictorCorrector8i1;
-import schrodinger.integrator.multi_step.predcorr.PredictorCorrector8i2;
+import schrodinger.integrator.multi_step.predcorr.PC6;
+import schrodinger.integrator.multi_step.predcorr.PC8i1;
+import schrodinger.integrator.multi_step.predcorr.PC8I2;
 import schrodinger.integrator.one_step.*;
 import schrodinger.integrator.multi_step.Stormer5;
 import schrodinger.integrator.multi_step.Stormer6;
@@ -69,12 +69,12 @@ public abstract class LennardJonesAbstractTest {
         // Thresholds for 1800 points, grid 1.5-13; thresholds for all 14 states (worse-case), ABSOLUTE ERRORS
         thresholds1800pts.put(CFMagnus6e5Opt.class, 3.16E-07);
         thresholds1800pts.put(CFMagnus8.class, 3.16E-07);
-        thresholds1800pts.put(PredictorCorrector8i1.class, 4.6E-07);
-        thresholds1800pts.put(PredictorCorrector8i2.class, 6.5E-07);
+        thresholds1800pts.put(PC8i1.class, 4.6E-07);
+        thresholds1800pts.put(PC8I2.class, 6.5E-07);
         thresholds1800pts.put(Obrechkoff6.class, 1.10E-06);
         thresholds1800pts.put(CFMagnus6e4.class, 3.6E-06);
         thresholds1800pts.put(Stormer8i.class, 3.2E-06);
-        thresholds1800pts.put(PredictorCorrector6.class, 1.32E-05);
+        thresholds1800pts.put(PC6.class, 1.32E-05);
         thresholds1800pts.put(CFMagnus4.class, 1.61E-05);
         thresholds1800pts.put(RK45DP.class, 6.0E-05);
         thresholds1800pts.put(Stormer8.class, 6.63E-05);

@@ -1,7 +1,7 @@
 package schrodinger.integrator.multi_step.predcorr;
 
 import schrodinger.integrator.Integrator;
-import schrodinger.integrator.multi_step.numerovlike.Numerov;
+import schrodinger.integrator.multi_step.numerovlike.EFN;
 
 import java.util.function.DoubleUnaryOperator;
 
@@ -23,13 +23,13 @@ import java.util.function.DoubleUnaryOperator;
  * Error constant: 31/60480 ≈ 5.1e-4   (8× smaller than Numerov)
  * Needs: psi[n-1], psi[n-2] as history; predicts psi[n+1], psi[n+2]
  */
-public class PredictorCorrector6 extends PredictorCorrectorBase {
+public class PC6 extends PCBase {
 
-    public PredictorCorrector6() {
-        super(new Numerov());
+    public PC6() {
+        super(new EFN());
     }
 
-    public PredictorCorrector6(Integrator predictor) {
+    public PC6(Integrator predictor) {
         super(predictor);
     }
 
