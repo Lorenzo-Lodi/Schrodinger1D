@@ -235,66 +235,53 @@ public class ShootingSolver {
         info.iterations = 0;
         level.convergenceInfo.add(info);
 
-        double x0 = level.lowerBound;
-        double x1 = level.upperBound;
-        double f0 = diffLower;
-        double f1 = diffUpper;
-        double x2 = x0; // initialize
-        double f2;
-
         int maxIter = 50;   // prevent infinite loops
-        double tol = 1e-11;  // tolerance on function value
+        double tol = 1e-11; // tolerance on function value
 
+        double diffEnergy;
         for (int iter = 0; iter < maxIter; iter++) {
-            // Compute the false position point (secant line crossing zero)
-            // Avoid division by zero (should not happen if f0 and f1 have opposite signs)
-            x2 = x1 - f1 * (x1 - x0) / (f1 - f0);
+            // Compute the false position point directly into level.energy
+            level.energy = level.upperBound - diffUpper * (level.upperBound - level.lowerBound) / (diffUpper - diffLower);
 
-            // Evaluate function at x2
-            level.energy = x2;
-            f2 = computeDerivativeMismatch(level, matchIndex);
-            info.iterations++;
+            // Evaluate function
+            diffEnergy = computeDerivativeMismatch(level, matchIndex);
 
             OutputManager.writeBlankLine();
             OutputManager.write(String.format("Energy refinement stage. iterations = %d", info.iterations));
-            OutputManager.write(String.format("Current energy is: %25.12f (%25.8f cm-1)", x2, toInverseCm(x2)));
-            OutputManager.write(String.format("Derivative mismatch for current energy: %25.12f (%25.8f cm-1/a0)", f2, toInverseCm(f2)));
+            OutputManager.write(String.format("Current energy is: %25.12f (%25.8f cm-1)", level.energy, toInverseCm(level.energy)));
+            OutputManager.write(String.format("Derivative mismatch for current energy: %25.12f (%25.8f cm-1/a0)", diffEnergy, toInverseCm(diffEnergy)));
 
             // Check for convergence
-            if (Math.abs(f2) < tol) {
+            if (Math.abs(diffEnergy) < tol) {
                 break;
             }
 
             // Anderson-Björck update logic
-            if (f0 * f2 < 0) {
-                // Root lies between x0 and x2. Endpoint x0 is retained.
-                x1 = x2;
+            if (diffLower * diffEnergy < 0) {
+                // Root lies between lowerBound and energy. Endpoint lowerBound is retained.
+                level.upperBound = level.energy;
 
-                // Calculate the scaling factor for the retained function value f0
-                double m = 1.0 - f2 / f1;
+                // Scale the retained function value
+                double m = 1.0 - diffEnergy / diffUpper;
                 if (m <= 0.0) {
                     m = 0.5;
                 }
-                f0 = m * f0;
-                f1 = f2;
+                diffLower = m * diffLower;
+                diffUpper = diffEnergy;
             } else {
-                // Root lies between x2 and x1. Endpoint x1 is retained.
-                x0 = x2;
+                // Root lies between energy and upperBound. Endpoint upperBound is retained.
+                level.lowerBound = level.energy;
 
-                // Calculate the scaling factor for the retained function value f1
-                double m = 1.0 - f2 / f0;
+                // Scale the retained function value
+                double m = 1.0 - diffEnergy / diffLower;
                 if (m <= 0.0) {
                     m = 0.5;
                 }
-                f1 = m * f1;
-                f0 = f2;
+                diffUpper = m * diffUpper;
+                diffLower = diffEnergy;
             }
         }
 
-        // Store the final approximations
-        level.energy = x2;
-        level.lowerBound = x0;
-        level.upperBound = x1;
     }
 
     private double computeDerivativeMismatch(QuantumLevel level, int matchIndex) {
