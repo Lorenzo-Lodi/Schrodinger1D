@@ -236,7 +236,7 @@ public class ShootingSolver {
         level.convergenceInfo.add(info);
 
         int maxIter = 50;   // prevent infinite loops
-        double tol = 1e-11; // tolerance on function value
+        double tol = 1e-11; // tolerance on derivative difference
 
         double diffEnergy;
         for (int iter = 0; iter < maxIter; iter++) {
@@ -260,28 +260,23 @@ public class ShootingSolver {
             if (diffLower * diffEnergy < 0) {
                 // Root lies between lowerBound and energy. Endpoint lowerBound is retained.
                 level.upperBound = level.energy;
-
-                // Scale the retained function value
-                double m = 1.0 - diffEnergy / diffUpper;
-                if (m <= 0.0) {
-                    m = 0.5;
-                }
-                diffLower = m * diffLower;
+                diffLower = diffLower * computeM(diffEnergy, diffUpper);
                 diffUpper = diffEnergy;
             } else {
                 // Root lies between energy and upperBound. Endpoint upperBound is retained.
                 level.lowerBound = level.energy;
-
-                // Scale the retained function value
-                double m = 1.0 - diffEnergy / diffLower;
-                if (m <= 0.0) {
-                    m = 0.5;
-                }
-                diffUpper = m * diffUpper;
+                diffUpper = diffUpper * computeM(diffEnergy, diffUpper);
                 diffLower = diffEnergy;
             }
         }
 
+    }
+
+    private double computeM(double fEnergy, double fReplaced) {
+        // Always return 0.5 for Illinois method.
+        // Return fReplaced / (fReplaced + fEnergy) for Pegasus method.
+        double m = 1.0 - fEnergy / fReplaced;
+        return (m <= 0.0) ? 0.5 : m;
     }
 
     private double computeDerivativeMismatch(QuantumLevel level, int matchIndex) {
