@@ -1,18 +1,18 @@
 package schrodinger.integrator;
 
-import schrodinger.integrator.numerovlike.EFN;
-import schrodinger.integrator.numerovlike.Numerov;
-import schrodinger.integrator.numerovlike.EFNFixedBeta;
-import schrodinger.integrator.predcorr.PredictorCorrector6;
-import schrodinger.integrator.predcorr.PredictorCorrector8i1;
-import schrodinger.integrator.predcorr.PredictorCorrector8i2;
-import schrodinger.integrator.rungekutta.*;
-import schrodinger.integrator.stormer.Stormer5;
-import schrodinger.integrator.stormer.Stormer6;
-import schrodinger.integrator.stormer.Stormer8;
-import schrodinger.integrator.stormer.Stormer8i;
-import schrodinger.integrator.misc.Obrechkoff6;
-import schrodinger.integrator.misc.Verlet;
+import schrodinger.integrator.multi_step.numerovlike.EFN;
+import schrodinger.integrator.multi_step.numerovlike.Numerov;
+import schrodinger.integrator.multi_step.numerovlike.EFNFixedBeta;
+import schrodinger.integrator.multi_step.predcorr.PredictorCorrector6;
+import schrodinger.integrator.multi_step.predcorr.PredictorCorrector8i1;
+import schrodinger.integrator.multi_step.predcorr.PredictorCorrector8i2;
+import schrodinger.integrator.one_step.*;
+import schrodinger.integrator.multi_step.Stormer5;
+import schrodinger.integrator.multi_step.Stormer6;
+import schrodinger.integrator.multi_step.Stormer8;
+import schrodinger.integrator.multi_step.Stormer8i;
+import schrodinger.integrator.multi_step.Obrechkoff6;
+import schrodinger.integrator.multi_step.Verlet;
 
 import java.util.ArrayList;
 import java.util.List;
