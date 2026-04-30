@@ -290,6 +290,8 @@ public class ShootingSolver {
 
         // Store the final approximation
         level.energy = x2;
+        level.lowerBound = x0;
+        level.upperBound = x1;
     }
 
     private double computeDerivativeMismatch(QuantumLevel level, int matchIndex) {
