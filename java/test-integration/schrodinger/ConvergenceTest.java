@@ -43,7 +43,7 @@ public class ConvergenceTest {
 
             List<Double> energies = new ArrayList<>();
             for (ShootingSolver s : solvers) {
-                double energy = s.findEigenvalue(nOfDesidedNodes, RefinementStrategy.BISECTION_THEN_SECANT).energy;
+                double energy = s.findEigenvalue(nOfDesidedNodes, RefinementStrategy.BISECTION_THEN_ANDERSON_BJORCK).energy;
                 energies.add(energy);
             }
 

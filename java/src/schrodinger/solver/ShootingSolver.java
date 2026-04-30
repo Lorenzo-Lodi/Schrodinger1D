@@ -39,8 +39,7 @@ public class ShootingSolver {
             case BISECTION_ONLY:
                 findEigenvalueByBisection(level, nOfDesiredNodes);
                 break;
-            case BISECTION_THEN_SECANT:
-            case BISECTION_THEN_REGULA_FALSI:
+            case BISECTION_THEN_ANDERSON_BJORCK:
                 findEigenvalueByHybridMethod(level, nOfDesiredNodes);
                 break;
         }
@@ -55,7 +54,7 @@ public class ShootingSolver {
     }
 
     public QuantumLevel findEigenvalue(int nOfDesiredNodes) {
-        return findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
+        return findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_ANDERSON_BJORCK);
     }
 
     /**
@@ -231,13 +230,11 @@ public class ShootingSolver {
 
     private void refineByBidirectionalMatching(QuantumLevel level, int matchIndex, double diffLower, double diffUpper) {
 
-        boolean isFalsePosition = (strategy == RefinementStrategy.BISECTION_THEN_REGULA_FALSI);
         QuantumLevel.ConvergenceInfo info = new QuantumLevel.ConvergenceInfo();
         info.convergengeStage = "Refinement by " + strategy.toString().toLowerCase().replace("bisection_then_", "");
         info.iterations = 0;
         level.convergenceInfo.add(info);
 
-        // Regula falsi (false position) iteration
         double x0 = level.lowerBound;
         double x1 = level.upperBound;
         double f0 = diffLower;
@@ -261,34 +258,40 @@ public class ShootingSolver {
             OutputManager.writeBlankLine();
             OutputManager.write(String.format("Energy refinement stage. iterations = %d", info.iterations));
             OutputManager.write(String.format("Current energy is: %25.12f (%25.8f cm-1)", x2, toInverseCm(x2)));
-            OutputManager.write(String.format("Derivative mismatch for  current energy: %25.12f (%25.8f cm-1/a0)", f2, toInverseCm(f2)));
+            OutputManager.write(String.format("Derivative mismatch for current energy: %25.12f (%25.8f cm-1/a0)", f2, toInverseCm(f2)));
 
             // Check for convergence
             if (Math.abs(f2) < tol) {
                 break;
             }
 
-            if (isFalsePosition) {
-                // Update the bracket while keeping the root inside
-                if (f0 * f2 < 0) {
-                    // Root lies between x0 and x2
-                    x1 = x2;
-                    f1 = f2;
-                } else {
-                    // Root lies between x2 and x1
-                    x0 = x2;
-                    f0 = f2;
-                }
-            } else {
-                // Secant update: always shift forward, discard oldest point
-                x0 = x1;
-                f0 = f1;
+            // Anderson-Björck update logic
+            if (f0 * f2 < 0) {
+                // Root lies between x0 and x2. Endpoint x0 is retained.
                 x1 = x2;
+
+                // Calculate the scaling factor for the retained function value f0
+                double m = 1.0 - f2 / f1;
+                if (m <= 0.0) {
+                    m = 0.5;
+                }
+                f0 = m * f0;
                 f1 = f2;
+            } else {
+                // Root lies between x2 and x1. Endpoint x1 is retained.
+                x0 = x2;
+
+                // Calculate the scaling factor for the retained function value f1
+                double m = 1.0 - f2 / f0;
+                if (m <= 0.0) {
+                    m = 0.5;
+                }
+                f1 = m * f1;
+                f0 = f2;
             }
         }
 
-        // Store the final approximation
+        // Store the final approximations
         level.energy = x2;
         level.lowerBound = x0;
         level.upperBound = x1;
