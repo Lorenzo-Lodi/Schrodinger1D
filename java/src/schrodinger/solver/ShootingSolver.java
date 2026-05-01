@@ -192,7 +192,7 @@ public class ShootingSolver {
 
             // Here we compute the current derivative difference for the upper/lower energies
             QuantumLevel.ConvergenceInfo info = new QuantumLevel.ConvergenceInfo();
-            info.convergengeStage = "Find derivative differences for the first time";
+            info.convergengeStage = "Compute derivative differences to see if we can switch away from bisection...";
             info.iterations = 0;
             l.convergenceInfo.add(info);
             l.energy = l.upperBound;
@@ -204,13 +204,13 @@ public class ShootingSolver {
             info.iterations++;
 
             OutputManager.writeBlankLine();
-            OutputManager.write(String.format("Energy refinement stage (initalization). iterations = %d", info.iterations));
+            OutputManager.write(String.format("Energy refinement stage (initalization). Macroiteration = %10d", i));
             OutputManager.write(String.format("Derivative mismatch for UPPER energy: %25.12f (%25.8f cm-1/a0)", diffUpper, toInverseCm(diffUpper)));
             OutputManager.write(String.format("Derivative mismatch for LOWER energy: %25.12f (%25.8f cm-1/a0)", diffLower, toInverseCm(diffLower)));
 
             if (diffUpper * diffLower < 0) {
                 OutputManager.write(String.format("Macroiteration i = %10d, the sign of the derivative mismatch for the " +
-                        "upper and lower energy are different, I can start iterating the fast root-finding algorythm", i));
+                        "upper and lower energy are different, I can start iterating the fast root-finding algorithm", i));
                 break;
             } else {
                 if (i < maxMacroIterations) {
@@ -273,8 +273,9 @@ public class ShootingSolver {
     }
 
     private double computeM(double fEnergy, double fReplaced) {
-        // Always return 0.5 for Illinois method.
+        // Return 0.5 for Illinois method.
         // Return fReplaced / (fReplaced + fEnergy) for Pegasus method.
+        // These two methods may be more stable. Consider switching to either of them if we reaches, eg, iteration 25
         double m = 1.0 - fEnergy / fReplaced;
         return (m <= 0.0) ? 0.5 : m;
     }
