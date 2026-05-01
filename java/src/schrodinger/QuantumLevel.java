@@ -109,66 +109,6 @@ public class QuantumLevel {
         return nodes;
     }
 
-    public double estimateEnergyScale() {
-        Grid grid = system.getGrid();
-
-        // 1. Scan the *Effective Potential* U_tilde(y) for the minimum
-        int minIndex = 0;
-        double uMin = Double.MAX_VALUE;
-
-        // We scan the uniform y-grid
-        int nPoints = grid.getNumberOfPoints();
-        for (int i = 1; i < nPoints - 1; i++) {
-            // Use the effective potential that includes mapping corrections
-            double val = system.UTildeAtGridPoint(i);
-            if (val < uMin) {
-                uMin = val;
-                minIndex = i;
-            }
-        }
-        system.physicalPotentialMinimumGridIndex = minIndex;
-        system.physicalPotentialMinimumGridValue = uMin;
-
-
-        OutputManager.write(String.format("I scanned the potential and found a minimum value %23.14f (%25.6f cm-1) for i = %d",
-                uMin, toInverseCm(uMin), minIndex));
-
-        // 2. Estimate Step Size (Energy Scale)
-        Double energyScale = null;
-
-        // Attempt A: Harmonic Curvature of U_tilde on uniform y-grid
-        String energyScaleMethod = "";
-        if (minIndex > 0 && minIndex < nPoints - 1) {
-
-            // U_tilde values at minimum and neighbors
-            double u0 = system.UTildeAtGridPoint(minIndex);
-            double uL = system.UTildeAtGridPoint(minIndex - 1);
-            double uR = system.UTildeAtGridPoint(minIndex + 1);
-
-            // second derivative  d^2(U_tilde)/dy^2
-            double hy = grid.getStepSizeYCoordinate();
-            double der2 = (uR - 2.0 * u0 + uL) / (hy * hy);
-
-            if (der2 > 1e-15) {
-                // Harmonic oscillator: omega = sqrt(K / M)
-                energyScale = Math.sqrt(der2 / system.getMass());
-                energyScaleMethod = "harmonic constant at equilibrium";
-            }
-        }
-
-        // Attempt B: Particle-in-a-Box (Fallback)
-        if (energyScale == null) {
-            double L = grid.getLastYValue() - grid.getFirstYValue();
-            energyScale = (Math.PI * Math.PI) / (2.0 * system.getMass() * L * L);
-            energyScaleMethod = "Particle-in-a-Box";
-        }
-
-        OutputManager.write(String.format("The energy scale was set to %23.14f (%25.6f cm-1) using as method: %s",
-                energyScale, toInverseCm(energyScale), energyScaleMethod));
-
-        return energyScale;
-    }
-
     public Grid getGrid() {
         return system.getGrid();
     }

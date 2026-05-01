@@ -76,7 +76,7 @@ public class ShootingSolver {
             OutputManager.write(String.format("Integrator is set to %s, and this integrator does NOT needs potential capping.",
                     integrator.getClass().getSimpleName()));
         }
-        double energyScale = level.estimateEnergyScale();
+        double energyScale = system.estimateEnergyScale();
 
         // Set minimum a bit lower than minimum of the potential on the grid
         level.lowerBound = system.physicalPotentialMinimumGridValue - energyScale * 0.05;

@@ -1,6 +1,9 @@
 package schrodinger.potential;
 
+import schrodinger.OutputManager;
 import schrodinger.grid.Grid;
+
+import static schrodinger.PhysicalConstants.toInverseCm;
 
 public class SchrodingerSystem {
     private final PhysicalPotential physicalPotential;
@@ -9,6 +12,7 @@ public class SchrodingerSystem {
     private final double qMin;
     public double physicalPotentialMinimumGridIndex;
     public double physicalPotentialMinimumGridValue;
+    private Double energyScale = null;
 
     // For now we use a unique hCritical for all integrators. In reality some integrators are very sensitive
     // (PC6 is the most sensitive and requires hCritical=2.5) and some much less (Obrechkoff6 requires hCritical=5.5)
@@ -54,9 +58,72 @@ public class SchrodingerSystem {
         return UTilde(y);
     }
 
-
     public double Ucapped() {
         return -qMin / (2. * mass);
+    }
+
+
+    public double estimateEnergyScale() {
+        if (energyScale != null) {
+            OutputManager.write(String.format("The energy scale was set to %23.14f (%25.6f cm-1) ",
+                    energyScale, toInverseCm(energyScale)));
+            return energyScale;
+        }
+
+        // 1. Scan the *Effective Potential* U_tilde(y) for the minimum
+        int minIndex = 0;
+        double uMin = Double.MAX_VALUE;
+
+        // We scan the uniform y-grid
+        int nPoints = grid.getNumberOfPoints();
+        for (int i = 1; i < nPoints - 1; i++) {
+            // Use the effective potential that includes mapping corrections
+            double val = UTildeAtGridPoint(i);
+            if (val < uMin) {
+                uMin = val;
+                minIndex = i;
+            }
+        }
+        physicalPotentialMinimumGridIndex = minIndex;
+        physicalPotentialMinimumGridValue = uMin;
+
+
+        OutputManager.write(String.format("I scanned the potential and found a minimum value %23.14f (%25.6f cm-1) for i = %d",
+                uMin, toInverseCm(uMin), minIndex));
+
+        // 2. Estimate Step Size (Energy Scale)
+
+        // Attempt A: Harmonic Curvature of U_tilde on uniform y-grid
+        String energyScaleMethod = "";
+        if (minIndex > 0 && minIndex < nPoints - 1) {
+
+            // U_tilde values at minimum and neighbors
+            double u0 = UTildeAtGridPoint(minIndex);
+            double uL = UTildeAtGridPoint(minIndex - 1);
+            double uR = UTildeAtGridPoint(minIndex + 1);
+
+            // second derivative  d^2(U_tilde)/dy^2
+            double hy = grid.getStepSizeYCoordinate();
+            double der2 = (uR - 2.0 * u0 + uL) / (hy * hy);
+
+            if (der2 > 1e-15) {
+                // Harmonic oscillator: omega = sqrt(K / M)
+                energyScale = Math.sqrt(der2 / getMass());
+                energyScaleMethod = "harmonic constant at equilibrium";
+            }
+        }
+
+        // Attempt B: Particle-in-a-Box (Fallback)
+        if (energyScale == null) {
+            double L = grid.getLastYValue() - grid.getFirstYValue();
+            energyScale = (Math.PI * Math.PI) / (2.0 * getMass() * L * L);
+            energyScaleMethod = "Particle-in-a-Box";
+        }
+
+        OutputManager.write(String.format("The energy scale was set to %23.14f (%25.6f cm-1) using as method: %s",
+                energyScale, toInverseCm(energyScale), energyScaleMethod));
+
+        return energyScale;
     }
 
     public double getMass() {
