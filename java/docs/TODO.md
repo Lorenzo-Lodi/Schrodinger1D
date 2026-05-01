@@ -3,9 +3,11 @@
 - Add benchmarks also for full integration tests.
 - Tighten the thresholds / values in all tests
 - Implement the caching.
+- Improve logic for initial tight bracketing (especially lower bound estimate)
 - Add checks for minimum step size for avoiding spurious oscillation (in Stormer8 especially) 
 - Add more logs (writes) throughout, especially to write the level-specific values.
 - Implement new grid mappings linear-switchover-linear, using arctan and using rational function.
+- Implement logic for automatically selecting xmax/xmin and step size.
 - More tests using the grid mappings.
 - Implement general polynomial potential.
 - Implement general spline/polynomial interpolation for potentials.
