@@ -6,7 +6,6 @@ import schrodinger.integrator.Integrator;
 import schrodinger.integrator.IntegratorFactory;
 import schrodinger.potential.PhysicalPotentialHarmonic;
 import schrodinger.potential.PhysicalPotential;
-import schrodinger.potential.SchrodingerSystem;
 import schrodinger.solver.ShootingSolver;
 
 public class Main {

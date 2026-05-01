@@ -7,7 +7,6 @@ import schrodinger.integrator.Integrator;
 import schrodinger.integrator.IntegratorFactory;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialHarmonic;
-import schrodinger.potential.SchrodingerSystem;
 import schrodinger.integrator.pt_correction.NumerovPTCorrector;
 import schrodinger.integrator.pt_correction.PTCorrector;
 import schrodinger.integrator.pt_correction.VerletPTCorrector;

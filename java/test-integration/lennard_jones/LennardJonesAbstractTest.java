@@ -22,7 +22,7 @@ import schrodinger.integrator.multi_step.Stormer8;
 import schrodinger.integrator.multi_step.Stormer8i;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialLennardJones;
-import schrodinger.potential.SchrodingerSystem;
+import schrodinger.SchrodingerSystem;
 import schrodinger.solver.RefinementStrategy;
 import schrodinger.solver.ShootingSolver;
 

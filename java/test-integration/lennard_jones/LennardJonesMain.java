@@ -8,7 +8,7 @@ import schrodinger.integrator.Integrator;
 import schrodinger.integrator.IntegratorFactory;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialLennardJones;
-import schrodinger.potential.SchrodingerSystem;
+import schrodinger.SchrodingerSystem;
 import schrodinger.solver.RefinementStrategy;
 import schrodinger.solver.ShootingSolver;
 

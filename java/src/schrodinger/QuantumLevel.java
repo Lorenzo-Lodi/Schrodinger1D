@@ -1,12 +1,9 @@
 package schrodinger;
 
 import schrodinger.grid.Grid;
-import schrodinger.potential.SchrodingerSystem;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static schrodinger.PhysicalConstants.toInverseCm;
 
 public class QuantumLevel {
     private final SchrodingerSystem system;

@@ -6,7 +6,6 @@ import schrodinger.grid.GridFactory;
 import org.junit.jupiter.api.Test;
 
 import schrodinger.grid.Grid;
-import schrodinger.potential.SchrodingerSystem;
 
 class QuantumLevelTest {
     private static final double SMALL_EPS = 1e-15;

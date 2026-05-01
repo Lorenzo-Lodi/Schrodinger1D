@@ -6,7 +6,7 @@ import schrodinger.integrator.IntegratorFactory;
 import schrodinger.integrator.pt_correction.PTCorrector;
 import schrodinger.grid.Grid;
 import schrodinger.integrator.Integrator;
-import schrodinger.potential.SchrodingerSystem;
+import schrodinger.SchrodingerSystem;
 
 import java.util.Arrays;
 import java.util.function.DoubleUnaryOperator;

@@ -6,7 +6,7 @@ import schrodinger.grid.GridFactory;
 import schrodinger.integrator.Integrator;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialHarmonic;
-import schrodinger.potential.SchrodingerSystem;
+import schrodinger.SchrodingerSystem;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,7 @@
-package schrodinger.potential;
+package schrodinger;
 
-import schrodinger.OutputManager;
 import schrodinger.grid.Grid;
+import schrodinger.potential.PhysicalPotential;
 
 import static schrodinger.PhysicalConstants.toInverseCm;
 
