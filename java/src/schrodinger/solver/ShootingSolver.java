@@ -342,7 +342,6 @@ public class ShootingSolver {
         return forwardDer - backwardDer;
     }
 
-
     private int countNodes(QuantumLevel level) {
         int nPoints = system.getGrid().getNumberOfPoints();
         double hy = system.getGrid().getStepSizeYCoordinate();
@@ -350,6 +349,9 @@ public class ShootingSolver {
         // --- Shoot Forward
         int startIndex = initialize(level, Integrator.Direction.FORWARD);
         int rightmostInversionPoint = findMatchingIndex(level.energy);
+        if (rightmostInversionPoint == level.getGrid().getNumberOfPoints() / 2) {
+            rightmostInversionPoint = 0;
+        }
 
         double gamma = 0.0; // To track how deep into the forbidden region we are
         for (int n = startIndex; n < nPoints - 1; n++) {

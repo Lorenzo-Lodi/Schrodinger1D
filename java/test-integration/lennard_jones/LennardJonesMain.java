@@ -22,7 +22,7 @@ public class LennardJonesMain {
     private static final double wellDepthHartree = wellDepthInverseCm / HARTREE_TO_INVERSE_CM;
     private static final double rMinAng = 1.;
     private static final double rMinBohr = rMinAng / BOHR_TO_ANG;
-    private static final PhysicalPotential potential = new PhysicalPotentialLennardJones(rMinBohr, wellDepthHartree, 6);
+    private static final PhysicalPotential potential = new PhysicalPotentialLennardJones(rMinBohr, wellDepthHartree);
     private static final double mass = 16.85762920 * UMA_TO_ELECTRON_MASS;
     private static final Map<Integer, Double> refEnergies = new HashMap<>();
 

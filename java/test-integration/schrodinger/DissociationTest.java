@@ -25,7 +25,7 @@ public class DissociationTest {
         double wellDepthHartree = wellDepthInverseCm / HARTREE_TO_INVERSE_CM;
         double rMinAng = 1.;
         double rMinBohr = rMinAng / BOHR_TO_ANG;
-        PhysicalPotential potential = new PhysicalPotentialLennardJones(rMinBohr, wellDepthHartree, 6);
+        PhysicalPotential potential = new PhysicalPotentialLennardJones(rMinBohr, wellDepthHartree);
         Integrator integrator = IntegratorFactory.getNumerov();
         double mass = 16.85762920 * UMA_TO_ELECTRON_MASS;
         int nOfPoints = 1000; // Adjusted so that the 14th state is weakly bound, needing an upper limit of around 50 or so
