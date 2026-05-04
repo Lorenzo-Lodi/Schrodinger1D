@@ -27,17 +27,7 @@ public class MorseMain {
         double De = toHartree(50000.);
 
         PhysicalPotential potential = new PhysicalPotentialMorse(rmin, a, De);
-        double xmin = 1.0;
-        double xmax = 12.;
-        double step = 0.005;
-        int nOfPoints = 1 + (int) ((xmax - xmin) / step);
-
-        Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
         double mass = 100. * UMA_TO_ELECTRON_MASS;
-        SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
-
-        Integrator integrator = IntegratorFactory.getEFNFixedBeta();
-        ShootingSolver finder = new ShootingSolver(system, integrator);
 
         double omega0 = a * Math.sqrt(2.0 * De / mass);
         double xe = omega0 / (4. * De);
@@ -45,23 +35,41 @@ public class MorseMain {
         int nOfBoundStates = (int) ((A + 1.) * 0.5);
         System.out.printf("omega0=%20.8f cm-1; xe=%20.8f nOfBoundStates=%10d\n", toInverseCm(omega0), xe, nOfBoundStates);
 
-        System.out.println(toInverseCm(potential.value(xmin)) + " " + toInverseCm(potential.value(xmax)) + "  " + nOfPoints);
+        double xmin = 1.0;
+        double xmax = 12.;
+//        double step = 0.005;
+//        int nOfPoints = 1 + (int) ((xmax - xmin) / step);
+        System.out.printf("%5s %18s %18s %18s %18s %15s %15s %15s %10s %18s\n", "n", "step", "exact", "calc", "exact-calc", "innerInv", "outerInv",
+                "span", "eff.points", "minStep");
+        System.out.println(toInverseCm(potential.value(xmin)) + " " + toInverseCm(potential.value(xmax)));
 
-        System.out.printf("%10s %20s %20s %20s %15s %15s %15s %10s\n", "n", "exact", "calc", "exact-calc", "innerInv", "outerInv", "span", "eff.points");
-        for (int nOfDesiredNodes = 0; nOfDesiredNodes < nOfBoundStates; nOfDesiredNodes++) {
-            QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_ONLY);
-            double exact = omega0 * (nOfDesiredNodes + 0.5) * (1. - xe * (nOfDesiredNodes + 0.5));
+        Integrator integrator = IntegratorFactory.getCFMagnus6e5Opt();
 
-            double innerInversionPoint = rmin - Math.log(1. + Math.sqrt(exact / De)) / a;
-            double outerInversionPoint = rmin - Math.log(1. - Math.sqrt(exact / De)) / a;
-            double span = outerInversionPoint - innerInversionPoint;
-            int nEffPoints = (int) (span / step);
-            double diff = exact - ek.energy;
-            System.out.printf("%10d %20.8f %20.8f %20.10f %15.6f %15.6f %15.6f %10d\n", nOfDesiredNodes, toInverseCm(exact),
-                    toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints);
+        for (int nOfPoints = 800; nOfPoints <= 900; nOfPoints += 1) {
+            double step = (xmax - xmin) / (nOfPoints - 1);
+
+            Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
+            SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
+            ShootingSolver finder = new ShootingSolver(system, integrator);
+
+
+//        for (int nOfDesiredNodes = 0; nOfDesiredNodes < nOfBoundStates; nOfDesiredNodes++) {
+            for (int nOfDesiredNodes = 100; nOfDesiredNodes < 101; nOfDesiredNodes++) {
+                QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_ANDERSON_BJORCK);
+                double exact = omega0 * (nOfDesiredNodes + 0.5) * (1. - xe * (nOfDesiredNodes + 0.5));
+
+                double innerInversionPoint = rmin - Math.log(1. + Math.sqrt(exact / De)) / a;
+                double outerInversionPoint = rmin - Math.log(1. - Math.sqrt(exact / De)) / a;
+                double span = outerInversionPoint - innerInversionPoint;
+                int nEffPoints = (int) (span / step);
+                double diff = exact - ek.energy;
+                double minStep = (span / (1.5 * (nOfDesiredNodes + 1)));
+                String msg = (step < minStep) ? "" : "!";
+                System.out.printf("%5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %2s\n", nOfDesiredNodes, step, toInverseCm(exact),
+                        toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, minStep, msg);
+            }
+
         }
-
-
     }
 
 }

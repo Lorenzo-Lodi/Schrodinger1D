@@ -12,6 +12,7 @@ public class SchrodingerSystem {
     private final double qMin;
     public double physicalPotentialMinimumGridIndex;
     public double physicalPotentialMinimumGridValue;
+    public double physicalPotentialMaximumGridValueRightOfMinimum = -(0.5 * Double.MAX_VALUE);
     private Double energyScale = null;
 
     // For now we use a unique hCritical for all integrators. In reality some integrators are very sensitive
@@ -37,6 +38,7 @@ public class SchrodingerSystem {
         this.mass = mass;
         this.grid = grid;
         qMin = -Math.pow(hCritical / grid.getStepSizeYCoordinate(), 2);
+        this.estimateEnergyScale(); // Pre-compute the energy scale
     }
 
     /**
@@ -87,9 +89,17 @@ public class SchrodingerSystem {
         physicalPotentialMinimumGridIndex = minIndex;
         physicalPotentialMinimumGridValue = uMin;
 
-
         OutputManager.write(String.format("I scanned the potential and found a minimum value %23.14f (%25.6f cm-1) for i = %d",
                 uMin, toInverseCm(uMin), minIndex));
+
+        for (int i = minIndex + 1; i < nPoints - 1; i++) {
+            double val = UTildeAtGridPoint(i);
+            if (val > physicalPotentialMaximumGridValueRightOfMinimum) {
+                physicalPotentialMaximumGridValueRightOfMinimum = val;
+            }
+        }
+        OutputManager.write(String.format("I scanned the potential and found a maximum value %23.14f (%25.6f cm-1) right of the minimum",
+                physicalPotentialMaximumGridValueRightOfMinimum, toInverseCm(physicalPotentialMaximumGridValueRightOfMinimum)));
 
         // 2. Estimate Step Size (Energy Scale)
 
