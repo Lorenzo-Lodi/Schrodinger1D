@@ -45,11 +45,13 @@ public class MorseMain {
 
         Integrator integrator = IntegratorFactory.getCFMagnus6e5Opt();
 
-        for (int nOfPoints = 800; nOfPoints <= 900; nOfPoints += 1) {
+        for (int nOfPoints = 1000; nOfPoints <= 1500; nOfPoints += 100) {
             double step = (xmax - xmin) / (nOfPoints - 1);
 
             Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
+            System.out.printf("minimum step size for all states = %20.8f \n", system.hCriticalAllowed);
+
             ShootingSolver finder = new ShootingSolver(system, integrator);
 
 

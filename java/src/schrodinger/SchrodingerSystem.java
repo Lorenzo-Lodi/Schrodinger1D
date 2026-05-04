@@ -12,7 +12,6 @@ public class SchrodingerSystem {
     private final double qMin;
     public double physicalPotentialMinimumGridIndex;
     public double physicalPotentialMinimumGridValue;
-    public double physicalPotentialMaximumGridValueRightOfMinimum = -(0.5 * Double.MAX_VALUE);
     private Double energyScale = null;
 
     // For now we use a unique hCritical for all integrators. In reality some integrators are very sensitive
@@ -31,13 +30,14 @@ public class SchrodingerSystem {
     //    EFNFixedBeta           3.0
     //    PC8i1                  3.0
     //    PC6                    2.5
-    private final static double hCritical = 2.5;
+    private final static double hCriticalForbidden = 2.5;
+    public double hCriticalAllowed = 0;
 
     public SchrodingerSystem(PhysicalPotential physicalPotential, double mass, Grid grid) {
         this.physicalPotential = physicalPotential;
         this.mass = mass;
         this.grid = grid;
-        qMin = -Math.pow(hCritical / grid.getStepSizeYCoordinate(), 2);
+        qMin = -Math.pow(hCriticalForbidden / grid.getStepSizeYCoordinate(), 2);
         this.estimateEnergyScale(); // Pre-compute the energy scale
     }
 
@@ -92,14 +92,19 @@ public class SchrodingerSystem {
         OutputManager.write(String.format("I scanned the potential and found a minimum value %23.14f (%25.6f cm-1) for i = %d",
                 uMin, toInverseCm(uMin), minIndex));
 
+        double uMaxRight = -(0.5 * Double.MAX_VALUE);
         for (int i = minIndex + 1; i < nPoints - 1; i++) {
             double val = UTildeAtGridPoint(i);
-            if (val > physicalPotentialMaximumGridValueRightOfMinimum) {
-                physicalPotentialMaximumGridValueRightOfMinimum = val;
+            if (val > uMaxRight) {
+                uMaxRight = val;
             }
         }
         OutputManager.write(String.format("I scanned the potential and found a maximum value %23.14f (%25.6f cm-1) right of the minimum",
-                physicalPotentialMaximumGridValueRightOfMinimum, toInverseCm(physicalPotentialMaximumGridValueRightOfMinimum)));
+                uMaxRight, toInverseCm(uMaxRight)));
+        double kMax = Math.sqrt(Math.max(0, 2. * mass * (uMaxRight - uMin)));
+        // Minimum step size for all states up to uMaxRight (for Morse-like potential, the dissociation energy of the potential)
+        // For potentials which are not-Morse like, this is wrong.
+        hCriticalAllowed = Math.PI / (4. * kMax); // The number at the denominator is somewhat arbitrary, values for 2 to 4 are reasonable.
 
         // 2. Estimate Step Size (Energy Scale)
 
