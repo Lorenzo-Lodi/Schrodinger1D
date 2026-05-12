@@ -343,7 +343,8 @@ public class ShootingSolver {
         }
         level.psi[matchIndex] = 1.;
 
-        return forwardDer / forwardPsiAtMatchIndex - backwardDer / backwardPsiAtMatchIndex;
+        return forwardDer / forwardPsiAtMatchIndex - backwardDer / backwardPsiAtMatchIndex; // Return logarithmic derivative
+//        return forwardDer * backwardPsiAtMatchIndex - backwardDer * forwardPsiAtMatchIndex; // Return Wroksian; seems to give problems!!!!
     }
 
     private int countNodes(QuantumLevel level) {
