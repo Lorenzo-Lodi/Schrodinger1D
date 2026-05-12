@@ -270,12 +270,14 @@ public class ShootingSolver {
             }
         }
 
+        // TODO rescale wavefunction from zero to matchIndex
+
     }
 
     private double computeM(double fEnergy, double fReplaced) {
         // Return 0.5 for Illinois method.
         // Return fReplaced / (fReplaced + fEnergy) for Pegasus method.
-        // These two methods may be more stable. Consider switching to either of them if we reaches, eg, iteration 25
+        // These two methods may be more stable. Consider switching to either of them if it reaches, eg, iteration 25
         double m = 1.0 - fEnergy / fReplaced;
         return (m <= 0.0) ? 0.5 : m;
     }
@@ -304,7 +306,7 @@ public class ShootingSolver {
 
         }
 
-        double forwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (level.psi[matchIndex] * 2. * hy);
+        double forwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (2. * hy);
         double forwardPsiAtMatchIndexMinusOne = level.psi[matchIndex - 1];
         double forwardPsiAtMatchIndex = level.psi[matchIndex];
 
@@ -327,9 +329,11 @@ public class ShootingSolver {
             }
 
         }
-        double backwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (level.psi[matchIndex] * 2. * hy);
+        double backwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (2. * hy);
+        double backwardPsiAtMatchIndex = level.psi[matchIndex];
 
-        // Let us rescale the correct psi (probably unnecessary doing this at each step).
+        // Let us rescale the correct psi (probably unnecessary doing this at each step). It should be done only once
+        // after convergence is reached.
         level.psi[matchIndex - 1] = forwardPsiAtMatchIndexMinusOne;
         for (int n = 0; n < matchIndex; n++) {
             level.psi[n] = level.psi[n] / forwardPsiAtMatchIndex;
@@ -339,7 +343,7 @@ public class ShootingSolver {
         }
         level.psi[matchIndex] = 1.;
 
-        return forwardDer - backwardDer;
+        return forwardDer / forwardPsiAtMatchIndex - backwardDer / backwardPsiAtMatchIndex;
     }
 
     private int countNodes(QuantumLevel level) {
