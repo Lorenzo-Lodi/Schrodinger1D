@@ -16,18 +16,18 @@ in the range we investigated. For np=100-150 it has 3-4 less digits of accuracy 
 CFMagnus6e5Opt gradually gains ground against Magnus8, but cannot catch it in the investigated range.
 This method evaluates Q(x) at 3 subpoints, so the same considerantions made for CFMagnus8 hold: it's very good but slow.
 
-3. Then we have the PC8 methods (which use Stormer6 as a predictor). They perform identically (so the second iteration is not needed).
+3. Then we have the PC8 methods (which use Cowell6 as a predictor). They perform identically (so the second iteration is not needed).
 They have h^8 convergence, but catch up to CFMagnus6e5Opt only for about 400 points, when they are also start being
 affected by numerical noise. The PC8 method seem more affected by numerical noise than the Magnus methods, as
 they show flattening at around 3e-12 error.
 
 4. Then, for most of the range comes RK45DP, which actually shows a h^6 convergence in the whole range (superconvergence?).
-From about 440 points it is overtaken by Stormer8i, which has quicker convergence.
+From about 440 points it is overtaken by Cowell8, which has quicker convergence.
 
 5. Then for most of the range comes the Obrechkoff6 method. It shows a perfect h^6 convergence.
-It too is overtaken by Stormer8i by abour 250 points onward.
+It too is overtaken by Cowell8 by abour 250 points onward.
 
-6. Then I'd put Stormer8i. It shows the expected h^8 factor, but with a relatively large prefactor.
+6. Then I'd put Cowell8. It shows the expected h^8 factor, but with a relatively large prefactor.
 For coarse grids (less than about 200 points) it is overtaken not only by the methods mentioned before but
 also by Magnus6e4, PC6 and even CFMagnus4.
 
@@ -38,14 +38,14 @@ It too, like CFMagnus6e5Opt, evaluates Q(x) at 3 subpoints but it's quite a bit 
 Overall it performs similarly to PC6, but PC6 beats it for dense grids (because PC6 shows effective h^7 convergence in this case).
 
 9. At this point it is more difficult to identify a clear winner.
-As an all-rounder I'd pick Stormer6; it shows a convergence which is closer to h^7 than h^6, but with a relatively large prefactor.
+As an all-rounder I'd pick Cowell6; it shows a convergence which is closer to h^7 than h^6, but with a relatively large prefactor.
 
 10. Then I'd put CFMagnus4. It shows a perfect h^4 convergence, but with a small prefactor, so that it beats
-Stormer6 for coarse grids up to about 230 points. CFMagnus4 evaluates Q(x) at 3 subpoints.
+Cowell6 for coarse grids up to about 230 points. CFMagnus4 evaluates Q(x) at 3 subpoints.
 
-11. Then, perhaps, I'd put Stormer8. This is the explicit version of Stormer8i and it's in all ways inferior to it.
+11. Then, perhaps, I'd put Stormer8. This is the explicit version of Cowell8 and it's in all ways inferior to it.
 I'd chosen to leave it for comparison, however. It shows h^8 convergence, but with a huge prefactor and some
-pre-asymptotic drops for coarse grids. For dense grids with more than 250 points it beats Stormer6. However,
+pre-asymptotic drops for coarse grids. For dense grids with more than 250 points it beats Cowell6. However,
 its performance becomes pretty poor at coarse grids, becoming even worse than Numerov for less than 180 points or so.
 
 12-14. Then I'd put ex-aequo EFN, EFNFixedBeta and Numerov. Overall the errors for these methods are within a factor of two,
@@ -55,7 +55,7 @@ Numerov shows a fast convergence (of h^5.5 type in fact) up to about 200 points,
 and from 260 points onwards the convergence seems to be close to h^3.5.
 I don't know the reason for this behaviour.
 
-15. Then there is Stormer5. It does show the expected h^5 convergence, but because of the large prefactor Numerov-like
+15. Then there is Cowell5. It does show the expected h^5 convergence, but because of the large prefactor Numerov-like
 methods beat it for all step sizes.
 
 16. Then there is RKN4. It shows perfect h^4 convergence but with a large prefactor (errors are about 10x Numerov's).
@@ -78,15 +78,15 @@ time    method
 8.67	PC8i1
 6.22	CFMagnus8
 4.46	PC6
-3.74	Stormer8i
+3.74	Cowell8
 3.68	CFMagnus6e5Opt
 3.59	Stormer8
 3.46	CFMagnus6e4
 2.94	Obrechkoff6
 2.77	RK45DP
 2.75	CFMagnus4
-2.68	Stormer5
-2.67	Stormer6
+2.68	Cowell5
+2.67	Cowell6
 2.14	Numerov
 2.00	RKN4
 1.97	EFN
@@ -105,16 +105,16 @@ Then the situation depends more strongly on whether we want super-high accuracy 
 accuracy goal. For medium accuracies RK45DP does very well (although the reasons for its superconvergence are unclear).
 The PC6 method is slightly worse but deals a good balance between speed and accuracy.
 
-For the highest accuracy (high number of points) Stormer8i eventually prevails, although it doesn't do very well at large grid sizes.
+For the highest accuracy (high number of points) Cowell8 eventually prevails, although it doesn't do very well at large grid sizes.
 
-PC8 is never competitive with Stormer8i, as Stormer8i is much faster and they have the same asymptotic.
+PC8 is never competitive with Cowell8, as Cowell8 is much faster and they have the same asymptotic.
 
 BTW, for np=100 the error of  CFMagnus8 is already 2e7 times smaller than Numerov's! Although Numerov is 4x faster, it just
 cannot make up for this huge difference in prefactor and scaling! Nor can other methods.
 
 
 errorRMS
-np	step	CFMagnus4	CFMagnus6e4	CFMagnus6e5Opt	CFMagnus8	EFNFixedBeta	EFN	Numerov	Obrechkoff6	PC6	PC8i1	PC8i2	RK45DP	RKN4	Stormer5	Stormer6	Stormer8	Stormer8i	Taylor3p
+np	step	CFMagnus4	CFMagnus6e4	CFMagnus6e5Opt	CFMagnus8	EFNFixedBeta	EFN	Numerov	Obrechkoff6	PC6	PC8i1	PC8i2	RK45DP	RKN4	Cowell5	Cowell6	Stormer8	Cowell8	Taylor3p
 100	0.1269	2.50E-05	1.92E-05	6.40E-08	1.15E-11	3.12E-04	1.60E-04	2.79E-04	7.43E-06	3.07E-05	1.31E-06	1.29E-06	2.41E-06	9.08E-04	6.48E-04	2.42E-04	7.82E-04	3.67E-05	1.03E-01
 110	0.1153	1.70E-05	1.08E-05	3.58E-08	5.20E-12	1.86E-04	9.00E-05	1.64E-04	4.12E-06	1.62E-05	6.67E-07	6.56E-07	1.37E-06	6.18E-04	4.35E-04	1.33E-04	4.13E-04	1.90E-05	9.01E-02
 120	0.1056	1.20E-05	6.35E-06	2.11E-08	2.62E-12	1.16E-04	5.34E-05	1.00E-04	2.40E-06	8.97E-06	3.49E-07	3.44E-07	8.12E-07	4.35E-04	2.98E-04	7.67E-05	2.22E-04	1.00E-05	7.91E-02

@@ -7,43 +7,43 @@ import schrodinger.integrator.Integrator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Stormer8iTest extends AbstractIntegratorTest {
+public class Cowell5Test extends AbstractIntegratorTest {
 
     @Override
     protected Integrator getIntegrator() {
-        return new Stormer8i();
+        return new Cowell5();
     }
 
     @Test
     public void integrateForwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.FORWARD);
-        assertEquals(2.819478335032403, val, 1e-14);
+        assertEquals(2.6789537448608023, val, 1e-14);
     }
 
     @Test
     public void integrateBackwardReferenceTest() {
         double val = integrateOneStep(Integrator.Direction.BACKWARD);
-        assertEquals(2.527657332202554, val, 1e-14);
+        assertEquals(2.3756666670094093, val, 1e-14);
     }
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x() {
-        return new ConvergenceParams(8.0, 0.3);
+        return new ConvergenceParams(4.85, 0.4);
     }
 
     @Override
     protected ConvergenceParams convergence_params_exp_minus_x() {
-        return new ConvergenceParams(8.00, 0.7);
+        return new ConvergenceParams(5.00, 1.4);
     }
 
     @Override
     protected ConvergenceParams convergence_params_exp_to_cos_x_minus_x() {
-        return new ConvergenceParams(8.00, 0.35);
+        return new ConvergenceParams(5.00, 0.4);
     }
 
     @Override
     protected ConvergenceParams convergence_params_tanh_x() {
-        return new ConvergenceParams(8.00, 1.0);
+        return new ConvergenceParams(5.00, 1.5);
     }
 
 }

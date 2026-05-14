@@ -7,10 +7,10 @@ import schrodinger.integrator.multi_step.predcorr.PC6;
 import schrodinger.integrator.multi_step.predcorr.PC8i1;
 import schrodinger.integrator.multi_step.predcorr.PC8I2;
 import schrodinger.integrator.one_step.*;
-import schrodinger.integrator.multi_step.Stormer5;
-import schrodinger.integrator.multi_step.Stormer6;
+import schrodinger.integrator.multi_step.Cowell5;
+import schrodinger.integrator.multi_step.Cowell6;
 import schrodinger.integrator.multi_step.Stormer8;
-import schrodinger.integrator.multi_step.Stormer8i;
+import schrodinger.integrator.multi_step.Cowell;
 import schrodinger.integrator.multi_step.Obrechkoff6;
 import schrodinger.integrator.multi_step.Verlet;
 
@@ -38,20 +38,20 @@ public class IntegratorFactory {
         return new EFN();
     }
 
-    public static Integrator getStormer5() {
-        return new Stormer5();
+    public static Integrator getCowell5() {
+        return new Cowell5();
     }
 
-    public static Integrator getStormer6() {
-        return new Stormer6();
+    public static Integrator getCowell6() {
+        return new Cowell6();
     }
 
     public static Integrator getStormer8() {
         return new Stormer8();
     }
 
-    public static Integrator getStormer8i() {
-        return new Stormer8i();
+    public static Integrator getCowell8() {
+        return new Cowell();
     }
 
     public static Integrator getPC6() {
@@ -105,10 +105,10 @@ public class IntegratorFactory {
         list.add(getNumerov());
         list.add(getEFNFixedBeta());
         list.add(getEFN());
-        list.add(getStormer5());
-        list.add(getStormer6());
+        list.add(getCowell5());
+        list.add(getCowell6());
         list.add(getStormer8());
-        list.add(getStormer8i());
+        list.add(getCowell8());
         list.add(getObrechkoff6());
         list.add(getPC6());
         list.add(getPC8i1());

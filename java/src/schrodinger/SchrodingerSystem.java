@@ -22,9 +22,9 @@ public class SchrodingerSystem {
     // These are the critical values (tested with Lennard-Jones potential) with 0.5 accuracy (only for integrators
     // which need capping):
     //    Obrechkoff6            5.5
-    //    Stormer5               3.5
-    //    Stormer6               3.5
-    //    Stormer8i              3.5
+    //    Cowell5                3.5
+    //    Cowell6                3.5
+    //    Cowell8                3.5
     //    PC8i2                  3.5
     //    Numerov                3.0
     //    EFNFixedBeta           3.0

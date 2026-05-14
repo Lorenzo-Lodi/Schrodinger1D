@@ -62,8 +62,8 @@ public class IntegratorSpeedBenchmark {
 //        Time taken for integrating 1000000 points is     60.352 ns / point for PC6
 //        Time taken for integrating 1000000 points is     76.251 ns / point for PC8NumerovIter1
 //        Time taken for integrating 1000000 points is    102.563 ns / point for PC8NumerovIter2
-//        Time taken for integrating 1000000 points is     18.324 ns / point for Stormer5
-//        Time taken for integrating 1000000 points is     14.718 ns / point for Stormer6
+//        Time taken for integrating 1000000 points is     18.324 ns / point for Cowell5
+//        Time taken for integrating 1000000 points is     14.718 ns / point for Cowell6
 //        Time taken for integrating 1000000 points is     57.302 ns / point for Stormer8
 //        Time taken for integrating 1000000 points is      9.685 ns / point for Verlet
 
@@ -75,8 +75,8 @@ public class IntegratorSpeedBenchmark {
 //        Time taken for integrating 1000000 points is    135.936 ns / point for PC6
 //        Time taken for integrating 1000000 points is    226.429 ns / point for PC8NumerovIter1
 //        Time taken for integrating 1000000 points is    315.115 ns / point for PC8NumerovIter2
-//        Time taken for integrating 1000000 points is     33.766 ns / point for Stormer5
-//        Time taken for integrating 1000000 points is     44.969 ns / point for Stormer6
+//        Time taken for integrating 1000000 points is     33.766 ns / point for Cowell5
+//        Time taken for integrating 1000000 points is     44.969 ns / point for Cowell6
 //        Time taken for integrating 1000000 points is    101.723 ns / point for Stormer8
 //        Time taken for integrating 1000000 points is     16.698 ns / point for Verlet
 
@@ -89,8 +89,8 @@ public class IntegratorSpeedBenchmark {
 //        PC6	                             6.23	 8.14
 //        PC8NumerovIter1                  	 7.87	13.56
 //        PC8NumerovIter2	                10.59	18.87
-//        Stormer5	                         1.89	 2.02
-//        Stormer6	                         1.52	 2.69
+//        Cowell5	                         1.89	 2.02
+//        Cowell6	                         1.52	 2.69
 //        Stormer8	                         5.92	 6.09
 //        Verlet                         	 1.00	 1.00
 
@@ -102,8 +102,8 @@ public class IntegratorSpeedBenchmark {
 //        Numerov	                         4.67
 //        ExponentiallyFitted	             4.23
 //        EfnFixedBeta	                     2.84
-//        Stormer6	                         2.11
-//        Stormer5	                         1.96
+//        Cowell6	                         2.11
+//        Cowell5	                         1.96
 //        Verlet        	                 1.00
 
 // NOTE: Verlet is very fast, which is no surprise as it's super simple, but its convergence is really poor.

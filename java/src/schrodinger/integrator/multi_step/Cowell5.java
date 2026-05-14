@@ -5,7 +5,7 @@ import schrodinger.integrator.Integrator;
 import java.util.function.DoubleUnaryOperator;
 
 /**
- * Extended Störmer method of order 5 for integrating the Schrödinger equation.
+ * Cowell method of order 5 for integrating the Schrödinger equation.
  * <p>
  * Uses the recurrence:  y_{n+1} - 2y_n + y_{n-1} = h² · Σ βₖ · f_{n+k}
  * with f = -Q·y (zero-stable, rho(z) = (z-1)^2).
@@ -14,7 +14,7 @@ import java.util.function.DoubleUnaryOperator;
  * <p>
  * Coefficients derived from Taylor order conditions; verified symbolically.
  */
-public class Stormer5 implements Integrator {
+public class Cowell5 implements Integrator {
 
     @Override
     public int minHistoryLength() {
