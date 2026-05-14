@@ -236,7 +236,8 @@ public class ShootingSolver {
         level.convergenceInfo.add(info);
 
         int maxIter = 50;   // prevent infinite loops
-        double tol = 1e-11; // tolerance on derivative difference
+        double tol = 1e-11; // tolerance on derivative difference (value appropriate when log-der is used)
+//        double tol = 1e-18; // tolerance on derivative difference (value appropriate when wroksian is used)
 
         double diffEnergy;
         for (int iter = 0; iter < maxIter; iter++) {
@@ -251,12 +252,12 @@ public class ShootingSolver {
             OutputManager.write(String.format("Current energy is: %25.12f (%25.8f cm-1)", level.energy, toInverseCm(level.energy)));
             OutputManager.write(String.format("Derivative mismatch for current energy: %25.12f (%25.8f cm-1/a0)", diffEnergy, toInverseCm(diffEnergy)));
 
-            // Check for convergence
+            // Check for convergence on the derivative difference
             if (Math.abs(diffEnergy) < tol) {
                 break;
             }
 
-            // Anderson-Björck update logic
+            // Modified regula falsi update logic (Illinois, Pegasus, Anderson-Björck)
             if (diffLower * diffEnergy < 0) {
                 // Root lies between lowerBound and energy. Endpoint lowerBound is retained.
                 level.upperBound = level.energy;
@@ -275,10 +276,10 @@ public class ShootingSolver {
     }
 
     private double computeM(double fEnergy, double fReplaced) {
-        // Return 0.5 for Illinois method.
-        // Return fReplaced / (fReplaced + fEnergy) for Pegasus method.
-        // These two methods may be more stable. Consider switching to either of them if it reaches, eg, iteration 25
-        double m = 1.0 - fEnergy / fReplaced;
+//  Illinois or Pegasus may be more stable. Consider switching to either of them if , eg, iter reaches 20 or so.
+//         return 0.5;  // Illinois method.
+//         return fReplaced / (fReplaced + fEnergy); // Pegasus method.
+        double m = 1.0 - fEnergy / fReplaced;  // Anderson-Björck method.
         return (m <= 0.0) ? 0.5 : m;
     }
 
@@ -343,8 +344,10 @@ public class ShootingSolver {
         }
         level.psi[matchIndex] = 1.;
 
-        return forwardDer / forwardPsiAtMatchIndex - backwardDer / backwardPsiAtMatchIndex; // Return logarithmic derivative
-//        return forwardDer * backwardPsiAtMatchIndex - backwardDer * forwardPsiAtMatchIndex; // Return Wroksian; seems to give problems!!!!
+        double result = forwardDer / forwardPsiAtMatchIndex - backwardDer / backwardPsiAtMatchIndex; // Return logarithmic derivative
+//        double result = forwardDer * backwardPsiAtMatchIndex - backwardDer * forwardPsiAtMatchIndex; // Return Wroksian; seems to give problems!!!!
+//        result = result / (Math.max(Math.abs(forwardPsiAtMatchIndex), Math.abs(backwardPsiAtMatchIndex)));
+        return result;
     }
 
     private int countNodes(QuantumLevel level) {
