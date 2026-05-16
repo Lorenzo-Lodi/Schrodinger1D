@@ -11,7 +11,7 @@ public class PC8i2Test extends AbstractIntegratorTest {
 
     @Override
     protected Integrator getIntegrator() {
-        return new PC8I2();
+        return new PC8i2();
     }
 
     @Test

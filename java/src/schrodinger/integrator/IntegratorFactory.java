@@ -5,7 +5,7 @@ import schrodinger.integrator.multi_step.numerovlike.Numerov;
 import schrodinger.integrator.multi_step.numerovlike.EFNFixedBeta;
 import schrodinger.integrator.multi_step.predcorr.PC6;
 import schrodinger.integrator.multi_step.predcorr.PC8i1;
-import schrodinger.integrator.multi_step.predcorr.PC8I2;
+import schrodinger.integrator.multi_step.predcorr.PC8i2;
 import schrodinger.integrator.one_step.*;
 import schrodinger.integrator.multi_step.Cowell5;
 import schrodinger.integrator.multi_step.Cowell6;
@@ -63,7 +63,7 @@ public class IntegratorFactory {
     }
 
     public static Integrator getPC8i2() {
-        return new PC8I2();
+        return new PC8i2();
     }
 
     public static Integrator getObrechkoff6() {

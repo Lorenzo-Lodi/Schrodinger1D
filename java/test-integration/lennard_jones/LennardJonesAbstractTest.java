@@ -14,7 +14,7 @@ import schrodinger.integrator.multi_step.numerovlike.EFNFixedBeta;
 import schrodinger.integrator.multi_step.numerovlike.Numerov;
 import schrodinger.integrator.multi_step.predcorr.PC6;
 import schrodinger.integrator.multi_step.predcorr.PC8i1;
-import schrodinger.integrator.multi_step.predcorr.PC8I2;
+import schrodinger.integrator.multi_step.predcorr.PC8i2;
 import schrodinger.integrator.one_step.*;
 import schrodinger.integrator.multi_step.Cowell5;
 import schrodinger.integrator.multi_step.Cowell6;
@@ -70,7 +70,7 @@ public abstract class LennardJonesAbstractTest {
         thresholds1800pts.put(CFMagnus6e5Opt.class, 3.16E-07);
         thresholds1800pts.put(CFMagnus8.class, 3.16E-07);
         thresholds1800pts.put(PC8i1.class, 4.6E-07);
-        thresholds1800pts.put(PC8I2.class, 6.5E-07);
+        thresholds1800pts.put(PC8i2.class, 6.5E-07);
         thresholds1800pts.put(Obrechkoff6.class, 1.10E-06);
         thresholds1800pts.put(CFMagnus6e4.class, 3.6E-06);
         thresholds1800pts.put(Cowell.class, 3.2E-06);
