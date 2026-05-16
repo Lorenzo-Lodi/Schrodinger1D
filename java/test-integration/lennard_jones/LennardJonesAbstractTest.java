@@ -26,6 +26,7 @@ import schrodinger.SchrodingerSystem;
 import schrodinger.solver.RefinementStrategy;
 import schrodinger.solver.ShootingSolver;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -47,6 +48,8 @@ public abstract class LennardJonesAbstractTest {
     List<Integrator> integrators;
     private final RefinementStrategy strategy;
     private final boolean isPrintOnlyBad;
+    private static Map<String, Double> refEnergiesBisection = new HashMap<>();
+    private static Map<String, Double> refEnergiesRegFalsi = new HashMap<>();
 
     static {
         // There were obtained with Magnus8, 4000 points and [1.2 - 45.0] uniform grid
@@ -85,7 +88,28 @@ public abstract class LennardJonesAbstractTest {
         thresholds1800pts.put(Numerov.class, 2.61E-03);
         thresholds1800pts.put(RKN4.class, 3.89E-03);
         thresholds1800pts.put(Verlet.class, 1.74E+00);
+        loadReferenceEnergies();
 
+    }
+
+    private static void loadReferenceEnergies() {
+        String filePath = "resources/reference_energies_lennard_jones.tsv";
+
+        try (InputStream is = LennardJonesAbstractTest.class.getResourceAsStream(filePath);
+             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split("\t");
+                if (parts.length < 3) continue; // skip empty/malformed lines
+                String key = parts[0];
+                refEnergiesBisection.put(key, Double.parseDouble(parts[1]));
+                refEnergiesRegFalsi.put(key, Double.parseDouble(parts[2]));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid double value in file.");
+        }
     }
 
     public LennardJonesAbstractTest(RefinementStrategy strategy, boolean isPrintOnlyBad) {
@@ -139,11 +163,11 @@ public abstract class LennardJonesAbstractTest {
 
         for (Integrator integrator : this.integrators) {
 
-            if(xmax >= 45. && integrator instanceof Stormer8) {
+            if (xmax >= 45. && integrator instanceof Stormer8) {
                 continue; //For now skip Stormer 8 for very long bond lengths as it goes crazy
             }
 
-            String className = integrator.getClass().getSimpleName().replaceAll("Test", "");
+            String className = integrator.getClass().getSimpleName().replace("Test", "");
             OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
                     nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log");
             Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
