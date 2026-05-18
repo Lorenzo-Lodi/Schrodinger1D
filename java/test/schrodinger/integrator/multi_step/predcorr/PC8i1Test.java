@@ -7,7 +7,7 @@ import schrodinger.integrator.Integrator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PC8I1Test extends AbstractIntegratorTest {
+public class PC8i1Test extends AbstractIntegratorTest {
 
     @Override
     protected Integrator getIntegrator() {
