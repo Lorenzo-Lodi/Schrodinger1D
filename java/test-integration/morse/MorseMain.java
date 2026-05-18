@@ -39,8 +39,8 @@ public class MorseMain {
         double xmax = 12.;
 //        double step = 0.005;
 //        int nOfPoints = 1 + (int) ((xmax - xmin) / step);
-        System.out.printf("%5s %18s %18s %18s %18s %15s %15s %15s %10s %18s\n", "n", "step", "exact", "calc", "exact-calc", "innerInv", "outerInv",
-                "span", "eff.points", "minStep");
+        System.out.printf("%5s %18s %18s %18s %18s %15s %15s %15s %10s %15s %18s\n", "n", "step", "exact", "calc", "exact-calc", "innerInv", "outerInv",
+                "span", "eff.points", "minStep", "step/minStep");
         System.out.println(toInverseCm(potential.value(xmin)) + " " + toInverseCm(potential.value(xmax)));
 
         Integrator integrator = IntegratorFactory.getCFMagnus6e5Opt();
@@ -50,7 +50,7 @@ public class MorseMain {
 
             Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
-            System.out.printf("minimum step size for all states = %20.8f \n", system.hCriticalAllowed);
+//            System.out.printf("minimum step size for all states = %20.8f \n", system.hCriticalAllowed);
 
             ShootingSolver finder = new ShootingSolver(system, integrator);
 
@@ -65,10 +65,10 @@ public class MorseMain {
                 double span = outerInversionPoint - innerInversionPoint;
                 int nEffPoints = (int) (span / step);
                 double diff = exact - ek.energy;
-                double minStep = (span / (1.5 * (nOfDesiredNodes + 1)));
-                String msg = (step < minStep) ? "" : "!";
-                System.out.printf("%5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %2s\n", nOfDesiredNodes, step, toInverseCm(exact),
-                        toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, minStep, msg);
+                double minStep = (span / (2.0 * (nOfDesiredNodes + 1)));
+                String msg = (step < minStep) ? "OK" : "!";
+                System.out.printf("%5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %15.3f %2s\n", nOfDesiredNodes, step, toInverseCm(exact),
+                        toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, minStep, step/minStep, msg);
             }
 
         }
