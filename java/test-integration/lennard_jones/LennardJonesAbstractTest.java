@@ -48,8 +48,8 @@ public abstract class LennardJonesAbstractTest {
     List<Integrator> integrators;
     private final RefinementStrategy strategy;
     private final boolean isPrintOnlyBad;
-    private static Map<String, Double> refEnergiesBisection = new HashMap<>();
-    private static Map<String, Double> refEnergiesRegFalsi = new HashMap<>();
+    private Map<String, Double> refEnergiesNew = new HashMap<>();
+
 
     static {
         // There were obtained with Magnus8, 4000 points and [1.2 - 45.0] uniform grid
@@ -88,13 +88,10 @@ public abstract class LennardJonesAbstractTest {
         thresholds1800pts.put(Numerov.class, 2.61E-03);
         thresholds1800pts.put(RKN4.class, 3.89E-03);
         thresholds1800pts.put(Verlet.class, 1.74E+00);
-        loadReferenceEnergies();
 
     }
 
-    private static void loadReferenceEnergies() {
-        String filePath = "resources/reference_energies_lennard_jones.tsv";
-
+    void loadReferenceEnergies(String filePath) {
         try (InputStream is = LennardJonesAbstractTest.class.getResourceAsStream(filePath);
              BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
             String line;
@@ -102,13 +99,12 @@ public abstract class LennardJonesAbstractTest {
                 String[] parts = line.split("\t");
                 if (parts.length < 3) continue; // skip empty/malformed lines
                 String key = parts[0];
-                refEnergiesBisection.put(key, Double.parseDouble(parts[1]));
-                refEnergiesRegFalsi.put(key, Double.parseDouble(parts[2]));
+                refEnergiesNew.put(key, Double.parseDouble(parts[1]));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (NumberFormatException e) {
-            System.err.println("Invalid double value in file.");
+            System.err.println("Invalid double value in file " + filePath);
         }
     }
 

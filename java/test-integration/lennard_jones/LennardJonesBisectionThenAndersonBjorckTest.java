@@ -6,6 +6,7 @@ public class LennardJonesBisectionThenAndersonBjorckTest extends LennardJonesAbs
 
     public LennardJonesBisectionThenAndersonBjorckTest() {
         super(RefinementStrategy.BISECTION_THEN_ANDERSON_BJORCK, false);
+        loadReferenceEnergies("resources/energies_lennard_jones_improved_regula_falsi.tsv");
     }
 
 }
