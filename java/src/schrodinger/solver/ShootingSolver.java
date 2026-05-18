@@ -174,6 +174,13 @@ public class ShootingSolver {
         int matchIndex = -1;
         double diffLower = 0;
         double diffUpper = 0;
+
+        // Loop:
+        // 1. Do some bisection
+        // 2. Check if sign of derivative differences for upper/lower energy have different signs
+        // 3. different sign => break loop and start refinement with improved regula falsi
+        // 4. loop again (more bisection and then test again the signs)
+
         for (int i = 1; i <= maxMacroIterations; i++) {
             OutputManager.write(String.format("Initial LOWER energy is: %23.14f (%25.6f cm-1)", l.lowerBound, toInverseCm(l.lowerBound)));
             OutputManager.write(String.format("Initial GUESS energy is: %23.14f (%25.6f cm-1)", l.energy, toInverseCm(l.energy)));
@@ -246,6 +253,7 @@ public class ShootingSolver {
 
             // Evaluate function
             diffEnergy = computeDerivativeMismatch(level, matchIndex);
+            info.iterations++;
 
             OutputManager.writeBlankLine();
             OutputManager.write(String.format("Energy refinement stage. iterations = %d", info.iterations));

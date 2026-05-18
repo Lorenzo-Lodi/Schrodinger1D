@@ -113,7 +113,8 @@ public abstract class LennardJonesAbstractTest {
     }
 
     public LennardJonesAbstractTest(RefinementStrategy strategy, boolean isPrintOnlyBad) {
-        this.integrators = IntegratorFactory.getAll();
+//        this.integrators = IntegratorFactory.getAll();
+        this.integrators = List.of(IntegratorFactory.getEFN());
         this.strategy = strategy;
         this.isPrintOnlyBad = isPrintOnlyBad;
     }
@@ -184,7 +185,7 @@ public abstract class LennardJonesAbstractTest {
             double thresholdAbs = thresholds1800pts.get(integrator.getClass());
             thresholdAbs = 1.25 * thresholdAbs * Math.pow((xmax - xmin) / (13. - 1.5), integrator.globalConvergenceOrder());
             System.out.printf(String.format("For class %22s thresholdAbs (max error for all states apart nNodes=14) is currently set to: %22.3e cm-1\n", className, thresholdAbs));
-            System.out.printf("%22s %20s %12s %15s %15s %20s %10s %22s %22s %20s %20s %12s %s\n", "className", "strategy", "nOfPoints", "xmin", "xmax", "nOfDesiredNodes",
+            System.out.printf("%22s %20s %12s %15s %15s %12s %10s %22s %22s %20s %20s %12s %s\n", "className", "strategy", "nOfPoints", "xmin", "xmax", "nOfDesiredNodes",
                     "goodOrBad", "energy", "energy_ref", "errorAbs", "errorRel", "TotalScans", "<- of which...");
 
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
@@ -217,7 +218,7 @@ public abstract class LennardJonesAbstractTest {
                         isFirstRow = false;
                     }
 
-                    System.out.printf("%22s %20s %12d %15.8e %15.8e %20d %10s %22.8f %22.8f %20.8f %20.8e %12d %s\n", className, strategy, nOfPoints,
+                    System.out.printf("%22s %20s %12d %15.8e %15.8e %12d %10s %22.8f %22.8f %20.8f %20.8e %12d %s\n", className, strategy, nOfPoints,
                             xmin, xmax, nOfDesiredNodes,
                             goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes), errorAbs, errorRel, ek.countTotalScans(), iterInfo);
                 }
