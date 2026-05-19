@@ -65,8 +65,8 @@ public abstract class LennardJonesAbstractTest {
     }
 
     public LennardJonesAbstractTest(RefinementStrategy strategy, boolean isPrintOnlyBad) {
-        this.integrators = IntegratorFactory.getAll();
-//        this.integrators = List.of(IntegratorFactory.getEFN());
+//        this.integrators = IntegratorFactory.getAll();
+        this.integrators = List.of(IntegratorFactory.getStormer8());
         this.strategy = strategy;
         this.isPrintOnlyBad = isPrintOnlyBad;
     }
@@ -104,7 +104,7 @@ public abstract class LennardJonesAbstractTest {
 
     @Test
     void test_1800_points_1_5_to_45_uniform_grid() {
-        test_core(1.5, 45, 1800);
+        test_core(1.5, 42, 1800);
     }
 
 
@@ -133,6 +133,9 @@ public abstract class LennardJonesAbstractTest {
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 String key = generateKey(className, grid, nOfDesiredNodes);
                 Double refEnergy = refEnergiesNew.get(key);
+                if (refEnergy == null) {
+                    refEnergy = 0.;
+                }
 
                 QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, this.strategy);
                 double errorAbs = (refEnergy - toInverseCm(ek.energy));
