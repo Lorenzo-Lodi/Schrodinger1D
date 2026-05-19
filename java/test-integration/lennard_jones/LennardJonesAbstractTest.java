@@ -42,54 +42,11 @@ public abstract class LennardJonesAbstractTest {
     private static final double rMinBohr = rMinAng / BOHR_TO_ANG;
     private static final PhysicalPotential potential = new PhysicalPotentialLennardJones(rMinBohr, wellDepthHartree);
     private static final double mass = 16.85762920 * UMA_TO_ELECTRON_MASS;
-    private static final Map<Integer, Double> refEnergies = new HashMap<>();
-    private static final Map<Class<?>, Double> thresholds1800pts = new HashMap<>();
 
     List<Integrator> integrators;
     private final RefinementStrategy strategy;
     private final boolean isPrintOnlyBad;
     private final Map<String, Double> refEnergiesNew = new HashMap<>();
-
-
-    static {
-        // There were obtained with Magnus8, 4000 points and [1.2 - 45.0] uniform grid
-        refEnergies.put(0, 371.40006854105536);
-        refEnergies.put(1, 1046.35039758025960);
-        refEnergies.put(2, 1636.86240202073500);
-        refEnergies.put(3, 2147.54058595915200);
-        refEnergies.put(4, 2583.19756725932500);
-        refEnergies.put(5, 2948.86947887610630);
-        refEnergies.put(6, 3249.83161605343780);
-        refEnergies.put(7, 3491.61374341683600);
-        refEnergies.put(8, 3680.01417388285970);
-        refEnergies.put(9, 3821.11132786356030);
-        refEnergies.put(10, 3921.27096821614170);
-        refEnergies.put(11, 3987.14669051490550);
-        refEnergies.put(12, 4025.67057896758570);
-        refEnergies.put(13, 4044.03031326710800);
-        refEnergies.put(14, 4049.62843497018100);
-
-        // Thresholds for 1800 points, grid 1.5-13; thresholds for all 14 states (worse-case), ABSOLUTE ERRORS
-        thresholds1800pts.put(CFMagnus6e5Opt.class, 3.16E-07);
-        thresholds1800pts.put(CFMagnus8.class, 3.16E-07);
-        thresholds1800pts.put(PC8i1.class, 4.6E-07);
-        thresholds1800pts.put(PC8i2.class, 6.5E-07);
-        thresholds1800pts.put(Obrechkoff6.class, 1.10E-06);
-        thresholds1800pts.put(CFMagnus6e4.class, 3.6E-06);
-        thresholds1800pts.put(Cowell.class, 3.2E-06);
-        thresholds1800pts.put(PC6.class, 1.32E-05);
-        thresholds1800pts.put(CFMagnus4.class, 1.61E-05);
-        thresholds1800pts.put(RK45DP.class, 6.0E-05);
-        thresholds1800pts.put(Stormer8.class, 6.63E-05);
-        thresholds1800pts.put(Cowell5.class, 1.7E-04);
-        thresholds1800pts.put(Cowell6.class, 8.01E-05);
-        thresholds1800pts.put(EFNFixedBeta.class, 2.33E-04);
-        thresholds1800pts.put(EFN.class, 2.33E-04);
-        thresholds1800pts.put(Numerov.class, 2.61E-03);
-        thresholds1800pts.put(RKN4.class, 3.89E-03);
-        thresholds1800pts.put(Verlet.class, 1.74E+00);
-
-    }
 
     void loadReferenceEnergies(String filePath) {
         try (InputStream is = LennardJonesAbstractTest.class.getResourceAsStream(filePath);
@@ -108,8 +65,8 @@ public abstract class LennardJonesAbstractTest {
     }
 
     public LennardJonesAbstractTest(RefinementStrategy strategy, boolean isPrintOnlyBad) {
-//        this.integrators = IntegratorFactory.getAll();
-        this.integrators = List.of(IntegratorFactory.getEFN());
+        this.integrators = IntegratorFactory.getAll();
+//        this.integrators = List.of(IntegratorFactory.getEFN());
         this.strategy = strategy;
         this.isPrintOnlyBad = isPrintOnlyBad;
     }
@@ -117,82 +74,72 @@ public abstract class LennardJonesAbstractTest {
 
     @Test
     void test_1800_points_1_0_to_13_uniform_grid() {
-        test_core(1.0, 13, 1800, 0.07);
+        test_core(1.0, 13, 1800);
     }
 
     @Test
     void test_1800_points_1_3_to_13_uniform_grid() {
-        test_core(1.3, 13, 1800, 0.07);
+        test_core(1.3, 13, 1800);
     }
 
     @Test
     void test_1800_points_1_5_to_13_uniform_grid() {
-        test_core(1.5, 13, 1800, 0.07);
+        test_core(1.5, 13, 1800);
     }
 
     @Test
     void test_1800_points_1_5_to_20_uniform_grid() {
-        test_core(1.5, 20, 1800, 0.06);
+        test_core(1.5, 20, 1800);
     }
 
     @Test
     void test_1800_points_1_5_to_30_uniform_grid() {
-        test_core(1.5, 30, 1800, 0.14);
+        test_core(1.5, 30, 1800);
     }
 
     @Test
     void test_1800_points_1_5_to_40_uniform_grid() {
-        test_core(1.5, 40, 1800, 0.28);
+        test_core(1.5, 40, 1800);
     }
 
     @Test
     void test_1800_points_1_5_to_45_uniform_grid() {
-        test_core(1.5, 45, 1800, 0.40);
+        test_core(1.5, 45, 1800);
     }
 
 
-    private void test_core(double xmin, double xmax, int nOfPoints, double threshold14thState) {
+    private void test_core(double xmin, double xmax, int nOfPoints) {
+
+        Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
+        SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
+
         int nBad = 0;
         int nGood = 0;
-
         boolean isFirstRow = true;
 
+        double thresholdAbsInverseCm = 1e-6;
+
         for (Integrator integrator : this.integrators) {
-
-            if (xmax >= 45. && integrator instanceof Stormer8) {
-                continue; //For now skip Stormer 8 for very long bond lengths as it goes crazy
-            }
-
-            String className = integrator.getClass().getSimpleName().replace("Test", "");
-            OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
-                    nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log");
-            Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
-//                OutputManager.write("Grid info");
-//                OutputManager.write(String.format("%10s %22s %22s %22s", "i", "r", "y", "V"));
-//                for (int i = 0; i < grid.getNumberOfPoints(); i++) {
-//                    double v = potential.value(grid.rAtGridPoint(i));
-//                    OutputManager.write(String.format("%10d %22.8f %22.8f %25.6f",
-//                            i, grid.rAtGridPoint(i), grid.yAtGridPoint(i), toInverseCm(v)));
-//                }
-            SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
 
-            double thresholdAbs = thresholds1800pts.get(integrator.getClass());
-            thresholdAbs = 1.25 * thresholdAbs * Math.pow((xmax - xmin) / (13. - 1.5), integrator.globalConvergenceOrder());
-            System.out.printf(String.format("For class %22s thresholdAbs (max error for all states apart nNodes=14) is currently set to: %22.3e cm-1\n", className, thresholdAbs));
+            String className = integrator.getClass().getSimpleName();
+            OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
+                    nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log");
+
+            System.out.printf(String.format("For class %22s thresholdAbsInverseCm (max error for all states apart nNodes=14) is currently set to: %22.3e cm-1\n", className, thresholdAbsInverseCm));
             System.out.printf("%22s %20s %12s %15s %15s %12s %10s %22s %22s %20s %20s %12s %s\n", "className", "strategy", "nOfPoints", "xmin", "xmax", "nOfDesiredNodes",
                     "goodOrBad", "energy", "energy_ref", "errorAbs", "errorRel", "TotalScans", "<- of which...");
 
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
+                String key = generateKey(className, grid, nOfDesiredNodes);
+                Double refEnergy = refEnergiesNew.get(key);
+
                 QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, this.strategy);
-                double errorAbs = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy));
-                double errorRel = errorAbs / refEnergies.get(nOfDesiredNodes);
-                // Special rule for the highest level, as it is not completely converged because of grid
-                if (nOfDesiredNodes == 14) {
-                    thresholdAbs = threshold14thState;
-                }
+                double errorAbs = (refEnergy - toInverseCm(ek.energy));
+                double errorRel = errorAbs / refEnergy;
+
                 String goodOrBad;
-                if (Math.abs(errorAbs) <= thresholdAbs) {
+                if (Math.abs(errorAbs) <= thresholdAbsInverseCm) {
                     goodOrBad = "Good";
                     nGood++;
                 } else {
@@ -212,14 +159,12 @@ public abstract class LennardJonesAbstractTest {
                         System.out.printf(iterDescription);
                         isFirstRow = false;
                     }
-                    String key = generateKey(integrator, grid, nOfDesiredNodes);
-                    Double refEnergy = refEnergiesNew.get(key);
 
-                    System.out.printf("%22s %20s %12d %15.8e %15.8e %12d %10s %22.8f %22.8f %20.8f %20.8e %12d %s, | %22s %20.8f \n", className, strategy, nOfPoints,
+
+                    System.out.printf("%22s %20s %12d %15.8e %15.8e %12d %10s %22.8f %22.8f %20.8f %20.8e %12d %s \n", className, strategy, nOfPoints,
                             xmin, xmax, nOfDesiredNodes,
-                            goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes),
-                            errorAbs, errorRel, ek.countTotalScans(), iterInfo,
-                            key, refEnergy);
+                            goodOrBad, toInverseCm(ek.energy), refEnergy,
+                            errorAbs, errorRel, ek.countTotalScans(), iterInfo);
                 }
             }
         }
@@ -231,9 +176,9 @@ public abstract class LennardJonesAbstractTest {
         assertEquals(0, nBad);
     }
 
-    private String generateKey(Integrator integrator, Grid grid, int nOfNodes) {
+    private String generateKey(String integratorClassName, Grid grid, int nOfNodes) {
         StringBuilder sb = new StringBuilder();
-        sb.append(integrator.getClass().getSimpleName()).append("_");
+        sb.append(integratorClassName).append("_");
 
         String mapping = grid.getMappingStrategy().getClass().getSimpleName();
         if (mapping.isEmpty()) {
