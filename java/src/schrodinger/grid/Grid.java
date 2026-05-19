@@ -120,4 +120,8 @@ public class Grid {
         return sb.toString();
     }
 
+    public MappingStrategy getMappingStrategy() {
+        return this.mappingStrategy;
+    }
+
 }

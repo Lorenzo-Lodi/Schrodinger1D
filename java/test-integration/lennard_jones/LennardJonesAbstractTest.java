@@ -214,9 +214,11 @@ public abstract class LennardJonesAbstractTest {
                         isFirstRow = false;
                     }
 
-                    System.out.printf("%22s %20s %12d %15.8e %15.8e %12d %10s %22.8f %22.8f %20.8f %20.8e %12d %s\n", className, strategy, nOfPoints,
+                    System.out.printf("%22s %20s %12d %15.8e %15.8e %12d %10s %22.8f %22.8f %20.8f %20.8e %12d %s, | %22s \n", className, strategy, nOfPoints,
                             xmin, xmax, nOfDesiredNodes,
-                            goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes), errorAbs, errorRel, ek.countTotalScans(), iterInfo);
+                            goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes),
+                            errorAbs, errorRel, ek.countTotalScans(), iterInfo,
+                            generateKey(integrator, grid, nOfDesiredNodes));
                 }
             }
         }
@@ -226,6 +228,22 @@ public abstract class LennardJonesAbstractTest {
         System.out.printf("%10s, %10d -- %10.2f%s\n", "nGood: ", nGood, nGood / nTotal, "%");
         System.out.printf("%10s, %10d -- %10.2f%s\n", "nBad", nBad, nBad / nTotal, "%");
         assertEquals(0, nBad);
+    }
+
+    private String generateKey(Integrator integrator, Grid grid, int nOfNodes) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(integrator.getClass().getSimpleName()).append("_");
+
+        String mapping = grid.getMappingStrategy().getClass().getSimpleName();
+        if (mapping.isEmpty()) {
+            mapping = "uniform";
+        }
+        sb.append(mapping).append("_");
+        sb.append(grid.getNumberOfPoints()).append("_");
+        sb.append(grid.getFirstYValue()).append("_");
+        sb.append((int) grid.getLastYValue()).append("_");
+        sb.append(nOfNodes);
+        return sb.toString();
     }
 
 
