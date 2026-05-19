@@ -48,7 +48,7 @@ public abstract class LennardJonesAbstractTest {
     List<Integrator> integrators;
     private final RefinementStrategy strategy;
     private final boolean isPrintOnlyBad;
-    private Map<String, Double> refEnergiesNew = new HashMap<>();
+    private final Map<String, Double> refEnergiesNew = new HashMap<>();
 
 
     static {
@@ -97,7 +97,6 @@ public abstract class LennardJonesAbstractTest {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("\t");
-                if (parts.length < 3) continue; // skip empty/malformed lines
                 String key = parts[0];
                 refEnergiesNew.put(key, Double.parseDouble(parts[1]));
             }
@@ -213,12 +212,14 @@ public abstract class LennardJonesAbstractTest {
                         System.out.printf(iterDescription);
                         isFirstRow = false;
                     }
+                    String key = generateKey(integrator, grid, nOfDesiredNodes);
+                    Double refEnergy = refEnergiesNew.get(key);
 
-                    System.out.printf("%22s %20s %12d %15.8e %15.8e %12d %10s %22.8f %22.8f %20.8f %20.8e %12d %s, | %22s \n", className, strategy, nOfPoints,
+                    System.out.printf("%22s %20s %12d %15.8e %15.8e %12d %10s %22.8f %22.8f %20.8f %20.8e %12d %s, | %22s %20.8f \n", className, strategy, nOfPoints,
                             xmin, xmax, nOfDesiredNodes,
                             goodOrBad, toInverseCm(ek.energy), refEnergies.get(nOfDesiredNodes),
                             errorAbs, errorRel, ek.countTotalScans(), iterInfo,
-                            generateKey(integrator, grid, nOfDesiredNodes));
+                            key, refEnergy);
                 }
             }
         }
