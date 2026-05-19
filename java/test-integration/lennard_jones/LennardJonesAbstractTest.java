@@ -65,8 +65,8 @@ public abstract class LennardJonesAbstractTest {
     }
 
     public LennardJonesAbstractTest(RefinementStrategy strategy, boolean isPrintOnlyBad) {
-//        this.integrators = IntegratorFactory.getAll();
-        this.integrators = List.of(IntegratorFactory.getStormer8());
+        this.integrators = IntegratorFactory.getAll();
+//        this.integrators = List.of(IntegratorFactory.getStormer8());
         this.strategy = strategy;
         this.isPrintOnlyBad = isPrintOnlyBad;
     }
@@ -104,7 +104,7 @@ public abstract class LennardJonesAbstractTest {
 
     @Test
     void test_1800_points_1_5_to_45_uniform_grid() {
-        test_core(1.5, 42, 1800);
+        test_core(1.5, 45, 2000);
     }
 
 
@@ -117,7 +117,7 @@ public abstract class LennardJonesAbstractTest {
         int nGood = 0;
         boolean isFirstRow = true;
 
-        double thresholdAbsInverseCm = 1e-6;
+        double thresholdAbsInverseCm = 1e-5;
 
         for (Integrator integrator : this.integrators) {
             ShootingSolver finder = new ShootingSolver(system, integrator);

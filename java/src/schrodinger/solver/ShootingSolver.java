@@ -286,9 +286,9 @@ public class ShootingSolver {
     private double computeM(double fEnergy, double fReplaced) {
 //  Illinois or Pegasus may be more stable. Consider switching to either of them if , eg, iter reaches 20 or so.
 //         return 0.5;  // Illinois method.
-//         return fReplaced / (fReplaced + fEnergy); // Pegasus method.
-        double m = 1.0 - fEnergy / fReplaced;  // Anderson-Björck method.
-        return (m <= 0.0) ? 0.5 : m;
+         return fReplaced / (fReplaced + fEnergy); // Pegasus method.
+//        double m = 1.0 - fEnergy / fReplaced;  // Anderson-Björck method.
+//        return (m <= 0.0) ? 0.5 : m;
     }
 
     private double computeDerivativeMismatch(QuantumLevel level, int matchIndex) {
