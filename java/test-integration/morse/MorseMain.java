@@ -1,6 +1,5 @@
 package morse;
 
-import schrodinger.OutputManager;
 import schrodinger.QuantumLevel;
 import schrodinger.SchrodingerSystem;
 import schrodinger.grid.Grid;
@@ -8,13 +7,9 @@ import schrodinger.grid.GridFactory;
 import schrodinger.integrator.Integrator;
 import schrodinger.integrator.IntegratorFactory;
 import schrodinger.potential.PhysicalPotential;
-import schrodinger.potential.PhysicalPotentialLennardJones;
 import schrodinger.potential.PhysicalPotentialMorse;
 import schrodinger.solver.RefinementStrategy;
 import schrodinger.solver.ShootingSolver;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static schrodinger.PhysicalConstants.*;
 
@@ -57,7 +52,7 @@ public class MorseMain {
 
 //        for (int nOfDesiredNodes = 0; nOfDesiredNodes < nOfBoundStates; nOfDesiredNodes++) {
             for (int nOfDesiredNodes = 100; nOfDesiredNodes < 101; nOfDesiredNodes++) {
-                QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_ANDERSON_BJORCK);
+                QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL);
                 double exact = omega0 * (nOfDesiredNodes + 0.5) * (1. - xe * (nOfDesiredNodes + 0.5));
 
                 double innerInversionPoint = rmin - Math.log(1. + Math.sqrt(exact / De)) / a;

@@ -39,7 +39,7 @@ public class ShootingSolver {
             case BISECTION_ONLY:
                 findEigenvalueByBisection(level, nOfDesiredNodes);
                 break;
-            case BISECTION_THEN_ANDERSON_BJORCK:
+            case BISECTION_THEN_BIDIRECTIONAL:
                 findEigenvalueByHybridMethod(level, nOfDesiredNodes);
                 break;
         }
@@ -54,7 +54,7 @@ public class ShootingSolver {
     }
 
     public QuantumLevel findEigenvalue(int nOfDesiredNodes) {
-        return findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_ANDERSON_BJORCK);
+        return findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL);
     }
 
     /**
