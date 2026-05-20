@@ -27,14 +27,22 @@ import schrodinger.solver.RefinementStrategy;
 import schrodinger.solver.ShootingSolver;
 
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static schrodinger.PhysicalConstants.*;
 
 public abstract class LennardJonesAbstractTest {
+    private static final Path PROJECT_ROOT = Path.of(System.getProperty("user.dir"));
+    private static final Path TEST_SRC_ROOT = PROJECT_ROOT.resolve("test-integration/lennard_jones");
 
     private static final double wellDepthInverseCm = 4050;
     private static final double wellDepthHartree = wellDepthInverseCm / HARTREE_TO_INVERSE_CM;
@@ -49,8 +57,11 @@ public abstract class LennardJonesAbstractTest {
     private final Map<String, Double> refEnergiesNew = new HashMap<>();
 
     void loadReferenceEnergies(String filePath) {
-        try (InputStream is = LennardJonesAbstractTest.class.getResourceAsStream(filePath);
-             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+
+        InputStream is = LennardJonesAbstractTest.class.getResourceAsStream(filePath);
+        Objects.requireNonNull(is, "Test resource not found: " + filePath);
+
+        try (is; BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("\t");
@@ -62,6 +73,7 @@ public abstract class LennardJonesAbstractTest {
         } catch (NumberFormatException e) {
             System.err.println("Invalid double value in file " + filePath);
         }
+
     }
 
     public LennardJonesAbstractTest(RefinementStrategy strategy, boolean isPrintOnlyBad) {
@@ -123,8 +135,9 @@ public abstract class LennardJonesAbstractTest {
             ShootingSolver finder = new ShootingSolver(system, integrator);
 
             String className = integrator.getClass().getSimpleName();
-            OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
-                    nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log");
+            String logFilename = "LennardJones_" + className + "_" + nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log";
+            Path logFile = TEST_SRC_ROOT.resolve(logFilename);
+            OutputManager.initCommonOutputFile(logFile.toString());
 
             System.out.printf("%22s %20s %12s %15s %15s %12s %10s %22s %22s %20s %20s %12s %s\n", "className", "strategy", "nOfPoints", "xmin", "xmax", "nOfDesiredNodes",
                     "goodOrBad", "energy", "energy_ref", "errorAbs", "errorRel", "TotalScans", "<- of which...");
@@ -163,7 +176,7 @@ public abstract class LennardJonesAbstractTest {
                     }
 
 
-                        System.out.printf("%22s %20s %10d %8.2f %8.2f %5d %8s %18.8f %18.8f %18.8f %15.3e %12d %s \n", className, strategy, nOfPoints,
+                    System.out.printf("%22s %20s %10d %8.2f %8.2f %5d %8s %18.8f %18.8f %18.8f %15.3e %12d %s \n", className, strategy, nOfPoints,
                             xmin, xmax, nOfDesiredNodes,
                             goodOrBad, toInverseCm(ek.energy), refEnergy,
                             errorAbs, errorRel, ek.countTotalScans(), iterInfo);
@@ -193,6 +206,5 @@ public abstract class LennardJonesAbstractTest {
         sb.append(nOfNodes);
         return sb.toString();
     }
-
 
 }
