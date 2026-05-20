@@ -136,7 +136,7 @@ public abstract class LennardJonesAbstractTest {
 
             String className = integrator.getClass().getSimpleName();
             String logFilename = "LennardJones_" + className + "_" + nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log";
-            Path logFile = TEST_SRC_ROOT.resolve(logFilename);
+            Path logFile = TEST_SRC_ROOT.resolve("outputs/" + logFilename);
             OutputManager.initCommonOutputFile(logFile.toString());
 
             System.out.printf("%22s %20s %12s %15s %15s %12s %10s %22s %22s %20s %20s %12s %s\n", "className", "strategy", "nOfPoints", "xmin", "xmax", "nOfDesiredNodes",
