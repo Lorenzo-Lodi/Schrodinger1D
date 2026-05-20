@@ -30,6 +30,7 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,11 +58,10 @@ public abstract class LennardJonesAbstractTest {
     private final Map<String, Double> refEnergiesNew = new HashMap<>();
 
     void loadReferenceEnergies(String filePath) {
+        Path inputFile = TEST_SRC_ROOT.resolve(filePath);
 
-        InputStream is = LennardJonesAbstractTest.class.getResourceAsStream(filePath);
-        Objects.requireNonNull(is, "Test resource not found: " + filePath);
-
-        try (is; BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+        try (InputStream is = Files.newInputStream(inputFile);
+             BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("\t");
@@ -69,7 +69,7 @@ public abstract class LennardJonesAbstractTest {
                 refEnergiesNew.put(key, Double.parseDouble(parts[1]));
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException("Test input file not found: " + inputFile, e);
         } catch (NumberFormatException e) {
             System.err.println("Invalid double value in file " + filePath);
         }
