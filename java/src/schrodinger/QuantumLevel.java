@@ -131,10 +131,24 @@ public class QuantumLevel {
         return scans;
     }
 
-    public double minimumStepSize() {
+    public double maximumStepSize() {
         double Qmax = QTildeAtGridPoint(system.physicalPotentialMinimumGridIndex);
         double lambdaMin = 2. * Math.PI / Math.sqrt(Qmax);
         return lambdaMin / 8.; // Divide the minimum lambda by a factor 2-10;
+    }
+
+    public void verifyStepSize() {
+        double stepSize = this.getGrid().getStepSizeYCoordinate();
+        double maxStepSize = this.maximumStepSize();
+        if (maxStepSize < stepSize) {
+            OutputManager.write(String.format("WARNING: current step size is %20.6f but the computed minimum step size is %20.6f",
+                    stepSize, maxStepSize));
+            OutputManager.write(String.format("Ratio currentStepSize/maxStepSize (should be less than 1.000): %20.4f",
+                    stepSize / maxStepSize));
+            // For now just warn, throw an exception in the future...
+//            String msg = String.format("Current step size %20.6f is too large! Maximum step size = %20.6f", stepSize, maxStepSize);
+//                    throw new RuntimeException(msg);
+        }
     }
 
 }

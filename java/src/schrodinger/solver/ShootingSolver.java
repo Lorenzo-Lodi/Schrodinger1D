@@ -97,21 +97,18 @@ public class ShootingSolver {
             int nodes = countNodes(level);
             info.iterations++;
 
-//            for (int k = 0; k < level.psi.length; k++) {
-//                OutputManager.writeData(String.format("%8d %20.6e", k, level.psi[k]));
-//            }
-
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = currentEnergy;
                 level.nodesUpper = nodes;
                 level.energy = 0.5 * (level.lowerBound + level.upperBound);
                 OutputManager.write(String.format("Upper bound found, current energy set to %s", fmtEnergy(level.energy)));
+                level.verifyStepSize();
                 return level;
             } else {
                 level.lowerBound = currentEnergy;
                 level.nodesLower = nodes;
-                energyScale *= 2.0;
                 currentEnergy += energyScale;
+                energyScale *= 1.5;
             }
         }
 
@@ -139,18 +136,6 @@ public class ShootingSolver {
 
             OutputManager.write(String.format("Bisection refinement. i = %5d; nodes= %5d %22.10f %22.10f %22.10f", i, nodes,
                     toInverseCm(level.lowerBound), toInverseCm(level.energy), toInverseCm(level.upperBound)));
-
-            {
-                double stepSize = level.getGrid().getStepSizeYCoordinate();
-                double minStepSize = level.minimumStepSize();
-                if (minStepSize < stepSize) {
-                    OutputManager.write(String.format("WARNING: current step size is %20.6f but the computed minimum step size is %20.6f",
-                            stepSize, minStepSize));
-                    OutputManager.write(String.format("Ratio currentStepSize/minStepSize (should be less than 1.000): %20.4f",
-                            stepSize / minStepSize));
-//                    throw new RuntimeException("Step size too large");
-                }
-            }
 
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = level.energy;
