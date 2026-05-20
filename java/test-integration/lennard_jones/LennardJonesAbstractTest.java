@@ -120,7 +120,8 @@ public abstract class LennardJonesAbstractTest {
             ShootingSolver finder = new ShootingSolver(system, integrator);
 
             String className = integrator.getClass().getSimpleName();
-            String logFilename = "LennardJones_" + className + "_" + nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log";
+            String logFilename = "LennardJones_" + className + "_" + xmin + "_" + xmax + "_" + nOfPoints + "_"
+                    + this.strategy.toString().toLowerCase() + ".log";
             Path logFile = TEST_SRC_ROOT.resolve("outputs/" + logFilename);
             OutputManager.initCommonOutputFile(logFile.toString());
 

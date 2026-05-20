@@ -137,14 +137,20 @@ public class ShootingSolver {
             level.energy = (level.lowerBound + level.upperBound) * 0.5;
             int nodes = countNodes(level);
 
-//            OutputManager.write(String.format("Bisection refinement. i = %5d; nodes= %5d %22.10f %22.10f %22.10f", i, nodes,
-//                    toInverseCm(level.lowerBound), toInverseCm(level.energy), toInverseCm(level.upperBound)));
-//
-//            OutputManager.writeBlankLine();
-//            for (int k = 0; k < level.psi.length; k++) {
-//                OutputManager.writeData(String.format("%8d %25.15e  %25.15e %25.15e", k, level.getGrid().yAtGridPoint(k), level.QTildeAtGridPoint(k), level.psi[k]));
-//            }
-//            OutputManager.writeBlankLine();
+            OutputManager.write(String.format("Bisection refinement. i = %5d; nodes= %5d %22.10f %22.10f %22.10f", i, nodes,
+                    toInverseCm(level.lowerBound), toInverseCm(level.energy), toInverseCm(level.upperBound)));
+
+            {
+                double stepSize = level.getGrid().getStepSizeYCoordinate();
+                double minStepSize = level.minimumStepSize();
+                if (minStepSize < stepSize) {
+                    OutputManager.write(String.format("WARNING: current step size is %20.6f but the computed minimum step size is %20.6f",
+                            stepSize, minStepSize));
+                    OutputManager.write(String.format("Ratio currentStepSize/minStepSize (should be less than 1.000): %20.4f",
+                            stepSize / minStepSize));
+//                    throw new RuntimeException("Step size too large");
+                }
+            }
 
             if (nodes > nOfDesiredNodes) {
                 level.upperBound = level.energy;
@@ -286,7 +292,7 @@ public class ShootingSolver {
     private double computeM(double fEnergy, double fReplaced) {
 //  Illinois or Pegasus may be more stable. Consider switching to either of them if , eg, iter reaches 20 or so.
 //         return 0.5;  // Illinois method.
-         return fReplaced / (fReplaced + fEnergy); // Pegasus method.
+        return fReplaced / (fReplaced + fEnergy); // Pegasus method.
 //        double m = 1.0 - fEnergy / fReplaced;  // Anderson-Björck method.
 //        return (m <= 0.0) ? 0.5 : m;
     }
