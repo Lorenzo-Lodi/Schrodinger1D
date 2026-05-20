@@ -34,13 +34,13 @@ public class MorseMain {
         double xmax = 12.;
 //        double step = 0.005;
 //        int nOfPoints = 1 + (int) ((xmax - xmin) / step);
-        System.out.printf("%5s %18s %18s %18s %18s %15s %15s %15s %10s %15s %18s\n", "n", "step", "exact", "calc", "exact-calc", "innerInv", "outerInv",
+        System.out.printf("%5s %5s %18s %18s %18s %18s %15s %15s %15s %10s %15s %18s\n", "n", "np", "step", "exact", "calc", "exact-calc", "innerInv", "outerInv",
                 "span", "eff.points", "minStep", "step/minStep");
-        System.out.println(toInverseCm(potential.value(xmin)) + " " + toInverseCm(potential.value(xmax)));
+//        System.out.println(toInverseCm(potential.value(xmin)) + " " + toInverseCm(potential.value(xmax)));
 
-        Integrator integrator = IntegratorFactory.getCFMagnus6e5Opt();
+        Integrator integrator = IntegratorFactory.getCFMagnus8();
 
-        for (int nOfPoints = 1000; nOfPoints <= 1500; nOfPoints += 100) {
+        for (int nOfPoints = 1000; nOfPoints <= 5000; nOfPoints += 100) {
             double step = (xmax - xmin) / (nOfPoints - 1);
 
             Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
@@ -60,10 +60,10 @@ public class MorseMain {
                 double span = outerInversionPoint - innerInversionPoint;
                 int nEffPoints = (int) (span / step);
                 double diff = exact - ek.energy;
-                double minStep = (span / (2.0 * (nOfDesiredNodes + 1)));
-                String msg = (step < minStep) ? "OK" : "!";
-                System.out.printf("%5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %15.3f %2s\n", nOfDesiredNodes, step, toInverseCm(exact),
-                        toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, minStep, step/minStep, msg);
+                double maxStep = ek.maximumStepSize();
+                String msg = (step < maxStep) ? "OK" : "!";
+                System.out.printf("%5d %5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %15.3f %2s\n", nOfDesiredNodes, nOfPoints, step, toInverseCm(exact),
+                        toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, maxStep, step/maxStep, msg);
             }
 
         }
