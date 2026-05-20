@@ -139,8 +139,8 @@ public abstract class LennardJonesAbstractTest {
             Path logFile = TEST_SRC_ROOT.resolve("outputs/" + logFilename);
             OutputManager.initCommonOutputFile(logFile.toString());
 
-            System.out.printf("%22s %20s %12s %15s %15s %12s %10s %22s %22s %20s %20s %12s %s\n", "className", "strategy", "nOfPoints", "xmin", "xmax", "nOfDesiredNodes",
-                    "goodOrBad", "energy", "energy_ref", "errorAbs", "errorRel", "TotalScans", "<- of which...");
+            System.out.printf("%22s %30s %10s %8s %8s %5s %18s %18s %18s %15s %12s %s\n", "className", "strategy", "nOfPoints", "xmin", "xmax", "nodes",
+                    "energy", "energy_ref", "errorAbs", "errorRel", "check", " SCANS...");
 
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 String key = generateKey(className, grid, nOfDesiredNodes);
@@ -171,15 +171,16 @@ public abstract class LennardJonesAbstractTest {
                         iterDescription += String.format("%3d %s\n", j, info.convergengeStage);
                     }
                     if (isFirstRow) {
-                        System.out.printf(iterDescription);
+                        //System.out.printf(iterDescription);
                         isFirstRow = false;
                     }
 
 
-                    System.out.printf("%22s %20s %10d %8.2f %8.2f %5d %8s %18.8f %18.8f %18.8f %15.3e %12d %s \n", className, strategy, nOfPoints,
+                    System.out.printf("%22s %30s %10d %8.2f %8.2f %5d %18.8f %18.8f %18.8f %15.3e %12s %4d %s\n",
+                            className, strategy, nOfPoints,
                             xmin, xmax, nOfDesiredNodes,
-                            goodOrBad, toInverseCm(ek.energy), refEnergy,
-                            errorAbs, errorRel, ek.countTotalScans(), iterInfo);
+                            toInverseCm(ek.energy), refEnergy,
+                            errorAbs, errorRel, goodOrBad, ek.countTotalScans(), iterInfo);
                 }
             }
         }
