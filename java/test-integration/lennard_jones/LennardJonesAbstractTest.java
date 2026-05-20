@@ -163,14 +163,16 @@ public abstract class LennardJonesAbstractTest {
                         iterDescription += String.format("%3d %s\n", j, info.convergengeStage);
                     }
 
-                    System.out.printf("%22s %30s %10d %8.2f %8.2f %8.4f %5d %18.8f %18.8f %18.8f %15.3e %12s %4d %s | %8.2f %8.2f %8.4f\n",
+                    double stepRatio = grid.getStepSizeYCoordinate() / ek.minimumStepSize();
+
+                    System.out.printf("%22s %30s %10d %8.2f %8.2f %8.4f %5d %18.8f %18.8f %18.8f %15.3e %12s %4d %s | %8.2f %8.2f %8.4f %s\n",
                             className, strategy, nOfPoints,
                             xmin, xmax, grid.getStepSizeYCoordinate(),
                             nOfDesiredNodes,
                             toInverseCm(ek.energy), refEnergy,
                             errorAbs, errorRel, goodOrBad, ek.countTotalScans(), iterInfo,
                             leftInversionPoint, rightInversionPoint,
-                            ek.minimumStepSize());
+                            ek.minimumStepSize(), stepMsg(stepRatio));
                 }
             }
         }
@@ -198,6 +200,23 @@ public abstract class LennardJonesAbstractTest {
         sb.append((int) grid.getLastYValue()).append("_");
         sb.append(nOfNodes);
         return sb.toString();
+    }
+
+    private String stepMsg(double stepRatio) {
+        if (stepRatio > 2.) {
+            return "!!";
+        }
+        if (stepRatio > 1.) {
+            return "!";
+        }
+        if (stepRatio > 0.5) {
+            return "close";
+        }
+        if (stepRatio > 0.2) {
+            return "ok";
+        }
+
+        return "OK";
     }
 
 }
