@@ -7,19 +7,6 @@ import schrodinger.grid.Grid;
 import schrodinger.grid.GridFactory;
 import schrodinger.integrator.Integrator;
 import schrodinger.integrator.IntegratorFactory;
-import schrodinger.integrator.multi_step.Obrechkoff6;
-import schrodinger.integrator.multi_step.Verlet;
-import schrodinger.integrator.multi_step.numerovlike.EFN;
-import schrodinger.integrator.multi_step.numerovlike.EFNFixedBeta;
-import schrodinger.integrator.multi_step.numerovlike.Numerov;
-import schrodinger.integrator.multi_step.predcorr.PC6;
-import schrodinger.integrator.multi_step.predcorr.PC8i1;
-import schrodinger.integrator.multi_step.predcorr.PC8i2;
-import schrodinger.integrator.one_step.*;
-import schrodinger.integrator.multi_step.Cowell5;
-import schrodinger.integrator.multi_step.Cowell6;
-import schrodinger.integrator.multi_step.Stormer8;
-import schrodinger.integrator.multi_step.Cowell;
 import schrodinger.potential.PhysicalPotential;
 import schrodinger.potential.PhysicalPotentialLennardJones;
 import schrodinger.SchrodingerSystem;
@@ -27,15 +14,12 @@ import schrodinger.solver.RefinementStrategy;
 import schrodinger.solver.ShootingSolver;
 
 import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,7 +39,7 @@ public abstract class LennardJonesAbstractTest {
     List<Integrator> integrators;
     private final RefinementStrategy strategy;
     private final boolean isPrintOnlyBad;
-    private final Map<String, Double> refEnergiesNew = new HashMap<>();
+    private final Map<String, Double> refEnergies = new HashMap<>();
 
     void loadReferenceEnergies(String filePath) {
         Path inputFile = TEST_SRC_ROOT.resolve(filePath);
@@ -66,7 +50,7 @@ public abstract class LennardJonesAbstractTest {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("\t");
                 String key = parts[0];
-                refEnergiesNew.put(key, Double.parseDouble(parts[1]));
+                refEnergies.put(key, Double.parseDouble(parts[1]));
             }
         } catch (IOException e) {
             throw new UncheckedIOException("Test input file not found: " + inputFile, e);
@@ -140,13 +124,15 @@ public abstract class LennardJonesAbstractTest {
             Path logFile = TEST_SRC_ROOT.resolve("outputs/" + logFilename);
             OutputManager.initCommonOutputFile(logFile.toString());
 
-            System.out.printf("%22s %30s %10s %8s %8s %5s %18s %18s %18s %15s %12s %s\n", "className", "strategy", "nOfPoints", "xmin", "xmax", "nodes",
-                    "energy", "energy_ref", "errorAbs", "errorRel", "check", " SCANS...");
+            System.out.printf("%22s %30s %10s %8s %8s %8s %5s %18s %18s %18s %15s %12s %17s | %8s %8s %8s\n",
+                    "className", "strategy", "nOfPoints", "xmin", "xmax", "step",
+                    "nodes", "energy", "energy_ref", "errorAbs", "errorRel", "check", " SCANS...",
+                    "LftInv", "RghtInv", "minStep");
 
 
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 String key = generateKey(className, grid, nOfDesiredNodes);
-                Double refEnergy = refEnergiesNew.get(key);
+                Double refEnergy = refEnergies.get(key);
                 if (refEnergy == null) {
                     refEnergy = 0.;
                 }
@@ -154,6 +140,10 @@ public abstract class LennardJonesAbstractTest {
                 QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, this.strategy);
                 double errorAbs = (refEnergy - toInverseCm(ek.energy));
                 double errorRel = errorAbs / refEnergy;
+
+                double leftInversionPoint = system.findLeftmostInversionGridpointY(toHartree(refEnergy));
+                double rightInversionPoint = system.findRightmostInversionGridpointY(toHartree(refEnergy));
+                double allowedRange = rightInversionPoint - leftInversionPoint;
 
                 String goodOrBad;
                 if (Math.abs(errorAbs) <= thresholdAbsInverseCm) {
@@ -173,11 +163,14 @@ public abstract class LennardJonesAbstractTest {
                         iterDescription += String.format("%3d %s\n", j, info.convergengeStage);
                     }
 
-                    System.out.printf("%22s %30s %10d %8.2f %8.2f %5d %18.8f %18.8f %18.8f %15.3e %12s %4d %s\n",
+                    System.out.printf("%22s %30s %10d %8.2f %8.2f %8.4f %5d %18.8f %18.8f %18.8f %15.3e %12s %4d %s | %8.2f %8.2f %8.4f\n",
                             className, strategy, nOfPoints,
-                            xmin, xmax, nOfDesiredNodes,
+                            xmin, xmax, grid.getStepSizeYCoordinate(),
+                            nOfDesiredNodes,
                             toInverseCm(ek.energy), refEnergy,
-                            errorAbs, errorRel, goodOrBad, ek.countTotalScans(), iterInfo);
+                            errorAbs, errorRel, goodOrBad, ek.countTotalScans(), iterInfo,
+                            leftInversionPoint, rightInversionPoint,
+                            ek.minimumStepSize());
                 }
             }
         }

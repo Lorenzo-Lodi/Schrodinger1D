@@ -131,4 +131,10 @@ public class QuantumLevel {
         return scans;
     }
 
+    public double minimumStepSize() {
+        double Qmax = QTildeAtGridPoint(system.physicalPotentialMinimumGridIndex);
+        double lambdaMin = 2. * Math.PI / Math.sqrt(Qmax);
+        return lambdaMin / 8.; // Divide the minimum lambda by a factor 2-10;
+    }
+
 }

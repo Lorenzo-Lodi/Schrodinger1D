@@ -153,4 +153,22 @@ public class SchrodingerSystem {
         return qMin;
     }
 
+    public double findLeftmostInversionGridpointY(double energy) {
+        for (int i = 0; i < grid.getNumberOfPoints(); i++) {
+            if (UTildeAtGridPoint(i) <= energy) {
+                return grid.yAtGridPoint(i);
+            }
+        }
+        return grid.getFirstYValue();
+    }
+
+    public double findRightmostInversionGridpointY(double energy) {
+        for (int i = grid.getNumberOfPoints() - 1; i > 0; i--) {
+            if (UTildeAtGridPoint(i) <= energy) {
+                return grid.yAtGridPoint(i);
+            }
+        }
+        return grid.getLastYValue();
+    }
+
 }
