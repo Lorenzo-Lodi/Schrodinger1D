@@ -129,7 +129,8 @@ public abstract class LennardJonesAbstractTest {
 
         int nBad = 0;
         int nGood = 0;
-        boolean isFirstRow = true;
+
+        String iterDescription = "";
 
         for (Integrator integrator : this.integrators) {
             ShootingSolver finder = new ShootingSolver(system, integrator);
@@ -141,6 +142,7 @@ public abstract class LennardJonesAbstractTest {
 
             System.out.printf("%22s %30s %10s %8s %8s %5s %18s %18s %18s %15s %12s %s\n", "className", "strategy", "nOfPoints", "xmin", "xmax", "nodes",
                     "energy", "energy_ref", "errorAbs", "errorRel", "check", " SCANS...");
+
 
             for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 14; nOfDesiredNodes++) {
                 String key = generateKey(className, grid, nOfDesiredNodes);
@@ -164,17 +166,12 @@ public abstract class LennardJonesAbstractTest {
 
                 if (!(isPrintOnlyBad && goodOrBad.equals("Good"))) {
                     String iterInfo = "";
-                    String iterDescription = "";
+                    iterDescription = "";
                     for (int j = 0; j < ek.convergenceInfo.size(); j++) {
                         QuantumLevel.ConvergenceInfo info = ek.convergenceInfo.get(j);
                         iterInfo += String.format("%4d", info.iterations);
                         iterDescription += String.format("%3d %s\n", j, info.convergengeStage);
                     }
-                    if (isFirstRow) {
-                        //System.out.printf(iterDescription);
-                        isFirstRow = false;
-                    }
-
 
                     System.out.printf("%22s %30s %10d %8.2f %8.2f %5d %18.8f %18.8f %18.8f %15.3e %12s %4d %s\n",
                             className, strategy, nOfPoints,
@@ -184,6 +181,8 @@ public abstract class LennardJonesAbstractTest {
                 }
             }
         }
+        System.out.println("SCAN iterations description:");
+        System.out.printf(iterDescription + "\n");
 
         double nTotal = (nBad + nGood);
         nTotal = nTotal / 100.;
