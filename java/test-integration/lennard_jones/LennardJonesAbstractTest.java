@@ -65,8 +65,8 @@ public abstract class LennardJonesAbstractTest {
     }
 
     public LennardJonesAbstractTest(RefinementStrategy strategy, boolean isPrintOnlyBad) {
-        this.integrators = IntegratorFactory.getAll();
-//        this.integrators = List.of(IntegratorFactory.getStormer8());
+//        this.integrators = IntegratorFactory.getAll();
+        this.integrators = List.of(IntegratorFactory.getEFN());
         this.strategy = strategy;
         this.isPrintOnlyBad = isPrintOnlyBad;
     }
@@ -107,17 +107,17 @@ public abstract class LennardJonesAbstractTest {
         test_core(1.5, 45, 2000);
     }
 
-
     private void test_core(double xmin, double xmax, int nOfPoints) {
 
         Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
 
+        double thresholdAbsInverseCm = 1e-5;
+        System.out.printf(String.format("ThresholdAbsInverseCm = %22.3e cm-1\n", thresholdAbsInverseCm));
+
         int nBad = 0;
         int nGood = 0;
         boolean isFirstRow = true;
-
-        double thresholdAbsInverseCm = 1e-5;
 
         for (Integrator integrator : this.integrators) {
             ShootingSolver finder = new ShootingSolver(system, integrator);
@@ -126,7 +126,6 @@ public abstract class LennardJonesAbstractTest {
             OutputManager.initCommonOutputFile("LennardJones_" + className + "_" +
                     nOfPoints + "_" + this.strategy.toString().toLowerCase() + ".log");
 
-            System.out.printf(String.format("For class %22s thresholdAbsInverseCm (max error for all states apart nNodes=14) is currently set to: %22.3e cm-1\n", className, thresholdAbsInverseCm));
             System.out.printf("%22s %20s %12s %15s %15s %12s %10s %22s %22s %20s %20s %12s %s\n", "className", "strategy", "nOfPoints", "xmin", "xmax", "nOfDesiredNodes",
                     "goodOrBad", "energy", "energy_ref", "errorAbs", "errorRel", "TotalScans", "<- of which...");
 
@@ -164,7 +163,7 @@ public abstract class LennardJonesAbstractTest {
                     }
 
 
-                    System.out.printf("%22s %20s %12d %15.8e %15.8e %12d %10s %22.8f %22.8f %20.8f %20.8e %12d %s \n", className, strategy, nOfPoints,
+                        System.out.printf("%22s %20s %10d %8.2f %8.2f %5d %8s %18.8f %18.8f %18.8f %15.3e %12d %s \n", className, strategy, nOfPoints,
                             xmin, xmax, nOfDesiredNodes,
                             goodOrBad, toInverseCm(ek.energy), refEnergy,
                             errorAbs, errorRel, ek.countTotalScans(), iterInfo);
