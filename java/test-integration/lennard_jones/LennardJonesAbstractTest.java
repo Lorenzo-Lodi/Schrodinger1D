@@ -144,7 +144,6 @@ public abstract class LennardJonesAbstractTest {
 
                 double leftInversionPoint = system.findLeftmostInversionGridpointY(toHartree(refEnergy));
                 double rightInversionPoint = system.findRightmostInversionGridpointY(toHartree(refEnergy));
-                double allowedRange = rightInversionPoint - leftInversionPoint;
 
                 String goodOrBad;
                 if (Math.abs(errorAbs) <= thresholdAbsInverseCm) {
