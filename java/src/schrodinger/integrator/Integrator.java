@@ -65,5 +65,9 @@ public interface Integrator {
         return false;
     }
 
+    default double[] offsets() {
+        return new double[1];
+    }
+
 
 }

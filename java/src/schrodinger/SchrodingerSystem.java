@@ -13,6 +13,7 @@ public class SchrodingerSystem {
     public double UTildeMinimumGridIndex;
     public double UTildeMinimumGridValue;
     private Double energyScale = null;
+    private FractionalGridCache cacheUTilde;
 
     // For now we use a unique hCritical for all integrators. In reality some integrators are very sensitive
     // (PC6 is the most sensitive and requires hCritical=2.5) and some much less (Obrechkoff6 requires hCritical=5.5)
@@ -169,6 +170,10 @@ public class SchrodingerSystem {
             }
         }
         return grid.getLastYValue();
+    }
+
+    public void initializeCache(double[] offsets) {
+        this.cacheUTilde = new FractionalGridCache(this.grid.getNumberOfPoints(), offsets, this::UTildeAtGridPoint);
     }
 
 }
