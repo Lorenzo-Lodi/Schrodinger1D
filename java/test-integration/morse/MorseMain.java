@@ -38,9 +38,9 @@ public class MorseMain {
                 "span", "eff.points", "minStep", "step/minStep");
 //        System.out.println(toInverseCm(potential.value(xmin)) + " " + toInverseCm(potential.value(xmax)));
 
-        Integrator integrator = IntegratorFactory.getCFMagnus8();
+        Integrator integrator = IntegratorFactory.getNumerov();
 
-        for (int nOfPoints = 1000; nOfPoints <= 5000; nOfPoints += 100) {
+        for (int nOfPoints = 1000; nOfPoints <= 1000; nOfPoints += 1) {
             double step = (xmax - xmin) / (nOfPoints - 1);
 
             Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);

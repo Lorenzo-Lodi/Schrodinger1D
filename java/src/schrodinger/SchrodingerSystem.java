@@ -57,6 +57,9 @@ public class SchrodingerSystem {
     }
 
     public double UTildeAtGridPoint(double i) {
+        if (this.cacheUTilde != null && this.cacheUTilde.contains(i)) {
+            return this.cacheUTilde.get(i);
+        }
         double y = grid.yAtGridPoint(i);
         return UTilde(y);
     }
@@ -64,7 +67,6 @@ public class SchrodingerSystem {
     public double Ucapped() {
         return -qMin / (2. * mass);
     }
-
 
     public double estimateEnergyScale() {
         if (energyScale != null) {

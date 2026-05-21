@@ -65,7 +65,7 @@ public interface Integrator {
         return false;
     }
 
-    default double[] offsets() {
+    default double[] getFractionalOffsets() {
         return new double[1];
     }
 

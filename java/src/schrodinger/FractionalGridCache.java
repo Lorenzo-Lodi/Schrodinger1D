@@ -26,18 +26,31 @@ public class FractionalGridCache {
         }
     }
 
-    // O(1) fast lookup
+    // O(numFractions) lookup
     public double get(double i) {
+        return cache[computeCacheVectorIndex(i)];
+    }
+
+    public int computeCacheVectorIndex(double i) {
         int baseIndex = (int) i;
         double fraction = i - baseIndex;
 
-        int fractionIndex = 0;
+        int fractionIndex = -1;
         for (int f = 0; f < numFractions; f++) {
             if (Math.abs(fraction - fractionalOffsets[f]) < 1e-9) {
                 fractionIndex = f;
                 break;
             }
         }
-        return cache[(baseIndex * numFractions) + fractionIndex];
+        if (fractionIndex >= 0) {
+            return (baseIndex * numFractions) + fractionIndex;
+        } else {
+            return -1;
+        }
+    }
+
+    public boolean contains(double i) {
+        int index = computeCacheVectorIndex(i);
+        return (index >= 0 && index < cache.length);
     }
 }

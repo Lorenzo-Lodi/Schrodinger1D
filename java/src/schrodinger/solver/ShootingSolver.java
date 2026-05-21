@@ -27,7 +27,7 @@ public class ShootingSolver {
     public ShootingSolver(SchrodingerSystem system, Integrator integrator) {
         this.system = system;
         this.integrator = integrator;
-        this.system.initializeCache(integrator.offsets());
+        this.system.initializeCache(integrator.getFractionalOffsets());
     }
 
     public QuantumLevel findEigenvalue(int nOfDesiredNodes, RefinementStrategy refinementStrategy) {
