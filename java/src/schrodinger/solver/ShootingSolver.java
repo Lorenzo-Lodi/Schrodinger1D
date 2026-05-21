@@ -79,7 +79,7 @@ public class ShootingSolver {
         double energyScale = system.estimateEnergyScale();
 
         // Set minimum a bit lower than minimum of the potential on the grid
-        level.lowerBound = system.physicalPotentialMinimumGridValue - energyScale * 0.05;
+        level.lowerBound = system.UTildeMinimumGridValue - energyScale * 0.05;
         level.nodesLower = 0; // Should be always correct
 
         // 3. Exponential Scan to find upper bound to the energy

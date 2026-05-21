@@ -10,8 +10,8 @@ public class SchrodingerSystem {
     private final double mass;
     private final Grid grid;
     private final double qMin;
-    public double physicalPotentialMinimumGridIndex;
-    public double physicalPotentialMinimumGridValue;
+    public double UTildeMinimumGridIndex;
+    public double UTildeMinimumGridValue;
     private Double energyScale = null;
 
     // For now we use a unique hCritical for all integrators. In reality some integrators are very sensitive
@@ -86,8 +86,8 @@ public class SchrodingerSystem {
                 minIndex = i;
             }
         }
-        physicalPotentialMinimumGridIndex = minIndex;
-        physicalPotentialMinimumGridValue = uMin;
+        UTildeMinimumGridIndex = minIndex;
+        UTildeMinimumGridValue = uMin;
 
         OutputManager.write(String.format("I scanned the potential and found a minimum value %23.14f (%25.6f cm-1) for i = %d",
                 uMin, toInverseCm(uMin), minIndex));
