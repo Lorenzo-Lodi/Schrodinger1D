@@ -126,7 +126,7 @@ public class RK45DP implements Integrator {
     @Override
     public double[] getFractionalOffsets() {
         // it also calls 1/9 (=1-c5) and 7/10 (1-c3) when going backwards
-        return new double[]{0.0, 1. / 9., c2, c3, 7. / 10., c4, c5};
+        return new double[]{0.0, 1. - c5, c2, c3, 1. - c3, c4, c5};
     }
 
 }
