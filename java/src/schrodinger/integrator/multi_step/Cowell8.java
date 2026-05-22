@@ -4,7 +4,7 @@ import schrodinger.integrator.Integrator;
 
 import java.util.function.DoubleUnaryOperator;
 
-public class Cowell implements Integrator {
+public class Cowell8 implements Integrator {
 
     @Override
     public int minHistoryLength() {

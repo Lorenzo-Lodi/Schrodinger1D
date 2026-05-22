@@ -7,11 +7,11 @@ import schrodinger.integrator.Integrator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CowellTest extends AbstractIntegratorTest {
+public class Cowell8Test extends AbstractIntegratorTest {
 
     @Override
     protected Integrator getIntegrator() {
-        return new Cowell();
+        return new Cowell8();
     }
 
     @Test
