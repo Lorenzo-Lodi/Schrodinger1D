@@ -63,4 +63,10 @@ public final class RKN4 implements Integrator {
         currentPsiPrime[0] = currentPsiPrime[0] + h * d * (BP1 * f1 + BP2 * f2 + BP3 * f3);
         return result;
     }
+
+    @Override
+    public double[] getFractionalOffsets() {
+        return new double[]{0.0, C2};
+    }
+
 }
