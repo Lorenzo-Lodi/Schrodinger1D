@@ -66,7 +66,7 @@ public class RK45DP implements Integrator {
                             Direction direction) {
 
         final int d = direction.getValue();
-        final double h = step*d;
+        final double h = step * d;
         final int n0 = n;
         final int n1 = n + d;
 
@@ -122,5 +122,12 @@ public class RK45DP implements Integrator {
         currentPsiPrime[0] = vNext;
         return yNext;
     }
+
+    @Override
+    public double[] getFractionalOffsets() {
+        // it also calls 1/9 (=1-c5) and 7/10 (1-c3) when going backwards
+        return new double[]{0.0, 1. / 9., c2, c3, 7. / 10., c4, c5};
+    }
+
 }
 

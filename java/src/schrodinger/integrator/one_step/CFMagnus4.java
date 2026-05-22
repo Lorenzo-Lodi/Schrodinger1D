@@ -44,4 +44,9 @@ public final class CFMagnus4 extends CFMagnusAbstract implements Integrator {
         return 4;
     }
 
+    @Override
+    public double[] getFractionalOffsets() {
+        return addZeroAndMakeCopyOfOffsets(C);
+    }
+
 }

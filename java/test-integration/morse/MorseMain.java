@@ -38,7 +38,7 @@ public class MorseMain {
                 "span", "eff.points", "minStep", "step/minStep");
 //        System.out.println(toInverseCm(potential.value(xmin)) + " " + toInverseCm(potential.value(xmax)));
 
-        Integrator integrator = IntegratorFactory.getCFMagnus4();
+        Integrator integrator = IntegratorFactory.getRK45DP();
 
         for (int nOfPoints = 5000; nOfPoints <= 5000; nOfPoints += 1) {
             double step = (xmax - xmin) / (nOfPoints - 1);
@@ -65,8 +65,11 @@ public class MorseMain {
                 System.out.printf("%5d %5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %15.3f %2s\n", nOfDesiredNodes, nOfPoints, step, toInverseCm(exact),
                         toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, maxStep, step / maxStep, msg);
             }
-            System.out.println("Cache hits   = " + system.getCacheUTilde().nOfCacheHits);
-            System.out.println("Cache misses = " + system.getCacheUTilde().nOfCacheMisses);
+            int hits = system.getCacheUTilde().nOfCacheHits;
+            int misses = system.getCacheUTilde().nOfCacheMisses;
+            double totCache = hits + misses;
+            System.out.printf("Cache hits   = %12d (%7.3f %%)\n", hits, 100. * hits / totCache);
+            System.out.printf("Cache misses = %12d (%7.3f %%)\n", misses, 100. * misses / totCache);
         }
 
 

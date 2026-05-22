@@ -16,7 +16,7 @@ public class FractionalGridCache {
 
     public FractionalGridCache(int numGridPoints, double[] offsets, DoubleUnaryOperator function) {
         this.numFractions = offsets.length;
-        this.fractionalOffsets = offsets;
+        this.fractionalOffsets = offsets.clone();  // Keep internally a copy of the passed array, for safety
         this.cache = new double[numGridPoints * numFractions];
 
         for (int i = 0; i < numGridPoints; i++) {
