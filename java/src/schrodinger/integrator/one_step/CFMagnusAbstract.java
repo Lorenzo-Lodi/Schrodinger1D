@@ -135,5 +135,12 @@ public abstract class CFMagnusAbstract {
         }
     }
 
+    double[] getFractionalOffsets() {
+        double[] result = new double[C.length + 1];
+        result[0] = 0.0;
+        System.arraycopy(C, 0, result, 1, C.length); // Return a copy of the array, for safety
+        return result;
+
+    }
 
 }

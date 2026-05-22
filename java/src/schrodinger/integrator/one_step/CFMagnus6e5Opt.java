@@ -72,7 +72,7 @@ public final class CFMagnus6e5Opt extends CFMagnusAbstract implements Integrator
 
     @Override
     public double[] getFractionalOffsets() {
-        return addZeroAndMakeCopyOfOffsets(C);
+        return super.getFractionalOffsets();
     }
 
 }

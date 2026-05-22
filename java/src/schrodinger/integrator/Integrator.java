@@ -69,13 +69,4 @@ public interface Integrator {
         return new double[1];
     }
 
-    default double[] addZeroAndMakeCopyOfOffsets(double[] offsets) {
-        double[] result = new double[offsets.length + 1];
-        result[0] = 0.0;
-        System.arraycopy(offsets, 0, result, 1, offsets.length); // Return a copy of the array, for safety
-        return result;
-
-    }
-
-
 }
