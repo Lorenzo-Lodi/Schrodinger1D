@@ -57,8 +57,11 @@ public class SchrodingerSystem {
     }
 
     public double UTildeAtGridPoint(double i) {
-        if (this.cacheUTilde != null && this.cacheUTilde.contains(i)) {
-            return this.cacheUTilde.get(i);
+        if (this.cacheUTilde != null) {
+            int flatIndex = this.cacheUTilde.computeCacheVectorIndex(i);
+            if (flatIndex >= 0 && flatIndex < this.cacheUTilde.cacheVectorLength()) {
+                return this.cacheUTilde.getByFlatIndex(flatIndex);
+            }
         }
         double y = grid.yAtGridPoint(i);
         return UTilde(y);
@@ -176,6 +179,10 @@ public class SchrodingerSystem {
 
     public void initializeCache(double[] offsets) {
         this.cacheUTilde = new FractionalGridCache(this.grid.getNumberOfPoints(), offsets, this::UTildeAtGridPoint);
+    }
+
+    public FractionalGridCache getCacheUTilde() {
+        return cacheUTilde;
     }
 
 }

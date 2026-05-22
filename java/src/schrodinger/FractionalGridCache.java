@@ -6,6 +6,8 @@ public class FractionalGridCache {
     private final double[] cache;
     private final int numFractions;
     private final double[] fractionalOffsets;
+    public int nOfCacheHits = 0;
+    public int nOfCacheMisses = 0;
 
     // Accepts any function taking in a (continuous) grid index i and tabularizes it for i=0, ... i = numGridPoints-1
     public FractionalGridCache(int numGridPoints, DoubleUnaryOperator function) {
@@ -31,6 +33,10 @@ public class FractionalGridCache {
         return cache[computeCacheVectorIndex(i)];
     }
 
+    public double getByFlatIndex(int flatIndex) {
+        return cache[flatIndex];
+    }
+
     public int computeCacheVectorIndex(double i) {
         int baseIndex = (int) i;
         double fraction = i - baseIndex;
@@ -43,14 +49,15 @@ public class FractionalGridCache {
             }
         }
         if (fractionIndex >= 0) {
+            nOfCacheHits++;
             return (baseIndex * numFractions) + fractionIndex;
         } else {
+            nOfCacheMisses++;
             return -1;
         }
     }
 
-    public boolean contains(double i) {
-        int index = computeCacheVectorIndex(i);
-        return (index >= 0 && index < cache.length);
+    public int cacheVectorLength() {
+        return cache.length;
     }
 }
