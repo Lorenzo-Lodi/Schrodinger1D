@@ -14,6 +14,7 @@ public class SchrodingerSystem {
     public double UTildeMinimumGridValue;
     private Double energyScale = null;
     private FractionalGridCache cacheUTilde;
+    private boolean isCachingUTilde;
 
     // For now we use a unique hCritical for all integrators. In reality some integrators are very sensitive
     // (PC6 is the most sensitive and requires hCritical=2.5) and some much less (Obrechkoff6 requires hCritical=5.5)
@@ -57,7 +58,7 @@ public class SchrodingerSystem {
     }
 
     public double UTildeAtGridPoint(double i) {
-        if (this.cacheUTilde != null) {
+        if (isCachingUTilde && this.cacheUTilde != null) {
             int flatIndex = this.cacheUTilde.computeCacheVectorIndex(i);
             if (flatIndex >= 0 && flatIndex < this.cacheUTilde.cacheVectorLength()) {
                 return this.cacheUTilde.getByFlatIndex(flatIndex);
@@ -183,6 +184,14 @@ public class SchrodingerSystem {
 
     public FractionalGridCache getCacheUTilde() {
         return cacheUTilde;
+    }
+
+    public boolean isCachingUTilde() {
+        return isCachingUTilde;
+    }
+
+    public void setCachingUTilde(boolean cachingUTilde) {
+        isCachingUTilde = cachingUTilde;
     }
 
 }
