@@ -10,7 +10,7 @@ import schrodinger.integrator.one_step.*;
 import schrodinger.integrator.multi_step.Cowell5;
 import schrodinger.integrator.multi_step.Cowell6;
 import schrodinger.integrator.multi_step.Stormer8;
-import schrodinger.integrator.multi_step.Cowell;
+import schrodinger.integrator.multi_step.Cowell8;
 import schrodinger.integrator.multi_step.Obrechkoff6;
 import schrodinger.integrator.multi_step.Verlet;
 
@@ -51,7 +51,7 @@ public class IntegratorFactory {
     }
 
     public static Integrator getCowell8() {
-        return new Cowell();
+        return new Cowell8();
     }
 
     public static Integrator getPC6() {
