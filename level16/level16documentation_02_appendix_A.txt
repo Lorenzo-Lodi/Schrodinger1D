@@ -1,0 +1,95 @@
+Appendix A. Structure of the Input Data File
+
+All of the READ statements for inputting data to the program, and the associated logical structure, are listed here. 
+Appendix B then provides a detailed description of the nature of and/or options associated with each of the input variables.
+
+#1  READ(5,*,END=999) IAN1, IMN1, IAN2, IMN2, CHARGE, NUMPOT
+#2  IF(CHARGE.NE.0) READ(5,*) hCHARGE1, hCHARGE2
+#3a IF(IAN1.LE.0) READ(5,*) NAME1, MASS1
+#3b IF(IAN2.LE.0) READ(5,*) NAME2, MASS2
+#4  READ(5,*) TITL
+#5  READ(5,*) RH, RMIN, RMAX, EPS
+    DO IPOT= 1, NUMPOT
+     READ(5,*) NTP, LPPOT, OMEGA, VLIM
+#6   IF(NTP.GT.0) THEN
+#7      READ(5,*) NUSE, IR2, ILR, NCN, CNN
+#8      READ(5,*) RFACT, EFACT, VSHIFT
+#9      READ(5,*) (XI(I), YI(I), I= 1,NTP)
+ELSE
+#10
+READ(5,*) IPOTL, QPAR, PPAR, Nbeta, APSE, IBOB
+#11
+READ(5,*) DSCM, REQ, Rref
+IF(IPOTL.GE.4) THEN
+#12
+READ(5,*) NCMM, rhoAB, sVSR2, IDSTT
+DO i= 1,NCMM
+#13
+READ(5,*) MMLR(i),CMM(i)
+ENDIFENDDO
+IF(NVARB.GT.0) THEN
+IF((IPOTL.EQ.4).AND.(APSE.GT.0)) THEN
+DO i= 1, NVARB
+
+Appendix A: Structure of the Input File Data
+2
+#14a
+READ(5,*) XPARM(I), PARM(I)
+ENDDO
+ELSE
+#14b
+READ(5,*) (PARM(I), I=1,NVARB)
+ENDIF
+ENDIF
+IF(IBOB.GT.0) THEN
+#15
+READ(5,*) MN1R, MN2R, qAD, pAD, NU1, NU2, qNA, NT1, NT2
+#16
+IF(NU1.GE.0) READ(5,*) (U1(I), I=0,NU1)
+#17
+IF(NU1.GE.0) READ(5,*) U1INF
+#18
+IF(NU2.GE.0) READ(5,*) (U2(I), I=0,NU2)
+#19
+IF(NU2.GE.0) READ(5,*) U2INF
+#20
+IF(NT1.GE.0) READ(5,*) (T1(I), I=0,NT1)
+#21
+IF(NT1.GE.0) READ(5,*) T1INF
+#22
+IF(NT2.GE.0) READ(5,*) (T2(I), I=0,NT2)
+#23
+IF(NT2.GE.0) READ(5,*) T2INF
+ENDIFENDIF
+ENDDO
+#24
+READ(5,*) NLEV1, AUTO1, LCDC, LXPCT, NJM, JDJR, IWR, LPRWF
+NLEV= MAX(1,NLEV1)
+#25a
+IF(AUTO1.GT.0) READ(5,*) (IV(I), IJ(I), I= 1,NLEV)
+#25b
+IF(AUTO1.LE.0) READ(5,*) (IV(I), IJ(I), GV(I), I= 1,NLEV)
+IF((LXPCT.NE.0).AND.(LXPCT.NE.-1)) THEN
+#26
+READ(5,*) MORDR, IRFN, DREF
+#27
+IF((IABS(IRFN).LE.9).AND.(MORDR.GE.0)) READ(5,*) (DM(J), J= 0,MORDR)
+IF(IRFN.GE.10) THEN
+#28
+READ(5,*) NRFN, RFLIM
+#29
+READ(5,*) NUSEF, ILRF, NCNF, CNNF
+#30
+READ(5,*) RFACTF, MFACTF
+#31
+READ(5,*) (XIF(I), YIF(I), I= 1,IRFN)
+ENDIF
+ENDIF
+IF(IABS(LXPCT).GE.3) THEN
+#32
+READ(5,*) NLEV2, AUTO2, J2DL, J2DU, J2DD
+#33a
+IF(AUTO2.GT.0) READ(5,*) (IV2(I),I= 1,NLEV2)
+#33b
+IF(AUTO2.LE.0) READ(5,*) (IV2(I),GV(I),I= 1,NLEV2)
+ENDIF

@@ -1,0 +1,76 @@
+Appendix D : Program Structure
+
+The present section lists the names and outlines the functions of the various subroutines used by
+LEVEL, and indicates their hierarchy. In particular, the level of indentation in this list indicates
+which subroutines call which others; unless stated otherwise, each subroutine is called exclusively
+by the immediately preceding routine having one lower level of indentation.
+LEVEL : The main program which reads input data and instructions, and calls the potential
+preparation, eigenfunction determination, and overlap integral routines.
+MASSES : A data subroutine containing accurate atomic masses and other properties of all
+stable atomic isotopes. For normal cases, its presence obviates the need for a user to look
+up and type precise particle masses into the input data file. It is lso called by POTGEN
+to define mass-scaling of BOB functions.
+ALF : For any smooth single-minimum, shelf-state or double-minimum potential, ALF
+(Automatic Level Finder) uses multiple calls to subroutine SCHRQ (see below) to deter-
+mine the vibrational energies of all levels from v = 0 up to some maximum v specified
+by its input parameter KVMAX. If fewer than the specified number of levels are found,
+warnings are printed.
+SCECOR : uses first-order semiclassical estimates of ( v + 1/2) and dG(v)/dv (see
+Eqs. (10) and (11), and sometimes more brute force methods, to generate a trial
+eigenvalue for the ‘next’ level of interest.
+SCHRQ : Solves the Schr¨odinger equation to determine the eigenvalue and (unit normalized)
+eigenfunction of the vibrational level lying closest to the input trial energy.
+QBOUND : For quasibound levels (those lying above the potential asymptote, but
+behind a potential barrier), applies the Airy function boundary condition at the
+third turning point to initiate the inward inward integration of the wave function
+for such levels [8, 9].
+WIDTH : Calculates the tunneling predissociation lifetime or width of a quasibound
+level [9–11].
+LEVQAD : Called by WIDTH to evaluate the near-turning-point contributions to
+the semiclassical quadratures over the potential well and the barrier to tunneling
+which are required for calculating the predissociation rate.
+CDJOEL : Calculates the diatomic molecule centrifugal distortion constants of Eq. (8). The
+required input is the effective (centrifugally-distorted, if appropriate) radial potential,
+and the eigenvalue and eigenfunction of the level in question (as calculated by SCHRQ).
+LEVXPC : Calculates the desired diagonal expectation values of powers of the specified
+distance coordinate or (interpolated) radial function RFN(r) (see Read #26 in Appendix
+B).
+MATXEL : Calculates the desired off-diagonal matrix elements of powers of the specified
+radial function or distance coordinate, and the radiative lifetime or Einstein emission
+coefficient A [s−1].
+PREPOT : The subroutine that oversees reading of the parameters defining the potential
+and generating the required potential array at the N distances specified by the input
+distance array.
+
+GENINT : Uses piecewise polynomial or cubic spline functions to interpolate over a set
+of read-in turning points to yield the potential function array at the equally-spaced
+radial mesh required by SCHRQ . If necessary, it extrapolates beyond the range of
+the given points with analytic functions (see options for parameter ILR of Read
+#7).
+PLYINTRP : Performs piecewise polynomial interpolation on a given array of
+point, and returns the function value and (if desired) its derivatives at a speci-
+fied point. It is used by GENINT to interpolate for the potential for cases with
+NUSE > 0 . This routine is also used by SPLINT to define the first derivatives at
+the inner and outer ends of the interpolation region, R = XI(1) and XI(NTP),
+respectively.
+SPLINT : Calls subroutine SPLINE to generate the 4 × (NTP − 1) coefficients
+required to define the cubic spline through the NTP given turning points, and
+then uses these coefficients to generate the desired interpolated function values
+at the specified integration mesh points.
+SPLINE : Generates the coefficients defining the cubic spline function through
+the given NTP turning points.
+POTGEN : For the various analytic potential function specified by input parameter
+IPOTL (see Read #10), reads in the parameters defining those functions and gen-
+erates the desired array of potential function values on the specified radial grid. If
+BOB correction functions are to be included, also reads in the parameters defining
+them and incorporates them into the effective adiabatic potential used by SCHRQ.
+DAMPF : Generates the damping functions of Eqs. (25) and (26) utilized in defin-
+ing the tails of the MLR, DELR and HPP potential energy functions.
+AFdiag : Performs the 2 × 2 or 3 × 3 diagonalization used to define the long-range
+tail of a potential energy function the case or interstate coupling near the nS+nP
+asymptote of a homonuclear alkali dimer [33, 49–51].
+LKoef : Asen Pashov’s subroutine to generate the array of Nbeta × Nbeta coeffi-
+cients that define his spline ‘basis functions’ [45].
+Scalc : A function subroutine to generate the Sm(x) ’basis functions’ used by Pashov
+to generate values of a spline function.
+ludcmp : A subroutine used by LKoef.
