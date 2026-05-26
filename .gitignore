@@ -14,3 +14,7 @@ java/bin/
 *.log
 java/build.xml
 java/nbproject/
+*.jfr
+a.exe
+fort.7
+fort.9
