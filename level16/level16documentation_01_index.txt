@@ -1,0 +1,9 @@
+This document contains Supplementary Material associated with the paper “LEVEL: A Computer Program for Solving the Radial Schr¨odinger Equation for Bound and Quasibound Levels”, submitted to the Journal of Quantitative Spectroscopy and Radiative Transfer in February 2016. It consists of the six Appendices enumerated below. Note that Equation and Reference numbering appearing herein refer to the equation and reference numbering in the Journal Article.
+
+Appendix A  : Structure of the Input Data File
+Appendix B  : Definitions and Descriptions of the Input Data File Parameters
+Appendix C  : Illustrative Cases and Sample Input and Output Files
+Appendix C.1: Introductory Illustrative Applications
+Appendix C.2: Applications with 7 Types of Analytical Potentials
+Appendix C.3: Sample pointwise-PEC line-list “production run”
+Appendix D  : Overview of Program Structure

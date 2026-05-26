@@ -1,0 +1,7742 @@
+This document contains Supplementary Material associated with the paper “LEVEL: A Computer Program for Solving the Radial Schr¨odinger Equation for Bound and Quasibound Levels”, submitted to the Journal of Quantitative Spectroscopy and Radiative Transfer in February 2016. It consists of the six Appendices enumerated below. Note that Equation and Reference numbering appearing herein refer to the equation and reference numbering in the Journal Article.
+
+Appendix A  : Structure of the Input Data File
+Appendix B  : Definitions and Descriptions of the Input Data File Parameters
+Appendix C  : Illustrative Cases and Sample Input and Output Files
+Appendix C.1: Introductory Illustrative Applications
+Appendix C.2: Applications with 7 Types of Analytical Potentials
+Appendix C.3: Sample pointwise-PEC line-list “production run”
+Appendix D  : Overview of Program Structure
+s
+Appendix A. Structure of the Input Data File
+All of the READ statements for inputting data to the program, and the associated logical
+structure, are listed here. Appendix B then provides a detailed description of the nature of and/or
+options associated with each of the input variables.
+#1
+READ(5,*,END=999) IAN1, IMN1, IAN2, IMN2, CHARGE, NUMPOT
+#2
+IF(CHARGE.NE.0) READ(5,*) hCHARGE1, hCHARGE2
+#3a
+IF(IAN1.LE.0) READ(5,*) NAME1, MASS1
+#3b
+IF(IAN2.LE.0) READ(5,*) NAME2, MASS2
+#4
+READ(5,*) TITL
+#5
+READ(5,*) RH, RMIN, RMAX, EPS
+DO
+IPOT= 1, NUMPOT
+#6
+READ(5,*) NTP, LPPOT, OMEGA, VLIM
+IF(NTP.GT.0) THEN
+#7
+READ(5,*) NUSE, IR2, ILR, NCN, CNN
+#8
+READ(5,*) RFACT, EFACT, VSHIFT
+#9
+READ(5,*) (XI(I), YI(I), I= 1,NTP)
+ELSE
+#10
+READ(5,*) IPOTL, QPAR, PPAR, Nbeta, APSE, IBOB
+#11
+READ(5,*) DSCM, REQ, Rref
+IF(IPOTL.GE.4) THEN
+#12
+READ(5,*) NCMM, rhoAB, sVSR2, IDSTT
+DO i= 1,NCMM
+#13
+READ(5,*) MMLR(i),CMM(i)
+ENDIFENDDO
+IF(NVARB.GT.0) THEN
+IF((IPOTL.EQ.4).AND.(APSE.GT.0)) THEN
+DO i= 1, NVARB
+
+Appendix A: Structure of the Input File Data
+2
+#14a
+READ(5,*) XPARM(I), PARM(I)
+ENDDO
+ELSE
+#14b
+READ(5,*) (PARM(I), I=1,NVARB)
+ENDIF
+ENDIF
+IF(IBOB.GT.0) THEN
+#15
+READ(5,*) MN1R, MN2R, qAD, pAD, NU1, NU2, qNA, NT1, NT2
+#16
+IF(NU1.GE.0) READ(5,*) (U1(I), I=0,NU1)
+#17
+IF(NU1.GE.0) READ(5,*) U1INF
+#18
+IF(NU2.GE.0) READ(5,*) (U2(I), I=0,NU2)
+#19
+IF(NU2.GE.0) READ(5,*) U2INF
+#20
+IF(NT1.GE.0) READ(5,*) (T1(I), I=0,NT1)
+#21
+IF(NT1.GE.0) READ(5,*) T1INF
+#22
+IF(NT2.GE.0) READ(5,*) (T2(I), I=0,NT2)
+#23
+IF(NT2.GE.0) READ(5,*) T2INF
+ENDIFENDIF
+ENDDO
+#24
+READ(5,*) NLEV1, AUTO1, LCDC, LXPCT, NJM, JDJR, IWR, LPRWF
+NLEV= MAX(1,NLEV1)
+#25a
+IF(AUTO1.GT.0) READ(5,*) (IV(I), IJ(I), I= 1,NLEV)
+#25b
+IF(AUTO1.LE.0) READ(5,*) (IV(I), IJ(I), GV(I), I= 1,NLEV)
+IF((LXPCT.NE.0).AND.(LXPCT.NE.-1)) THEN
+#26
+READ(5,*) MORDR, IRFN, DREF
+#27
+IF((IABS(IRFN).LE.9).AND.(MORDR.GE.0)) READ(5,*) (DM(J), J= 0,MORDR)
+IF(IRFN.GE.10) THEN
+#28
+READ(5,*) NRFN, RFLIM
+#29
+READ(5,*) NUSEF, ILRF, NCNF, CNNF
+#30
+READ(5,*) RFACTF, MFACTF
+#31
+READ(5,*) (XIF(I), YIF(I), I= 1,IRFN)
+ENDIF
+ENDIF
+IF(IABS(LXPCT).GE.3) THEN
+#32
+READ(5,*) NLEV2, AUTO2, J2DL, J2DU, J2DD
+#33a
+IF(AUTO2.GT.0) READ(5,*) (IV2(I),I= 1,NLEV2)
+#33b
+IF(AUTO2.LE.0) READ(5,*) (IV2(I),GV(I),I= 1,NLEV2)
+ENDIF
+
+Appendix B: Description of Input Data File
+3
+Appendix B. Definitions and Description of Input Data File
+Read integers identifying the molecule or system.
+#1. READ(5,*) IAN1, IMN1, IAN2, IMN2, CHARGE, NUMPOT
+IAN1 & IAN2 : integer atomic numbers of the atoms/particles
+#1 and 2 forming the
+molecule. If both are positive and ≤ 109 , atomic masses from the tabulation in sub-
+routine MASSES are used to generate the reduced mass of the system. If either is < 0
+or > 109 the mass of that non-standard particle will be input via Read #3. Setting
+IANi = 0 selects masses of proton, deuteron or triteron for mass numbers IMNi = 1 − 3,
+respectively.
+IMN1 & IMN2 : integer mass numbers of the atoms/particles
+#1 and 2 forming the
+molecule. For a normal stable atomic isotope, its mass is taken from the tabulation
+in subroutine MASSES; if its value lies outside the range for the normal stable isotopes
+of that atom, the abundance-averaged atomic mass will be used.
+CHARGE : ± integer for the total charge on the molecule. Normally causes the reduced
+mass of a molecular ion to be defined as the ‘charge-modified’ reduced mass of Eq. (2)
+[5].
+NUMPOT : the number of potentials considered: NUMPOT = 1 for calculations involving only
+a single potential function; NUMPOT = 2 to input and generate two different potentials
+and calculate matrix elements coupling their levels.
+#2 If(CHARGE ̸= 0)
+READ(5,*) CHARGE1, CHARGE2
+CHARGE1 & CHARGE2 :
+the integer number of me/2 masses to be added to or subtracted
+from the normal masses of atoms #1 and #2 prior to calculation of a conventional
+2-body reduced mass for each isotopologue [42, 68].
+If CHARGE1 = CHARGE2 = 0 ,
+use Watson’s charged-modified reduced mass for all species.
+Otherwise, necessarily,
+1/2(CHARGE1 + CHARGE2) = CHARGE .
+In the special case in which IAN1 and/or IAN2 is either ≤ 0 or > 109 , read in a two-character
+alphanumeric name for that particle and its mass (in amu). This facilitates the treatment of model
+systems or exotic species such as muonium or positronium “molecules”.
+#3.a IF(IAN1.LE.0) READ(5,*) NAME1, MASS1
+#3.b IF(IAN2.LE.0) READ(5,*) NAME2, MASS2
+NAME1 & NAME2 : a two-character alphanumeric name for the (1 or 2) particle whose
+mass is being read, enclosed in single quotes, as in ′mu′.
+MASS1 & MASS2 : the masses of particles 1 and 2, in amu.
+Read a text title or description for the calculation.
+#4. READ(5,510) (TITL(I),I= 1,20)
+TITL : a title or output header for the calculation, consisting of up to 78 characters on a
+single line, enclosed between single quotes: e.g., ′title of problem′.
+Read real numbers defining the mesh and range of the numerical integration (all in ˚A), and the
+eigenvalue convergence criterion to be used (in cm−1).
+#5 READ(5,*) RH, RMIN, RMAX, EPS
+
+Appendix B: Description of Input Data File
+4
+RH : the numerical integration mesh size; see discussion associated with Eq. (3) in § 2.1.
+RMIN & RMAX : the inner and outer limits, respectively, of the range of numerical in-
+tegration (see § 2.1). Plausible zeroth order estimates would be RMIN ≈ 0.6×(potential
+inner wall position) and RMAX fairly large (say 40 ˚A). Internally RMAX is set to the smaller
+of: this read-in value, or the largest distance allowed by RMIN, RH and the array dimension
+NDIMR (see § 3).
+EPS : the eigenvalue convergence parameter used by SCHRQ (in cm−1).
+To ensure that
+appropriately accurate expectation values or matrix elements are generated, it should
+normally be set ca. 2 orders of magnitude smaller than the eigenvalue precision actually
+required.
+Some combination of the next 18 Read statements defines the potential energy function. A partic-
+ular case always starts with Read #6, but then uses either Reads #7–9 for numerical interpolation
+over a set of input turning points, or (some of) Read s #10–23 for the case of an analytic potential
+function.
+#6. READ(5,*) NTP, LPPOT, OMEGA, VLIM
+NTP : an integer that is set ≤ 0 to generate an analytic potential using POTGEN, in which
+case the program skips Read s #7–9 and goes directly to Read #10. If NTP > 0 , it is
+the number of turning points to be input via Read #9.
+LPPOT : controls printing of the potential array (normally set = 0 to have no printing).
+If LPPOT > 0 , write the potential and its first 2 derivatives-by-differences to standard
+output (Channel–6) at every LPPOTth mesh point; it is sometimes useful to do this when
+troubleshooting. Setting LPPOT < 0 writes the resulting potential in condensed format
+to Channel–8 at every |LPPOT|th mesh point; this is useful if one wants to employ this
+calculated potential as input for a plotting program.
+OMEGA : the (integer) projection of the electronic orbital angular momentum onto the
+molecular axis for this state.
+It causes the reduced centrifugal potential to become
+[J(J + 1) − OMEGA2]ℏ2/(2µr2) . Setting OMEGA ≥ 99 will cause the centrifugal potential
+to have the form [J2 − 1/4]ℏ2/(2µr2) that is appropriate for rotation constrained to a
+plane.
+VLIM : the absolute energy (in cm−1) of the potential asymptote. This value sets the ab-
+solute energy scale for the calculations.
+For power-series (GPEF- or Dunham-type)
+potentials (IPOTL = 2), it specifies the energy at the potential function minimum, where
+r = re .
+For a pointwise potential we must specify how the interpolation is to be done, and since RMAX
+usually lies outside the range of the input turning points, we also must specify how the potential is
+to be represented in that large–r extrapolation region.
+#7. READ(5,*) NUSE, IR2, ILR, NCN, CNN
+NUSE : specifies how the interpolation is to be done. If NUSE > 0 , use NUSE–point piecewise
+polynomials;
+if NUSE ≤ 0 , perform cubic spline interpolation. For highly precise and
+smooth input points, such as those generated from an RKR calculation, NUSE = 8, 10 or
+12 is often most appropriate; for less precise or less dense points, such as those from ab
+initio calculations, low-order piecewise polynomials (NUSE = 4) or a spline (NUSE ≤ 0) is
+normally best.
+
+Appendix B: Description of Input Data File
+5
+IR2 : for very steep repulsive potential walls, better interpolation is often attained by inter-
+polating over r2 × V (r) , rather than over V (r) itself; setting integer IR2 > 0 causes
+this to be done (normally recommended). A comparison between results obtained with
+this option turned on vs. off provides an indication of the magnitude of ‘interpolation
+noise’ uncertainties in the final results.
+ILR : specifies how to extrapolate from the outermost read-in turning points to RMAX. For
+a long extrapolation, one of ILR = −1, 0 or 1 is often most appropriate;
+however, if
+the outer turning points extend moderately close to the dissociation limit (at VLIM), one
+should set ILR ≥ 2 , specify the theoretically appropriate value of NCN ( ≥ 1 ), and if it
+is available, also input an estimate of CNN (see below).
+For ILR < 0 , fit the last 3 points to: V (r) = VLIM − A × exp[−b(r − ro)2]
+For ILR = 0 , fit the last 3 points to: V (r) = VLIM − A × rp × exp[−b r] .
+For ILR = 1 , fit the last 2 points to: V (r) = VLIM − A/rB .
+For ILR = 2 or 3 , respectively, fit the outermost 2 or 3 points to a sum of 2 or 3 inverse-
+power terms, with powers differing by 2: V (r) = VLIM − �ILR−1
+m=0 CNCN+2m/rNCN+2m .
+For ILR ≥ 4 , fit outermost ILR turning points to a sum of ILR inverse-power terms,
+with powers differing by 1: V (r) = VLIM − �ILR−1
+m=0 CNCN+m/rNCN+m .
+NCN : For inverse-power potential extrapolation with ILR ≥ 2 , NCN ( > 0) specifies the
+limiting inverse-power behaviour:
+V (r) ∝ VLIM − CNN/rNCN . Otherwise (for ILR ≤ 1 ),
+it is a dummy input variable.
+CNN : For inverse-power potential extrapolation with ILR ≥ 2 , setting CNN ̸= 0 causes the
+leading inverse-power coefficient to be fixed at the read-in value CNN = CNCN [cm−1 ˚ANCN]
+rather than to be determined from a fit to the outermost turning points.
+The input turning points may come from ab initio or RKR calculations, and their energies may
+need to be shifted to make them consistent with the value of VLIM input through Read #6, and
+they may also need also need to have their units converted to those employed in the program (˚A
+and cm−1).
+#8. READ(5,*) RFACT, EFACT, VSHIFT
+RFACT & EFACT : multiplicative factors required to convert units of the NTP input turn-
+ing point distances XI(i) and energies YI(i) to ˚A and cm−1, respectively. If no conversion
+is required, set these factors at 1.0D+0.
+VSHIFT : an energy shift (in cm−1) to be added to the input potential point energies to
+make them consistent with the user-specified asymptote energy VLIM. It addresses the
+fact that the input ab initio or RKR turning points may be expressed relative to a
+different energy zero.
+Read in the actual turning points.
+#9. READ(5,*) (XI(I), YI(I), I= 1,NTP)
+XI(i) & YI(i) : are the (distance, energy) input turning points defining the potential func-
+tion.
+
+Appendix B: Description of Input Data File
+6
+If the input potential is defined by an analytic function (i.e., when NTP ≤ 0 ), use subroutine
+POTGEN, which reads parameters via some or all of Reads #10–23. For a user-supplied POTGEN
+function, no input parameters are read here, and its calling sequence must match that expected by
+subroutine PREPOT (see the discussion of § 2.6.9). The variable NVARB, which specifies the number
+of parameters being read in through Read #14, is determined internally, as specified below.
+#10. READ(5,*) IPOTL, QPAR, PPAR, Nbeta, APSE, IBOB
+IPOTL is an integer specifying the type of analytic function used for the potential.
+IPOTL = 1 : generates a Lennard-Jones(m = QPAR, n = PPAR) potential energy function
+using Eq. (12). In this case APSE and Nbeta are dummy variables, and NVARB = 0 .
+IPOTL = 2 : uses Eq. (13) to generate a GPEF power series potential of order Nβ =
+Nbeta using Seto’s [27] form of the ˇSurkus [26] expansion variable
+z = z(r) =
+(rQPAR − reQPAR)/(aS rQPAR + bS reQPAR) , with β0 defined by the input value of DSCM,
+PARM(i) = βi for i = 1 to Nbeta, aS = PARM(Nbeta + 1) and bS = (Nbeta + 2).
+Note that the ˇSurkus case of QPAR < 0 is accommodated by Seto’s identity [27]:
+z(−QPAR, aS, bS) = z(QPAR, −bS, −aS) . For this case NVARB = Nbeta + 2 , while
+QPAR, APSE and NCMM are dummy variables.
+• Dunham expansions are generated by setting QPAR = 1 , αS = 0.0 and bS = 1.0 .
+• SPF expansions are generated by setting QPAR = 1 , αS = 1.0 and bS = 0.0 .
+• Ogilvie–Tipping expansions are generated by setting QPAR = 1 , αS = bS = 0.5 .
+• A harmonic oscillator potential is obtained by setting QPAR = 1 , Nbeta = 0 ,
+aS = 0.0 and bS = 1.0 , and the harmonic force constant is k = 2 DSCM/REQ2 .
+• All of these polynomial-type potentials have an undefined (or at best, indirectly-
+defined) asymptote, so parameter VLIM defines the potential energy minimum.
+• If QPAR = 0 , the potential is generated as an order–Nbeta polynomial in r
+whose constant coefficient is set as c0 = VLIM and NVARB = Nbeta .
+IPOTL = 3 : generates the Morse or EMO potential of Eq. (15), in which De = DSCM ,
+re = REQ , and the expansion-variable of Eq. (17) is defined by the positive integer
+q = QPAR , while the expansion coefficients are PARM(i) = βi−1 for i = 1 to NVARB =
+(Nbeta + 1). In this case PPAR and APSE are dummy variables. Setting Nbeta = 0
+( NVARB = 1) yields the ordinary Morse potential.
+If QPAR ≤ 0 , generate the 4–parameter Morse-like potential of Hua Wei [36],
+V (r) = De
+�
+[1 − e−b (r−re)]/[1 − C e−b (r−re)]
+�2
+in which b = PARM(1) and
+C = PARM(2) . In this case NVARB = 2 while QPAR, APSE and Nbeta are dummy
+variables.
+IPOTL = 4 : generates an MLR potential from Eqs. (19–20) [33, 34, 37], in which De ≡
+DSCM , re ≡ REQ , and the potential tail uLR(r) is defined either by Eq. (20) or by
+one of the coupled-state matrix eigenvalues discussed at the end of § 2.6.4.
+For APSE ≤ 0 , the exponent coefficient in Eq. (19) is represented by the constrained
+polynomial expansion of Eq. (23), in which positive integers QPAR = q and
+PPAR = p are the powers defining its two radial variables, and the upper bound
+on the summation is Nβ = Nbeta , while the exponent expansion coefficients are
+PARM(i) = βi−1 for i = 1 to NVARB = (Nbeta + 1) .
+
+Appendix B: Description of Input Data File
+7
+For APSE > 0 , the exponent coefficient in Eq. (19) is represented by the natural
+cubic spline of Eq. (24) passing through Nbeta points at distances defined by the
+set of input yref
+q
+values, whose ordinate values βi = PARM(i) for i = 1 to Nbeta
+define the potential function shape.
+IPOTL = 5 : generates the DELR potential of Eqs. (28 – 30) [11], in which De ≡ DSCM ,
+re ≡ REQ , the power defining the expansion variable yref
+q (r) is QPAR = q , and the
+exponent coefficient β(r) is the simple power-series expansion of Eq. (16) in yref
+q (r)
+with expansion coefficients PARM(i) = βi−1 for i = 1 to (NVARB = Nbeta + 1) . The
+additive long-range tail function uLR(r) is defined either by Eq. (20) or by one of
+the diagonalizations mentioned at the end of § 2.6.4 (see Reads #12 and 13), and
+PPAR is a dummy parameter.
+IPOTL = 6 : generates a generalized HFD-type potential from Eq. (31), with AHFD
+and β1 defined (internally) by the input values of De ≡ DSCM , re ≡ REQ , and
+the attractive inverse-power-sum tail, while the parameters defining the damping
+function DHFD(r) are read in as PARM(i) = αi
+for i = 1 − 3 , and the other
+exponent coefficients are β2 = PARM(4) and γ = PARM(5) . For this case, the inverse-
+power long-range coefficients Cm (in units cm−1·˚Am) are input through Read #13,
+and Nbeta = NVARB = 5 , while PPAR, QPAR and APSE are all dummy parameters.
+IPOTL = 7 : generates a generalized Tang-Toennies-type potential from Eq. (33), with
+the attractive term uLR(r) defined by Reads #12 and 13, and the repulsive term
+parameters {βi} read in as PARM(i) for i = 1 to NVARB = Nbeta = 9 . The reported
+values of the well depth De and equilibrium distance re are read in as DSCM and
+REQ, respectively, and the code compares them with the actual energy and position
+of the potential minimum as defined by the {βi} and {Cm} input parameters. For
+this case, PPAR, QPAR, and APSE are dummy parameters.
+IPOTL = 8 : generates a ‘Hannover Polynomial Potential’ (HPP) [58] from Eq. (34), a
+power series of order Nbeta in the variable ξ = (r−rm)/(r+b rm) , with coefficients
+βi = PARM(i + 1) for i = 0 to Nbeta, in which b = PARM(Nbeta + 2). The well depth
+De is read as DSCM, and the reference distance rm (which for a1 ̸= 0 is not identical
+to re ) is read in as REQ . For r < rinn ≡ PARM(Nbeta+3) the potential is extrapolated
+inward by smoothly attaching the function A e−α(r−rinn) at distance rinn . For r >
+rout ≡ (Nbeta + 4) the potential is extrapolated outward continuously as the sum of
+NCMM inverse-power terms defined by Reads #12 and 13 , with the (internal) inclusion
+of an additional term CmL/rmL with mL = [MMLR(NCMM) + 2] , whose coefficient CmL
+is defined (internally) to attach this long-range tail continuously to the polynomial
+at r = rout . For this model, QPAR, PPAR and APSE are dummy parameters, and
+NVARB = (Nbeta + 4).
+QPAR, PPAR, Nbeta and APSE : integers used to characterize specific potential forms
+(see above).
+IBOB : an integer to specify whether (for IBOB > 0 ) or not (for IBOB ≤ 0 ) atomic-mass-
+dependent Born-Oppenheimer breakdown correction terms are to be included in the
+potential energy function V (r), and/or in the centrifugal { [J(J + 1) − Ω2]ℏ2/(2µr2) }
+potential (see § 2.7).
+
+Appendix B: Description of Input Data File
+8
+#11. READ(5,*) DSCM, REQ, Rref
+#12. IF(IPOTL.GE.4) READ(5,*) NCMM, rhoAB, sVSR2, IDSTT
+#13. IF(IPOTL.GE.4) READ(5,*) (MMLR(I), CMM(I), I= 1,NCMM)
+DSCM : normally (except for the IPOTL = 2 case) the potential well depth De in cm−1.
+REQ : normally (except for the IPOTL = 8 case, in which it defines rm ) the equilibrium
+distance re in ˚A.
+Rref : the reference distance in the definition of the exponent expansion radial variable of
+Eqs. (17) and (23). If the input value is ≤ 0.0, the code sets rref = re.
+NCMM : the number of inverse-power long-range terms to be incorporated into uLR(r) via
+Eq. (20), or to be used to define the elements of the 2×2 or 3×3 matrices whose
+eigenvalues define uLR(r) for nS + nP alkali homo-dimers [33, 49–51, 69].
+For the 2 × 2 alkali-homodimer (X2) cases, set NCMM = 7 with MMLR(1) = 0 or −1 and
+MMLR(i > 1) = 3, 3, 6, 6, 8, 8 , while the input values of CmVAL(i) are Aso , CΣ
+3 ,
+CΠ
+3 , CΣ
+6 , CΠ
+6 , CΣ
+8 and CΠ
+8 for i = 1 − 7, respectively, and
+• For the A 1Σ+
+determinant.u state of X2, set MMLR(1)= 0 to select the lower root of the 2 × 2
+• For the b 3Πu state of X2, set MMLR(1)= -1 to select the upper root of the 2 × 2
+determinant.
+For the 3 × 3 alkali-homodimer cases, set NCMM = 10 with MMLR(1) = −2 or −3 or −4,
+and MMLR(i > 1) = 3, 3, 3, 6, 6, 6, 8, 8, 8 , while CmVAL(i) = Aso , CΣ
+3 , C
+1Π
+3 , C
+3Π
+3 ,
+CΣ
+6 , C
+1Π
+6 , C
+3Π
+6 , CΣ
+8 , C
+81Π
+and C
+3Π
+8 , respectively, and:
+• For the 1 3Σ+
+g state of X2, set MMLR(2)= -2 to select the lowest root of the 3×3
+determinant [49, 50].
+• For the B 1Πu state of X2, set MMLR(2)= -3 to select the middle root of the 3×3
+determinant.
+• set MMLR(2)= -4 to select the highest root of the 3 × 3 determinant.
+rhoAB : selects whether ( rhoAB > 0 ) or not ( rhoAB ≤ 0 ) damping functions are to be
+used with the inverse-power long-range terms.
+If rhoAB > 0 , it is the value of the
+system-dependent range-scaling parameter of ρ of Eqs. (25) and (26).
+sVSR2 : when damping functions are used, integer sVSR2 is twice the value of the very-
+short-range power parameter ‘s’ of Eqs. (25)-(27), (sVSR2 ≡ 2 s). For the generalized
+Tang-Toennies functions of Eq. (26), its allowed values are -4 -2, 0, 2, or 4, while for the
+generalized Douketis-type functions of Eq. (25), its allowed values are -4, -3, -2, -1, or 0.
+IDSTT : an integer specifying the form of the damping function, for rhoAB > 0 :
+• IDSTT > 0 invokes use of the Douketis-type damping functions of Eq. (25).
+• IDSTT ≤ 0 specifies use of the Tang-Toennies-type damping functions of Eq. (26).
+#14 a. IF((IPOTL.EQ.4).AND.(APSE.GT.0)) READ(5,*) (XPARM(I), PARM(I), I=1,NVARB)
+XPARM(i) & PPARM(i) : the NVARB values of the distance coordinate yref
+q (ri) and of
+the associated exponent coefficient β(ri) defining the cubic spline used to represent the
+MLR exponent coefficient function β(r) when APSE > 0 . Read them in, one pair per
+line.
+
+Appendix B: Description of Input Data File
+9
+#14 b. IF((NVARB.GE.0).AND.(APSE.LE.0)) READ(5,*) (PARM(I), I=1,NVARB)
+PPARM(i) : are the NVARB parameters characterizing the potential functions described
+above for all cases other than an MLR with APSE > 0 . For example, the βi param-
+eters of Eqs. (13), (23), (33) or (34), or the coefficients βi of the exponent polynomials
+defining the EMO or DELR potentials.
+If atomic-mass-dependent Born-Oppenheimer breakdown (BOB) terms are to be incorporated into
+the potential energy and/or centrifugal potential functions ( IBOB > 0 ), use Reads #15 and two or
+more (as needed) of #16–23. These BOB functions have the forms defined by Eqs. (35) and (36). If
+a given type of correction function is to be omitted, the associated expansion order (e.g., NU1, NU2,
+NT1 or NT2) should be set < 0 , in which case the associated parameter Read statements (from
+among #16–23) are omitted, while if no BOB corrections are considered (IBOB ≤ 0), omit all of
+Reads #15–23.
+#15. READ(5,*) MN1R, MN2R, QAD, PAD, NU1, NU2, QNA, NT1, NT2
+MN1R & MN2R : The integer mass numbers of the reference isotopes of atoms 1 and 2 ,
+respectively, whose masses Mref
+a
+appear in Eqs. (35) and (36) [70].
+NU1 & NU2 : For atoms a = 1 and 2 (or A and B), these are the orders Na
+ad of the
+polynomial expansions of Eq. (35). If either of them is set < 0 , neglect the corresponding
+pair from among Reads #16 − 19.
+NTA & NTB : For atoms a = 1 and 2 (or A and B), these are the orders Na
+na of the
+polynomial expansions of Eq. (36). If either of them is set < 0 , neglect the corresponding
+pair from among Reads #20 − 23.
+QAD , PAD & QNA : positive integers qad , pad , and qna , respectively, define the vari-
+ables yre
+p (r) and yre
+q (r) in the expressions for the potential energy and centrifugal
+BOB functions of Eqs. (35) and (36). One should normally set PAD ≡ pad > mLast ≡
+MMLR(NCMM) . Note that if PAD = 0 and UaINF = 0 , the adiabatic potential correction
+function is collapsed to a simple power series in yq(r).
+For cases in which IBOB > 0 ,
+#16. IF(NU1.GE.0) READ(5,*) (U1(i), i= 0,NU1)
+#17. IF(NU1.GE.0) READ(5,*) U1INF
+#18. IF(NU2.GE.0) READ(5,*) (U2(i), i= 0,NU2)
+#19. IF(NU2.GE.0) READ(5,*) U2INF
+#20. IF(NT1.GE.0) READ(5,*) (T1(i), i= 0,NT1)
+#21. IF(NT1.GE.0) READ(5,*) T1INF
+#22. IF(NT2.GE.0) READ(5,*) (T2(i), i= 0,NT2)
+#23. IF(NT2.GE.0) READ(5,*) T2INF
+Ua(i) and UaINF : For a = 1 or 2, they are, respectively, the REAL*8 expansion parameters
+and limiting asymptotic values defining the ‘adiabatic’ potential correction functions of
+Eq. (35): Ua(i) = uia and UaINF = ua
+∞ , all have units cm−1.
+Ta(i) and TaINF : For a = 1 or 2, they are, respectively, the REAL*8 expansion parameters
+and limiting asymptotic values defining the ‘non-adiabatic’ centrifugal potential energy
+correction functions of Eq. (36). All of Ta(i) = tia and TaINF = ta
+∞ are dimensionless.
+
+Appendix B: Description of Input Data File
+10
+For a calculation involving only a single potential energy curve ( NUMPOT = 1 in Read #1), the code
+now proceeds directly to Read #24. However, if NUMPOT = 2 , it first first repeats Reads #6–23 to
+input the second potential function.
+Now read the parameters controlling which levels (of Potential-1) are to be calculated, and what
+expectation values and or matrix elements are to be calculated (if any).
+#24. READ(5,*) NLEV1, AUTO1, LCDC, LXPCT, NJM, JDJR, IWR, LPRWF
+NLEV1 :
+• if > 0 , integer NLEV1 is the number of vibrational or vibrotational levels to be
+calculated. Their quantum number specifications are then input via Read #25.
+• if ≤ 0 , the program automatically finds all vibrational levels from v = 0 − |NLEV1|
+associated with the rotational quantum number read in as IJ(1) (see below). If the input
+value of NLEV is very large and negative, the program will (attempt to) find all possible
+vibrational levels associated with the specified J = IJ(1).
+AUTO1 : integer AUTO1 > 0 (normal option) causes the program to (attempt to) generate
+automatically realistic trial eigenvalues for all desired levels, so that only their quantum
+number labels need be input via (Read #25a). If this fails, setting AUTO1 ≤ 0 will
+allow/require a trial energy GV(i) to be input (via Read #25b) for each specified level
+using the NLEV1 > 0 option.
+LCDC : If LCDC > 0 , calculate the inertial rotational constant Bv and the first 6 centrifugal
+distortion constants {−Dv, Hv, Lv, Mv, Nv, & Ov} for all of the levels specified by NLEV1.
+These results are also written in a compact format to Channel-9.
+LXPCT : An integer controlling which expectation values/matrix elements are to be calcu-
+lated. For LXPCT = 0 , no expectation values or matrix elements are calculated (in which
+case Read s #26–31 are omitted).
+• Even values of |LXPCT| ̸= 0 cause the results to be written in compact form to Channels–
+7 or 8 (as appropriate, see below), as well as to Channel-6;
+• Odd values of LXPCT yield only Channel–6 output, while negative values of LXPCT
+cause most of the (relatively wordy) output to Channel–6 to be suppressed.
+LXPCT = −1 causes the eigenvalues and (if appropriate) quasibound level widths to be
+written compactly to Channel–7, and no expectation values or matrix elements are
+calculated (so Read s #26 − 31 are omitted).
+LXPCT = 1, 2 or −2 causes calculation of expectation values of the kinetic energy and
+of positive powers of the distance variable specified by Read #26 plus either #27
+or #28 − 31 (as appropriate, see below). Write results to Channel–6 if LXPCT = 1
+or 2; also write them (compactly) to Channel–7 if LXPCT = 2 , and write them only
+(compactly) to Channel–8 if LXPCT = −2.
+|LXPCT| ≥ 3 invokes the calculation of matrix elements coupling levels of Potential-1 to
+each other (if NUMPOT = 1) or to levels of Potential-2 (if NUMPOT = 2), as specified
+by Reads #27 and 28. Write results to Channel–6 if LXPCT > 0 and (compactly)
+to Channel–8 if LXPCT = ±4 .
+|LXPCT| ≥ 5 also causes the component radial moments comprising the overall matrix
+elements to be written to Channel–7, while still writing the overall matrix elements
+for selection-rule allowed transitions to Channel–8. For LXPCT = ±6 write only the
+radial moment components, and omit the output to Channel–8.
+
+Appendix B: Description of Input Data File
+11
+NJM & JDJR : if (integer) NJM > 0 , then for each (vibrational) level generated by the
+NLEV1 specification, automatically calculate eigenvalues (and if appropriate, expectation
+values and matrix elements) for all rotational sublevels J ranging from the input-specified
+(see below) J = IJ(i) to a maximum of J = NJM (or until that vibrational level energy
+predissociates above the potential barrier), with J increasing in steps of JDJR. e.g., to
+determine automatically all possible rotational levels, set JDJR = 1 , IJ(i) = 0 (or more
+strictly = |Ω|) and NJM very large (e.g., NJM = 999).
+IWR : an integer controlling the printout of diagnostics and calculation details inside sub-
+routine SCHRQ.
+• If IWR ̸= 0 print warning and error messages inside SCHRQ, as appropriate. Unless
+one is troubleshooting, normally set IWR = −1.
+• If IWR ≥ 1 also print final eigenvalue and node count for every level determined.
+• If IWR ≥ 2 also print end-of-range wave function amplitudes.
+• If IWR ≥ 3 also print intermediate trial eigenvalues as the iterative convergence pro-
+ceeds.
+LPRWF : • If LPRWF > 0 write to Channel–6 the wavefunction of each specified level at
+every {LPRWF}th mesh point.
+• If LPRWF < 0 write wavefunction of each specified level compactly to Channel–10, at
+every |LPRWF|th mesh point.
+• If LPRWF = 0 , no wavefunction printout.
+SINNER & INNOD1 : parameters to facilitate finding inner vs. outer wells of a double
+well potential if IAUTO1 > 0 fails, or to facilitate treating a precisely symmetric potential.
+These parameters may be added to Read #24 by making small modifications to Lines
+#411–423 of the code.
+Read quantum numbers specifying which vibration-rotation levels (of Potential-1) are to be deter-
+mined.
+#25 a. IF(AUTO1.GT.0) READ(5,*) (IV(i),IJ(i),i= 1,max{1,|NLEV1|})
+#25 b. IF(AUTO1.LE.0) READ(5,*) (IV(i),IJ(i),GV(i),i= 1,max{1,|NLEV1|})
+IV(i) & IJ(i) : • For NLEV1 > 0 these are the vibrational [ v = IV(i) ] and rotational [ J =
+IJ(i) ] quantum numbers of the levels to be determined;
+if NJM > IJ(i) the program
+also automatically calculates rotational levels for that v = IV(i) with J = IJ(i) to NJM
+in steps of JDJR.
+• For NLEV1 ≤ 0 , read one {IV(i), IJ(i)} pair.
+The value of IV(1) is ignored, but
+J = IJ(1) is the rotational quantum number for which all vibrational levels up to
+v = |NLEV1| are to be determined.
+GV(i) : If AUTO1 ≤ 0 , Read #25b is used in place of #25a, and GV(i) is the trial energy
+read in for each level v = IV(i), J = IJ(i) . This option presumes NLEV1 > 0 .
+If expectation values or matrix elements are to be calculated (i.e., if LXPCT ̸= 0 or −1), Reads
+#26 − 31 specify the desired arguments. However, if LXPCT = 0 or −1, the data input for this case
+is now finished.
+#26. READ(5,*) MORDR, IRFN, DREF
+
+Appendix B: Description of Input Data File
+12
+MORDR : an integer specifying the highest power of the chosen radial function or distance
+coordinate RFN(r) for which expectation values or matrix elements are to be calculated
+(see Eq. (8)). The current program version is dimensioned for MORDR ≤ 20 . To calculate
+only Franck-Condon factors (when |LXPCT| ≥ 3), set MORDR = −1 .
+IRFN & DREF : integer and real variables, respectively, specifying the definition of the
+radial function or distance coordinate RFN(r).
+• If IRFN ≤ −10 , RFN is generated by user-supplied code inserted at Lines #565-586
+of the main program. In this case DREF is a dummy variable, and Reads #27-31 are
+omitted.
+• If IRFN = −4 , then RFN(r) = r and the matrix element operator is a polynomial
+in r, of order MORDR, and having coefficients DM(i), that pre-multiplies the derivative
+operator d/dr that acts on the wavefunction for ‘Potential–2’ (inserted for Bob Field).
+• If IRFN = −3 , RFN(r) = 1/r3 .
+• If IRFN = −2 , RFN(r) = 1/r2 .
+• If IRFN = −1 , use a Dunham-type expansion coordinate RFN(r) = (r − DREF)/DREF .
+• If IRFN = 0 , the function RFN(r) = r , the distance coordinate itself.
+• If IRFN = 1−9 , use the ˇSurkus-type variable RFN(r) = yDREF
+p
+(r) = (rp −DREF p)/(rp +
+DREF p) , with p = IRFN .
+For IRFN = −1 or 1 − 9 , a positive (real) input value of DREF specifies it as the
+reference distance r = DREF ; for these cases, normally set DREF = re . However,
+if the input value of DREF ≤ 0.0 , the program internally (iteratively) determines a
+value of DREF such that the expectation value of RFN(r) is identically zero for the
+first vibration-rotation level considered.
+If IRFN ≥ 10 , RFN(r) is a function defined by reading in and interpolating over (and
+extrapolating beyond) input values of some known radial function (e.g., a dipole
+or transition moment function).
+This reading and interpolation/extrapolation is
+performed by the same subroutine package PREPOT used to treat a numerical input
+potential (see Reads #6–9). In this case DREF is a dummy variable, Read #27 is
+omitted, and the code internally sets MORDR = 1, DM(0) = 0.0 and DM(1) = 1.0 .
+#27. IF(DABS(IRFN).LE.9) READ(5,*) (DM(J), J= 0,MORDR)
+DM(j) : Coefficients of the power series in RFN(r) defining the argument of the overall ex-
+pectation values or matrix elements: M(r) = �MORDR
+j=0
+DM(j) × RFN(r)j .
+If the expectation value or matrix element radial function argument is to be defined by interpolating
+over and extrapolating beyond a set of read-in points (IRFN ≥ 10), use the same read sequence,
+options and procedures employed for treating a numerical input potential. Most input parameters
+here have definitions essentially equivalent to those associated with Read #6–9.
+#28. READ(5,*) NRFN, RFLIM
+#29. READ(5,*) NUSEF, ILRF, NCNF, CNNF
+#30. READ(5,*) RFACTF, MFACTF
+#31. READ(5,*) (XIF(I), YIF(I), I= 1,NRFN)
+NRFN : Is the number of known function values {XIF(i), YIF(i)} to be read in,
+
+Appendix B: Description of Input Data File
+13
+RFLIM : Is the limiting asymptotic value imposed when extrapolating beyond the range of
+the input values, and
+NUSEF : Specifies how the interpolation is to be performed, while ILRF, NCNF and
+CNNF define the manner in which it extrapolates to large r (see comments for Read
+#7).
+RFACTF & MFACTF : Convert units of input distances XIF(i) and ordinates YIF(i),
+respectively, to ˚A and whatever units are required for the expectation value/matrix
+element argument M(r) (debye, for a dipole or transition moment function).
+For matrix element calculations ( |LXPCT| ≥ 3 ), couple each level of Potential-1, generated as
+specified by Read s #24 and 25, to all rotation levels of the NLEV2 vibrational levels v = IV2(i)
+allowed by the rotational selection rules ∆J = J2DL to J2DU in steps of J2DD (e.g., for P and R
+transitions: J2DL = −1 , J2DU = +1 J2DD = +2 ). If NUMPOT = 2 these are levels of Potential-2
+and no constraints are imposed, but if NUMPOT = 1 the matrix elements couple levels of Potential-1
+to one another, and to avoid redundancy the program considers only emission from (rotational
+sublevels of) these NLEV2 vibrational levels into lower (v′′, J′′) levels generated as per Read s #32
+& 33. Integer AUTO2 > 0 causes LEVEL to generate trial eigenvalues automatically for all desired
+levels (preferred option), so only their vibrational quantum number labels need be input (Read
+#33a). If this fails, setting AUTO2 ≤ 0 will require a trial pure vibrational energy GV2(i) to be read
+in (Read #33b) for each specified level.
+#32. READ(5,*) NLEV2, AUTO2, J2DL, J2DU, J2DD
+#33 a. IF(NLEV2.GT.0) READ(5,*) (IV2(I), I= 1,NLEV2)
+#33 b. IF(NLEV2.GT.0) READ(5,*) (IV2(I), GV2(I), I= 1,NLEV2)
+
+Appendix C.1 : Input/Output for LJ(12,6) PECs and a double minimum potential
+14
+Appendix C : Illustrative Cases and Sample Input and Output Files
+The running time for this program depends entirely upon the complexity of the calculation being
+performed and the type of computer being used; CPU requirements may range from a fraction of
+a second to a couple of minutes. This Appendix presents three sets of sample data files and the
+resulting output for representative cases illustrating some of the types of problems to which the
+program may be applied. The sets of sample input data files described below are available as a
+plain ASCII text file in the Supplementary Material associated with this paper. Note that entries
+after the “ % ” sign on each line of those input data files are comments identifying the variables,
+and are ignored by the program.
+Appendix C 1 :
+Input/Output for LJ(12,6) PECs and a double minimum potential
+The first three cases considered in this subsection are based on use of a simple Lennard-
+Jones(12,6) potential and serve to provided an introduction to the types of calculations that may
+be performed, and illustrates the nature of the resulting output. The fourth case is introduced to
+illustrate the ability of LEVEL to locate specified eigenvalues of a double-minimum potential. On
+a decade-old SGI UNIX workstation, the 4 examples of Case 1 require 0.125 s of CPU time.
+Case 1 : This data file consists of five separate data sets that illustrate a variety of the capabilities
+of the program, including the fact that it can treat several independent problems in a single
+run by simply putting the input data for several cases into the same file, one after the other.
+(a) For a Lennard-Jones(12,6) potential, find all the vibrational levels, and calculate the
+associated values of the centrifugal distortion constants. This is a model system with
+fictitious particle masses, so those masses and the chosen particle names ′L1′ and ′J2′
+are input by Read #3.
+(b) For the same simple model Lennard-Jones(12,6) potential of Case 1 (a), calculate all
+possible infrared matrix elements involving levels with v ≤ 2 and J(upper) ≤ 1 .
+(c) For the same model Lennard-Jones(12,6) potential of Case 1a (a), locate all (four) vi-
+brational levels of the centrifugally-distorted potential associated with J = 18 . This
+demonstrates that the procedure for automatically finding all vibrational levels works
+for a potential with a barrier (here, centrifugal in origin) protruding above its dissociation
+limit. This example invokes the highest print level inside SCHRQ (by setting IWR = 3 ,
+see Read #24) in order to illustrate the progress of the iterative eigenvalue convergence
+procedure. In this case convergence details for each level are presented twice (though
+only one iteration is required the second time) because of a quirk of the internal program
+logic.
+(d) To illustrate the ability to determine the eigenvalues of a double-minimum potential, find
+the eigenvalues for vibrational levels v = 56 − 80 of an ab initio potential for the 3Πg
+state of Cl2 [71], and calculate expectation values of various powers of r. The lowest of
+these levels lies in the region in which all levels belong to the deeper outer well, while the
+highest lies above the barrier separating the two wells. The output expectation values
+show that as the energy increases, the region of maximum wave function amplitude hops
+back and forth between the two wells. This case illustrates the ability of the program,
+and in particular, its automatic level-finder subroutine ALF, to find arbitrary levels of a
+double minimum potential automatically.
+
+Appendix C.1 : Input/Output for LJ(12,6) PECs and a double minimum potential
+15
+-1 0
+-1 0
+0
+1
+% IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+’L1’ 30.34373256D0
+% NAME1 MASS1
+’J2’ 30.34373256D0
+% NAME2 MASS2
+’Case 1.a: For a model L.J.(12,6) get all vib. levels and their CDCs’
+0.0020
+0.6
+20.
+1.d-6
+% RH RMIN RMAX EPS
+0
+0
+0
+0.D0
+% NTP LPPOT IOMEG VLIM
+1
+12 6
+0
+0
+0
+% IPOTL PPAR QPAR APSE Nbeta IBOB
+1000.d0
+1.d0
+1.d0
+% DSCM REQ Rref
+-999
+1
+1
+-1
+0 1
+-1 0
+% NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR
+LPRWF
+0 0
+% IV(1) IJ(1)
+-1 30
+-1 30
+0
+1
+% IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+’L1’ 30.34373256D0
+% NAME1 MASS1
+’J2’ 30.34373256D0
+% NAME2 MASS2
+’Case 1.b: For same model L.J.(12,6) get radial matrix elements for v < 3’
+0.0020
+0.6
+20.
+1.d-6
+% RH RMIN RMAX EPS
+0
+0
+0
+0.D0
+% NTP LPPOT IOMEG VLIM
+1
+12 6
+0
+0
+0
+% IPOTL PPAR QPAR APSE Nbeta IBOB
+1000.d0
+1.d0
+1.d0
+% DSCM REQ Rref
+-2
+1
+0
+5
+1 1
+-1 0
+% NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR
+LPRWF
+0 0
+% IV(1) IJ(1)
+4 -1
+1.D0
+% MORDR IRFN RREF
+1.d0
+-0.2d0 0.03d0 -0.004d0 0.0005d0
+% {DM(j)}
+3
+1
+-1 +1 2
+% NLEV2 AUTO2 J2DL J2DU J2DD
+0
+1
+2
+% IV2(1) IV2(2) IV2(3)
+-1 0
+-1 0
+0
+1
+% IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+’L1’ 30.34373256D0
+% NAME1 MASS1
+’J2’ 30.34373256D0
+% NAME2 MASS2
+’Case 1.c: For the same L.J.(12,6), find levels of potential with a barrier’
+0.0020
+0.6
+20.
+1.d-6
+% RH RMIN RMAX EPS
+0
+0
+0
+0.D0
+% NTP LPPOT IOMEG VLIM
+1
+12 6
+0
+0
+0
+% IPOTL PPAR QPAR APSE Nbeta IBOB
+1000.d0
+1.d0
+1.d0
+% DSCM REQ Rref
+-999
+1
+0
+-1
+0 1
+3
+0
+% NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR
+LPRWF
+0 18
+% IV(1) IJ(1)
+17 35
+17 35
+0
+1
+% IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+’Case 1.d:
+Levels of a pointwise double-minimum potential for 3(PI)g Cl2’
+0.001
+1.6
+10.
+1.d-06
+% RH RMIN RMAX EPS
+29
+0
+0
+95440.D0
+% NTP LPPOT IOMEG VLIM
+0 0
+2
+1
+0.D5
+% NUSE IR2 ILR NCN CNN
+0.5291772108D0
+8065.5444D0
+0.d0
+% RFACT EFACT VSHIFT
+3.34 10.608 3.40 9.683
+3.43 9.221
+3.49 8.758
+3.57 8.295
+3.66 8.132
+3.76 8.051
+3.86 8.132
+3.94 8.268
+4.03 8.350
+4.17 8.595
+4.26 8.704
+4.31 8.758
+4.46 8.432
+4.56 8.134
+4.66 7.887
+4.80 7.615
+4.91 7.425
+5.00 7.343
+5.17 7.125
+5.37 6.962
+5.51 6.908
+5.66 6.880
+5.80 6.908
+5.94 6.989
+6.00 7.044
+6.20 7.125
+6.40 7.261
+6.60 7.425
+22
+1
+0
+1
+0 1
+-1 0
+% NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR
+LPRWF
+56 0
+57 0
+58 0
+59 0
+60 0
+61 0
+62 0
+63 0
+64 0
+65 0
+66 0
+67
+0
+68 0
+69 0
+70 0
+72 0
+72 0
+73 0
+74 0
+75 0
+76 0
+77 0
+78 0
+80 0
+3
+0
+0.D0
+% MORDR IRFN RREF
+1.d0
+-2.d-1
+3.d-2
+-4.d-3
+% {DM(j)}
+
+Appendix C.1 : Input/Output for LJ(12,6) PECs and a double minimum potential
+16
+Standard Channel-6 output for Introductory Illustrative Cases 1(a) − 1(d)
+Case 1.a: For a model L.J.(12,6) get all vib. levels and their CDCs
+================================================================================
+Generate
+ZMU= 15.17186628000(u)
+&
+BZ= 8.999999997D-01((1/cm-1)(1/Ang**2))
+from atomic masses:
+30.34373256000
+&
+30.34373256000(u)
+Integrate from
+RMIN=
+0.600
+to
+RMAX=
+20.00
+with mesh
+RH= 0.002000(Angst)
+Potential #1 for L1(
+0)-J2(
+0)
+================================
+State has
+OMEGA= 0
+and energy asymptote:
+Y(lim)=
+0.00000(cm-1)
+Lennard-Jones(12, 6) potential with
+De=
+1000.000(cm-1)
+Re =
+1.000000(A)
+----------------------------------------------------------------------------
+Calculate properties of the single potential described above
+Potential-1 uses inner boundary condition of
+zero value
+at
+RMIN
+Eigenvalue convergence criterion is
+EPS= 1.0D-06(cm-1)
+Airy function at 3-rd turning point is quasibound outer boundary condition
+Since state-1 has (projected) electronic angular momentum
+OMEGA= 0
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 0]/r**2
+For
+J=
+0, seek the first 400 levels of Potential-1
+with
+VLIM=
+0.000
+ALF finds the highest calculated level is
+E(v=
+6)= -7.7249284D-01
+E(v=
+0, J=
+0)=
+-811.519
+Bv=
+1.0540426
+-Dv= -4.1381D-05
+Hv= -6.5120D-09
+Lv= -1.9007D-12
+Mv= -7.2230D-16
+Nv= -3.1926D-19
+Ov= -1.5585D-22
+E(v=
+1, J=
+0)=
+-507.170
+Bv=
+0.9332450
+-Dv= -6.0794D-05
+Hv= -1.4820D-08
+Lv= -6.5533D-12
+Mv= -3.7208D-15
+Nv= -2.4359D-18
+Ov= -1.7523D-21
+E(v=
+2, J=
+0)=
+-287.838
+Bv=
+0.8013476
+-Dv= -9.2177D-05
+Hv= -3.5187D-08
+Lv= -2.3947D-11
+Mv= -2.0879D-14
+Nv= -2.1041D-17
+Ov= -2.3384D-20
+E(v=
+3, J=
+0)=
+-141.503
+Bv=
+0.6566553
+-Dv= -1.4627D-04
+Hv= -9.2303D-08
+Lv= -1.0432D-10
+Mv= -1.5291D-13
+Nv= -2.6179D-16
+Ov= -4.9802D-19
+E(v=
+4, J=
+0)=
+-54.890
+Bv=
+0.4974391
+-Dv= -2.4978D-04
+Hv= -2.9569D-07
+Lv= -6.5212D-10
+Mv= -1.9135D-12
+Nv= -6.6507D-15
+Ov= -2.5885D-17
+E(v=
+5, J=
+0)=
+-13.337
+Bv=
+0.3221808
+-Dv= -4.9470D-04
+Hv= -1.4933D-06
+Lv= -9.1824D-09
+Mv= -7.7465D-11
+Nv= -7.8195D-13
+Ov= -8.8619D-15
+E(v=
+6, J=
+0)=-.772493
+Bv=
+0.1290036
+-Dv= -1.6478D-03
+Hv= -3.8715D-05
+Lv= -2.0424D-06
+Mv= -1.4479D-07
+Nv= -1.1986D-08
+Ov= -1.0942D-09
+Find
+7 Potential-1 vibrational levels with
+J=
+0
+v
+E(v)
+v
+E(v)
+v
+E(v)
+v
+E(v)
+--------------
+--------------
+--------------
+--------------
+0
+-811.5192
+2
+-287.8379
+4
+-54.8902
+6
+-0.7725
+1
+-507.1696
+3
+-141.5034
+5
+-13.3368
+An
+n=12
+N-D theory extrapolation from
+v=
+5 &
+6
+implies
+vD =
+6.439
+===============================================================================
+Case 1.b: For same model L.J.(12,6) get radial matrix elements for v < 3
+================================================================================
+Generate
+ZMU= 15.17186628000(u)
+&
+BZ= 8.999999997D-01((1/cm-1)(1/Ang**2))
+from atomic masses:
+30.34373256000
+&
+30.34373256000(u)
+Integrate from
+RMIN=
+0.600
+to
+RMAX=
+20.00
+with mesh
+RH= 0.002000(Angst)
+Potential #1 for L1( 30)-J2( 30)
+================================
+State has
+OMEGA= 0
+and energy asymptote:
+Y(lim)=
+0.00000(cm-1)
+Lennard-Jones(12, 6) potential with
+De=
+1000.000(cm-1)
+Re =
+1.000000(A)
+----------------------------------------------------------------------------
+Calculate properties of the single potential described above
+Potential-1 uses inner boundary condition of
+zero value
+at
+RMIN
+Eigenvalue convergence criterion is
+EPS= 1.0D-06(cm-1)
+Airy function at 3-rd turning point is quasibound outer boundary condition
+Since state-1 has (projected) electronic angular momentum
+OMEGA= 0
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 0]/r**2
+For
+J=
+0, seek the first
+3 levels of Potential-1
+with
+VLIM=
+0.000
+and automatically increment
+J
+in steps of
+1 to a maximum value of
+1
+Matrix element argument expansion variable is:
+X = (r - DREF)/DREF
+where reference length is held fixed at
+DREF = 1.0000000000(Angstroms)
+Coefficients of expansion for radial matrix element/expectation value argument:
+1.000000D+00 -2.000000D-01
+3.000000D-02 -4.000000D-03
+5.000000D-04
+Using the rotational selection rule:
+delta(J)= -1 to 1 with increment 2
+calculate matrix elements for coupling to the
+3 vibrational levels of
+Potential-2:
+v =
+0
+1
+2
+Coupling
+E(v=
+0, J=
+1)=
+-809.4112
+to
+E(v=
+0, J=
+0)=
+-811.5192
+Moment matrix elements:
+<X** 0>=
+0.9999997392
+<X** 1>=
+0.0315663983
+<X** 2>=
+0.0043724231
+<X** 3>=
+0.0004274505
+<X** 4>=
+0.0000681864
+FCF= 1.0000D+00
+<M>= 9.93816D-01
+d(E)=
+-2.11
+A(Einst)= 9.6706D-07 s-1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+For vibrational level
+v =
+0
+of Potential-1
+J
+E
+J
+E
+J
+E
+J
+E
+J
+E
+--------------
+--------------
+--------------
+--------------
+--------------
+0
+-811.519
+1
+-809.411
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Coupling
+E(v=
+1, J=
+0)=
+-507.1696
+to
+E(v=
+0, J=
+1)=
+-809.4112
+Moment matrix elements:
+<X** 0>=
+0.0007038706
+<X** 1>=
+0.0555644965
+<X** 2>=
+0.0061799007
+<X** 3>=
+0.0011668795
+<X** 4>=
+0.0002051809
+FCF= 4.9543D-07
+<M>=-1.02282D-02
+d(E)=
+-302.24
+A(Einst)= 9.0586D-04 s-1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Coupling
+E(v=
+1, J=
+1)=
+-505.3034
+to
+E(v=
+0, J=
+0)=
+-811.5192
+Moment matrix elements:
+<X** 0>= -0.0007036644
+<X** 1>=
+0.0554599642
+<X** 2>=
+0.0061672593
+<X** 3>=
+0.0011650604
+<X** 4>=
+0.0002048749
+FCF= 4.9514D-07
+<M>=-1.16152D-02
+d(E)=
+-306.22
+A(Einst)= 4.0496D-04 s-1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Coupling
+E(v=
+1, J=
+1)=
+-505.3034
+to
+E(v=
+0, J=
+2)=
+-805.1964
+
+Appendix C.1 : Input/Output for LJ(12,6) PECs and a double minimum potential
+17
+Moment matrix elements:
+<X** 0>=
+0.0014096830
+<X** 1>=
+0.0556429498
+<X** 2>=
+0.0062065908
+<X** 3>=
+0.0011721096
+<X** 4>=
+0.0002064159
+FCF= 1.9872D-06
+<M>=-9.53729D-03
+d(E)=
+-299.89
+A(Einst)= 5.1293D-04 s-1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Coupling
+E(v=
+1, J=
+1)=
+-505.3034
+to
+E(v=
+1, J=
+0)=
+-507.1696
+Moment matrix elements:
+<X** 0>=
+0.9999989173
+<X** 1>=
+0.1072309514
+<X** 2>=
+0.0227481313
+<X** 3>=
+0.0044941830
+<X** 4>=
+0.0010331538
+FCF= 1.0000D+00
+<M>= 9.79218D-01
+d(E)=
+-1.87
+A(Einst)= 6.5155D-07 s-1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+For vibrational level
+v =
+1
+of Potential-1
+J
+E
+J
+E
+J
+E
+J
+E
+J
+E
+--------------
+--------------
+--------------
+--------------
+--------------
+0
+-507.170
+1
+-505.303
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Coupling
+E(v=
+2, J=
+0)=
+-287.8379
+to
+E(v=
+0, J=
+1)=
+-809.4112
+Moment matrix elements:
+<X** 0>= -0.0001445686
+<X** 1>= -0.0146868141
+<X** 2>=
+0.0021494006
+<X** 3>=
+0.0006270858
+<X** 4>=
+0.0002038462
+FCF= 2.0900D-08
+<M>= 2.85487D-03
+d(E)=
+-521.57
+A(Einst)= 3.6268D-04 s-1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Coupling
+E(v=
+2, J=
+0)=
+-287.8379
+to
+E(v=
+1, J=
+1)=
+-505.3034
+Moment matrix elements:
+<X** 0>=
+0.0012364336
+<X** 1>=
+0.0838602021
+<X** 2>=
+0.0215270661
+<X** 3>=
+0.0065378301
+<X** 4>=
+0.0019424342
+FCF= 1.5288D-06
+<M>=-1.49150D-02
+d(E)=
+-217.47
+A(Einst)= 7.1749D-04 s-1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Coupling
+E(v=
+2, J=
+1)=
+-286.2356
+to
+E(v=
+0, J=
+0)=
+-811.5192
+Moment matrix elements:
+<X** 0>=
+0.0001452962
+<X** 1>= -0.0147714152
+<X** 2>=
+0.0021295981
+<X** 3>=
+0.0006226650
+<X** 4>=
+0.0002028174
+FCF= 2.1111D-08
+<M>= 3.16108D-03
+d(E)=
+-525.28
+A(Einst)= 1.5140D-04 s-1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Coupling
+E(v=
+2, J=
+1)=
+-286.2356
+to
+E(v=
+0, J=
+2)=
+-805.1964
+Moment matrix elements:
+<X** 0>= -0.0002889435
+<X** 1>= -0.0146592358
+<X** 2>=
+0.0021551720
+<X** 3>=
+0.0006307829
+<X** 4>=
+0.0002051064
+FCF= 8.3488D-08
+<M>= 2.70514D-03
+d(E)=
+-518.96
+A(Einst)= 2.1384D-04 s-1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Coupling
+E(v=
+2, J=
+1)=
+-286.2356
+to
+E(v=
+1, J=
+0)=
+-507.1696
+Moment matrix elements:
+<X** 0>= -0.0012355622
+<X** 1>=
+0.0834456954
+<X** 2>=
+0.0214393061
+<X** 3>=
+0.0065170119
+<X** 4>=
+0.0019370216
+FCF= 1.5266D-06
+<M>=-1.73066D-02
+d(E)=
+-220.93
+A(Einst)= 3.3767D-04 s-1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Coupling
+E(v=
+2, J=
+1)=
+-286.2356
+to
+E(v=
+1, J=
+2)=
+-501.5723
+Moment matrix elements:
+<X** 0>=
+0.0024778195
+<X** 1>=
+0.0841137737
+<X** 2>=
+0.0216303217
+<X** 3>=
+0.0065743346
+<X** 4>=
+0.0019558701
+FCF= 6.1396D-06
+<M>=-1.37213D-02
+d(E)=
+-215.34
+A(Einst)= 3.9306D-04 s-1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Coupling
+E(v=
+2, J=
+1)=
+-286.2356
+to
+E(v=
+2, J=
+0)=
+-287.8379
+Moment matrix elements:
+<X** 0>=
+0.9999970447
+<X** 1>=
+0.2089561346
+<X** 2>=
+0.0661950523
+<X** 3>=
+0.0214010286
+<X** 4>=
+0.0074711130
+FCF= 9.9999D-01
+<M>= 9.60110D-01
+d(E)=
+-1.60
+A(Einst)= 3.9644D-07 s-1
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+For vibrational level
+v =
+2
+of Potential-1
+J
+E
+J
+E
+J
+E
+J
+E
+J
+E
+--------------
+--------------
+--------------
+--------------
+--------------
+0
+-287.838
+1
+-286.236
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Find
+3 Potential-1 vibrational levels with
+J=
+0
+v
+E(v)
+v
+E(v)
+v
+E(v)
+v
+E(v)
+--------------
+--------------
+--------------
+--------------
+0
+-811.5192
+1
+-507.1696
+2
+-287.8379
+An
+n=12
+N-D theory extrapolation from
+v=
+1 &
+2
+implies
+vD =
+5.757
+===============================================================================
+Case 1.c: For the same L.J.(12,6), find levels of potential with a barrier
+================================================================================
+Generate
+ZMU= 15.17186628000(u)
+&
+BZ= 8.999999997D-01((1/cm-1)(1/Ang**2))
+from atomic masses:
+30.34373256000
+&
+30.34373256000(u)
+Integrate from
+RMIN=
+0.600
+to
+RMAX=
+20.00
+with mesh
+RH= 0.002000(Angst)
+Potential #1 for L1(
+0)-J2(
+0)
+================================
+State has
+OMEGA= 0
+and energy asymptote:
+Y(lim)=
+0.00000(cm-1)
+Lennard-Jones(12, 6) potential with
+De=
+1000.000(cm-1)
+Re =
+1.000000(A)
+----------------------------------------------------------------------------
+Calculate properties of the single potential described above
+Potential-1 uses inner boundary condition of
+zero value
+at
+RMIN
+Eigenvalue convergence criterion is
+EPS= 1.0D-06(cm-1)
+Airy function at 3-rd turning point is quasibound outer boundary condition
+Since state-1 has (projected) electronic angular momentum
+OMEGA= 0
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 0]/r**2
+For
+J= 18, seek the first 400 levels of Potential-1
+with
+VLIM=
+0.000
+Solve for
+v=
+0
+J= 18
+ETRIAL= -4.6535526D+02
+INNER= 0
+WF(1st) WF(NEND)
+ITER
+ETRIAL
+D(E)
+M
+R(M)
+/WF(M)
+/WF(M)
+R(NEND) NBEG ITP1
+-------------------------------------------------------------------------------
+1 -4.6535526D+02
+9.86D+00
+258
+1.11
+8.3D-27
+2.5D-13
+2.54
+1
+178
+2 -4.5549824D+02 -6.65D-01
+260
+1.12
+1.0D-26
+3.6D-13
+2.54
+1
+177
+3 -4.5616312D+02 -4.08D-03
+260
+1.12
+9.9D-27
+3.5D-13
+2.54
+1
+177
+4 -4.5616720D+02 -1.53D-07
+260
+1.12
+9.9D-27
+3.5D-13
+2.54
+1
+177
+-------------------------------------------------------------------------------
+E(v=
+0,J= 18)=
+-456.1672
+4 Iter
+R(M)=
+1.12
+WF(NBEG=
+52)/WF(M)= 9.9D-27
+INNER= 0
+WF(NEND=
+799)/WF(M)= 3.5D-13
+Single well
+ICOR= 0:
+E(v=
+0,J= 18)=
+-456.17
+v(SC)=
+0.002
+dGdv= 308.355
+(vD-v)=
+4.0487
+E(next)= -1.9930D+02
+Solve for
+v=
+1
+J= 18
+ETRIAL= -1.9929905D+02
+INNER= 0
+WF(1st) WF(NEND)
+
+Appendix C.1 : Input/Output for LJ(12,6) PECs and a double minimum potential
+18
+ITER
+ETRIAL
+D(E)
+M
+R(M)
+/WF(M)
+/WF(M)
+R(NEND) NBEG ITP1
+-------------------------------------------------------------------------------
+1 -1.9929905D+02
+3.65D+00
+330
+1.26 -1.9D-26
+3.6D-13
+3.23
+1
+164
+2 -1.9565349D+02 -1.62D-01
+331
+1.26 -2.1D-26
+4.5D-13
+3.23
+1
+164
+3 -1.9581525D+02 -3.75D-04
+331
+1.26 -2.1D-26
+4.5D-13
+3.23
+1
+164
+4 -1.9581563D+02 -2.25D-09
+331
+1.26 -2.1D-26
+4.5D-13
+3.23
+1
+164
+-------------------------------------------------------------------------------
+E(v=
+1,J= 18)=
+-195.8156
+4 Iter
+R(M)=
+1.26
+WF(NBEG=
+51)/WF(M)=-2.1D-26
+INNER= 0
+WF(NEND=
+1066)/WF(M)= 4.5D-13
+Single well
+ICOR= 0:
+E(v=
+1,J= 18)=
+-195.82
+v(SC)=
+1.003
+dGdv= 213.103
+(vD-v)=
+2.9262
+E(next)= -3.1232D+01
+Solve for
+v=
+2
+J= 18
+ETRIAL= -3.1232480D+01
+INNER= 0
+WF(1st) WF(NEND)
+ITER
+ETRIAL
+D(E)
+M
+R(M)
+/WF(M)
+/WF(M)
+R(NEND) NBEG ITP1
+-------------------------------------------------------------------------------
+1 -3.1232480D+01
+5.23D+00
+418
+1.43
+2.3D-26
+7.1D-13
+5.09
+1
+158
+2 -2.6003756D+01 -4.39D-01
+423
+1.44
+2.9D-26
+6.8D-13
+5.30
+1
+158
+3 -2.6442466D+01 -4.69D-03
+422
+1.44
+2.8D-26
+6.1D-13
+5.30
+1
+158
+4 -2.6447160D+01 -5.09D-07
+422
+1.44
+2.8D-26
+6.1D-13
+5.30
+1
+158
+-------------------------------------------------------------------------------
+E(v=
+2,J= 18)=
+-26.4472
+4 Iter
+R(M)=
+1.44
+WF(NBEG=
+50)/WF(M)= 2.8D-26
+INNER= 0
+WF(NEND=
+1780)/WF(M)= 6.1D-13
+Single well
+ICOR= 0:
+E(v=
+2,J= 18)=
+-26.45
+v(SC)=
+2.002
+dGdv= 126.808
+(vD-v)=
+1.7121
+E(next)=
+5.2997D+01
+Solve for
+v=
+3
+J= 18
+ETRIAL=
+5.2996575D+01
+INNER= 0
+WF(1st) WF(NEND)
+ITER
+ETRIAL
+D(E)
+M
+R(M)
+/WF(M)
+/WF(M)
+R(NEND) NBEG ITP1
+-------------------------------------------------------------------------------
+1
+5.2996575D+01
+6.26D+00
+562
+1.72 -1.6D-26
+1.6D-01
+2.49
+1
+156
+2
+5.9253832D+01 -7.10D-01
+600
+1.80 -2.5D-26
+4.1D-01
+2.27
+1
+156
+3
+5.8543620D+01 -4.68D-02
+594
+1.79 -2.3D-26
+3.8D-01
+2.29
+1
+156
+4
+5.8496786D+01 -1.39D-03
+594
+1.79 -2.3D-26
+3.7D-01
+2.30
+1
+156
+5
+5.8495398D+01 -4.63D-05
+594
+1.79 -2.3D-26
+3.7D-01
+2.30
+1
+156
+6
+5.8495352D+01 -1.54D-06
+594
+1.79 -2.3D-26
+3.7D-01
+2.30
+1
+156
+7
+5.8495350D+01 -5.12D-08
+594
+1.79 -2.3D-26
+3.7D-01
+2.30
+1
+156
+-------------------------------------------------------------------------------
+E(v=
+3,J= 18)=
+58.4954
+7 Iter
+R(M)=
+1.79
+WF(NBEG=
+51)/WF(M)=-2.3D-26
+INNER= 0
+WF(NEND=
+849)/WF(M)= 3.7D-01
+Lifetime= 5.035D-12(s)
+Width= 1.054D+00
+dG/dv=
+41.60
+V(max)=
+64.01
+Single well
+ICOR= 0:
+E(v=
+3,J= 18)=
+58.50
+v(SC)=
+2.983
+dGdv=
+44.289
+(vD-v)=
+0.2492
+E(next)=
+1.3932D+01
+Find highest level of this potential is
+E(v=
+3)=
+5.8495350075D+01
+ALF finds the highest calculated level is
+E(v=
+3)=
+5.8495350D+01
+Solve for
+v=
+0
+J= 18
+ETRIAL= -4.5616720D+02
+INNER= 0
+WF(1st) WF(NEND)
+ITER
+ETRIAL
+D(E)
+M
+R(M)
+/WF(M)
+/WF(M)
+R(NEND) NBEG ITP1
+-------------------------------------------------------------------------------
+1 -4.5616720D+02 -1.53D-07
+260
+1.12
+9.9D-27
+3.5D-13
+2.54
+1
+177
+-------------------------------------------------------------------------------
+E(v=
+0,J= 18)=
+-456.1672
+1 Iter
+R(M)=
+1.12
+WF(NBEG=
+52)/WF(M)= 9.9D-27
+INNER= 0
+WF(NEND=
+799)/WF(M)= 3.5D-13
+Solve for
+v=
+1
+J= 18
+ETRIAL= -1.9581563D+02
+INNER= 0
+WF(1st) WF(NEND)
+ITER
+ETRIAL
+D(E)
+M
+R(M)
+/WF(M)
+/WF(M)
+R(NEND) NBEG ITP1
+-------------------------------------------------------------------------------
+1 -1.9581563D+02 -2.25D-09
+331
+1.26 -2.1D-26
+4.5D-13
+3.23
+1
+164
+-------------------------------------------------------------------------------
+E(v=
+1,J= 18)=
+-195.8156
+1 Iter
+R(M)=
+1.26
+WF(NBEG=
+51)/WF(M)=-2.1D-26
+INNER= 0
+WF(NEND=
+1066)/WF(M)= 4.5D-13
+Solve for
+v=
+2
+J= 18
+ETRIAL= -2.6447160D+01
+INNER= 0
+WF(1st) WF(NEND)
+ITER
+ETRIAL
+D(E)
+M
+R(M)
+/WF(M)
+/WF(M)
+R(NEND) NBEG ITP1
+-------------------------------------------------------------------------------
+1 -2.6447160D+01 -5.09D-07
+422
+1.44
+2.8D-26
+7.2D-13
+5.27
+1
+158
+-------------------------------------------------------------------------------
+E(v=
+2,J= 18)=
+-26.4472
+1 Iter
+R(M)=
+1.44
+WF(NBEG=
+50)/WF(M)= 2.8D-26
+INNER= 0
+WF(NEND=
+1780)/WF(M)= 7.2D-13
+Solve for
+v=
+3
+J= 18
+ETRIAL=
+5.8495350D+01
+INNER= 0
+WF(1st) WF(NEND)
+ITER
+ETRIAL
+D(E)
+M
+R(M)
+/WF(M)
+/WF(M)
+R(NEND) NBEG ITP1
+-------------------------------------------------------------------------------
+1
+5.8495350D+01 -5.12D-08
+594
+1.79 -2.3D-26
+3.7D-01
+2.30
+1
+156
+-------------------------------------------------------------------------------
+E(v=
+3,J= 18)=
+58.4954
+1 Iter
+R(M)=
+1.79
+WF(NBEG=
+51)/WF(M)=-2.3D-26
+INNER= 0
+WF(NEND=
+849)/WF(M)= 3.7D-01
+Lifetime= 5.035D-12(s)
+Width= 1.054D+00
+dG/dv=
+41.60
+V(max)=
+64.01
+Find
+4 Potential-1 vibrational levels with
+J= 18
+v
+E(v)
+v
+E(v)
+v
+E(v)
+v
+E(v)
+--------------
+--------------
+--------------
+--------------
+0
+-456.1672
+1
+-195.8156
+2
+-26.4472
+3
+58.4954
+===============================================================================
+Case 1.d:
+Levels of a pointwise double-minimum potential for 3(PI)g Cl2
+================================================================================
+Generate
+ZMU= 17.48442634000(u)
+&
+BZ= 1.037181808D+00((1/cm-1)(1/Ang**2))
+from atomic masses:
+34.96885268000
+&
+34.96885268000(u)
+Integrate from
+RMIN=
+1.600
+to
+RMAX=
+10.00
+with mesh
+RH= 0.001000(Angst)
+Potential #1 for Cl( 35)-Cl( 35)
+================================
+State has
+OMEGA= 0
+and energy asymptote:
+Y(lim)= 95440.00000(cm-1)
+Perform cubic spline interpolation over the
+29 input points
+To make input points Y(i) consistent with
+Y(lim),
+add
+Y(shift)=
+0.0000
+Scale input points:
+(distance)* 5.291772108D-01
+&
+(energy)* 8.065544400D+03
+to get required internal units
+[Angstroms & cm-1 for potentials]
+r(i)
+Y(i)
+r(i)
+Y(i)
+r(i)
+Y(i)
+----------------------
+----------------------
+----------------------
+3.340000
+10.60800000
+4.170000
+8.59500000
+5.370000
+6.96200000
+3.400000
+9.68300000
+4.260000
+8.70400000
+5.510000
+6.90800000
+3.430000
+9.22100000
+4.310000
+8.75800000
+5.660000
+6.88000000
+3.490000
+8.75800000
+4.460000
+8.43200000
+5.800000
+6.90800000
+
+Appendix C.1 : Input/Output for LJ(12,6) PECs and a double minimum potential
+19
+3.570000
+8.29500000
+4.560000
+8.13400000
+5.940000
+6.98900000
+3.660000
+8.13200000
+4.660000
+7.88700000
+6.000000
+7.04400000
+3.760000
+8.05100000
+4.800000
+7.61500000
+6.200000
+7.12500000
+3.860000
+8.13200000
+4.910000
+7.42500000
+6.400000
+7.26100000
+3.940000
+8.26800000
+5.000000
+7.34300000
+6.600000
+7.42500000
+4.030000
+8.35000000
+5.170000
+7.12500000
+----------------------------------------------------------------------------
+Extrapolate to
+X .le. 1.7992
+with
+Y= -5091495.587
++5.609801D+06 * exp(-4.542065D-02*X)
+Extrapolate to
+X .GE.
+3.3867
+using
+Y=
+95440.0000 - [ 1.128770D+05/X**1 +1.377826D+05/X**3]
+----------------------------------------------------------------------------
+Calculate properties of the single potential described above
+Potential-1 uses inner boundary condition of
+zero value
+at
+RMIN
+Eigenvalue convergence criterion is
+EPS= 1.0D-06(cm-1)
+Airy function at 3-rd turning point is quasibound outer boundary condition
+Since state-1 has (projected) electronic angular momentum
+OMEGA= 0
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 0]/r**2
+Solve for the
+22 vibration-rotation levels of Potential-1:
+(v,J) =
+( 56,
+0)
+( 57,
+0)
+( 58,
+0)
+( 59,
+0)
+( 60,
+0)
+( 61,
+0)
+( 62,
+0)
+( 63,
+0)
+( 64,
+0)
+( 65,
+0)
+( 66,
+0)
+( 67,
+0)
+( 68,
+0)
+( 69,
+0)
+( 70,
+0)
+( 72,
+0)
+( 72,
+0)
+( 73,
+0)
+( 74,
+0)
+( 75,
+0)
+( 76,
+0)
+( 77,
+Matrix element arguments are powers of the distance0)
+r (in Angstroms)
+Coefficients of expansion for radial matrix element/expectation value argument:
+1.000000D+00 -2.000000D-01
+3.000000D-02 -4.000000D-03
+Find
+2
+potential minima:
+Vmin=
+64929.256
+55490.947
+at mesh points
+R =
+1.99400
+2.99500
+Find
+2
+potential maxima:
+Vmax=
+70645.436
+84014.515
+at mesh points
+R =
+2.28400
+10.00000
+E(v= 56, J=
+0)=
+68214.438
+<M(r)>=
+0.4721236994
+<KE>=
+4580.196
+<X** 1>=
+3.63045127
+<X** 2>=
+13.66002892
+<X** 3>=
+52.89672853
+-------------------------------------------------------------------------------
+E(v= 57, J=
+0)=
+68387.998
+<M(r)>=
+0.4695211055
+<KE>=
+4617.063
+<X** 1>=
+3.64732349
+<X** 2>=
+13.79516352
+<X** 3>=
+53.71727533
+-------------------------------------------------------------------------------
+E(v= 58, J=
+0)=
+68476.426
+<M(r)>=
+0.6824612177
+<KE>=
+1651.393
+<X** 1>=
+2.04384519
+<X** 2>=
+4.18845602
+<X** 3>=
+8.60585634
+-------------------------------------------------------------------------------
+E(v= 59, J=
+0)=
+68559.695
+<M(r)>=
+0.4669189761
+<KE>=
+4652.829
+<X** 1>=
+3.66408683
+<X** 2>=
+13.93033264
+<X** 3>=
+54.54340917
+-------------------------------------------------------------------------------
+E(v= 60, J=
+0)=
+68729.539
+<M(r)>=
+0.4643045290
+<KE>=
+4686.656
+<X** 1>=
+3.68083020
+<X** 2>=
+14.06617696
+<X** 3>=
+55.37868492
+-------------------------------------------------------------------------------
+E(v= 61, J=
+0)=
+68897.547
+<M(r)>=
+0.4617011736
+<KE>=
+4718.810
+<X** 1>=
+3.69738156
+<X** 2>=
+14.20154715
+<X** 3>=
+56.21723207
+-------------------------------------------------------------------------------
+E(v= 62, J=
+0)=
+69063.700
+<M(r)>=
+0.4591313914
+<KE>=
+4749.186
+<X** 1>=
+3.71357576
+<X** 2>=
+14.33535705
+<X** 3>=
+57.05354180
+-------------------------------------------------------------------------------
+E(v= 63, J=
+0)=
+69214.948
+<M(r)>=
+0.6781183397
+<KE>=
+1985.878
+<X** 1>=
+2.07712475
+<X** 2>=
+4.36259568
+<X** 3>=
+9.33364510
+-------------------------------------------------------------------------------
+E(v= 64, J=
+0)=
+69228.156
+<M(r)>=
+0.4588457942
+<KE>=
+4751.128
+<X** 1>=
+3.71260668
+<X** 2>=
+14.36531493
+<X** 3>=
+57.39807961
+-------------------------------------------------------------------------------
+E(v= 65, J=
+0)=
+69390.488
+<M(r)>=
+0.4540380379
+<KE>=
+4803.188
+<X** 1>=
+3.74528392
+<X** 2>=
+14.60094615
+<X** 3>=
+58.73339038
+-------------------------------------------------------------------------------
+E(v= 66, J=
+0)=
+69551.030
+<M(r)>=
+0.4516314964
+<KE>=
+4825.287
+<X** 1>=
+3.75994565
+<X** 2>=
+14.72704336
+<X** 3>=
+59.54766857
+-------------------------------------------------------------------------------
+E(v= 67, J=
+0)=
+69709.530
+<M(r)>=
+0.4496202586
+<KE>=
+4837.877
+<X** 1>=
+3.77158473
+<X** 2>=
+14.83463802
+<X** 3>=
+60.27548393
+-------------------------------------------------------------------------------
+E(v= 68, J=
+0)=
+69864.123
+<M(r)>=
+0.4631813287
+<KE>=
+4633.896
+<X** 1>=
+3.66813651
+<X** 2>=
+14.22170337
+<X** 3>=
+57.46061741
+-------------------------------------------------------------------------------
+E(v= 69, J=
+0)=
+69900.180
+<M(r)>=
+0.6579325788
+<KE>=
+2352.457
+<X** 1>=
+2.22764740
+<X** 2>=
+5.25807538
+<X** 3>=
+13.57005061
+-------------------------------------------------------------------------------
+E(v= 70, J=
+0)=
+70022.038
+<M(r)>=
+0.4464976859
+<KE>=
+4867.346
+<X** 1>=
+3.78784876
+<X** 2>=
+15.00980661
+<X** 3>=
+61.55668989
+-------------------------------------------------------------------------------
+E(v= 72, J=
+0)=
+70321.487
+<M(r)>=
+0.4485338715
+<KE>=
+4776.940
+<X** 1>=
+3.76631221
+<X** 2>=
+14.93793365
+<X** 3>=
+61.58542409
+-------------------------------------------------------------------------------
+E(v= 72, J=
+0)=
+70321.487
+<M(r)>=
+0.4485338715
+<KE>=
+4776.940
+<X** 1>=
+3.76631221
+<X** 2>=
+14.93793365
+<X** 3>=
+61.58542409
+-------------------------------------------------------------------------------
+E(v= 73, J=
+0)=
+70453.823
+<M(r)>=
+0.5032628690
+<KE>=
+4057.676
+<X** 1>=
+3.36247828
+<X** 2>=
+12.39895889
+<X** 3>=
+49.05256070
+-------------------------------------------------------------------------------
+E(v= 74, J=
+0)=
+70524.503
+<M(r)>=
+0.5646387149
+<KE>=
+3567.119
+<X** 1>=
+2.91080360
+<X** 2>=
+9.57364570
+<X** 3>=
+35.10248406
+-------------------------------------------------------------------------------
+E(v= 75, J=
+0)=
+70634.089
+<M(r)>=
+0.4560303262
+<KE>=
+4812.997
+<X** 1>=
+3.70350160
+<X** 2>=
+14.63177900
+<X** 3>=
+60.55568119
+-------------------------------------------------------------------------------
+E(v= 76, J=
+0)=
+70771.143
+<M(r)>=
+0.4453926382
+<KE>=
+4880.577
+<X** 1>=
+3.77812257
+<X** 2>=
+15.13371060
+<X** 3>=
+63.24854142
+-------------------------------------------------------------------------------
+E(v= 77, J=
+0)=
+70905.689
+<M(r)>=
+0.4521314033
+<KE>=
+4783.371
+<X** 1>=
+3.72580681
+<X** 2>=
+14.82855323
+<X** 3>=
+61.89095769
+-------------------------------------------------------------------------------
+===============================================================================
+
+Appendix C.2 : Input/Output files for Several Families of Analytic Potentials
+20
+Appendix C 2 :
+Input/Output files for Several Families of Analytic Potentials
+Case 2 . Illustrative input data files are presented for eigenvalue calculations using a number of the
+analytic potential energy functions supported by the code, as described in § 2.6. Performing
+this set of seven calculations required 1.60 s of CPU on a decade-old Silicon Graphics UNIX
+server.
+(a) To illustrate an application to an Extended Morse Oscillator (EMO) potential and
+the inclusion of BOB correction terms, this case presents a calculation of the eigenval-
+ues of 109AgD from the ‘EMO3(7)’ potential determined in Ref. [72] from a combined-
+isotopologue analysis that treated 107AgH as the ‘reference isotopologue’.
+(b) To illustrate use of a standard Polynomial-Exponent Morse/Long-Range (PE-MLR)
+potential form, and incorporation of Born-Oppenheimer breakdown (BOB) contributions
+to the radial and centrifugal potentials, this case is a calculation of properties of levels of
+the ground state of 24MgD using the analytic PE-MLR potential and BOB correction
+functions determined from a combined isotopologue analysis of data for the MgH system
+in which 24MgH was the “reference isotopologue” (see Ref. [73]). Note that in such cases,
+calculation of the rotational constants is based on a centrifugal potential that includes
+the BOB correction function of Eq. (36).
+(c) To illustrate use of a Spline-Exponent Morse/Long-Range (SE-MLR) potential form,
+this case calculates the band constants for all levels of the ground X 1Σ+ state of NaH
+using parameter values generated from the example of Appendix C.3 of Ref. [44].
+(d) This is an example of a calculation performed using the Double-Exponential Long-Range
+(DELR) potential form that was introduced in Ref. [11]. This is not precisely the same
+DELR functional form reported there, since our current model for this function no
+longer allows the exponent polynomial to have different orders for r ≤ re and r > re .
+However, it provides an equally good representation of the data for emission into the
+B 1Πu state of Li2.
+(e) This calculation is performed using the “X-expansion or HPP” polynomial po-
+tential for the X 1Σ+
+g state of Ca2 reported by Allard et al. [74]. Note that the fact
+that the 18-digit polynomial expansion coefficients reported in Ref. [74] are rounded to
+(approximately) 13 digits by our program appears to have no significant effect on the
+results.
+(f) This calculation for the ground X 1Σ+ state of 20Xe84Kr is performed using the gener-
+alized HFD function reported by Aziz et al. [75].
+(g) This calculation for the ground X 1Σ+ state of 40Ar2 using the generalized Tang-
+Toennies type function reported by Jaeger et al. [76].
+47 109
+1 2
+0
+1
+% IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+’Case 2.a: EMO potential for {109}AgD w. BOB corrn [JCP 123, 204304(2005)]’
+0.0010
+0.8
+30.0
+1.d-6
+% RH RMIN RMAX EPS
+0
+0
+0
+19250.d0
+0.d0
+% NTP LPPOT OMEGA VLM
+3
+3 3
+7
+0
+1
+% IPOTL QPAR PPAR Nbeta APSE IBOB
+19250.d0 1.6179162d0
+0.d0
+% DSCM REQ Rref
+1.54358095D+00 3.73860D-02 1.66424D-01 9.8030D-02 1.7089D-01 6.0200D-02
+1.4000D-01 2.2400D-01
+107 1
+3 3 -1 3
+3 -1 2
+0.0D+0 1.175D+01 1.756D+01 -1.270D+01% MN1R MN2R qAD pAD NU1 NU2 qNA NT1 NT2
+% UA2(0) UA2(1) ...
+
+Appendix C.2 : Input/Output files for Several Families of Analytic Potentials
+21
+0.0D+0
+% U2INF
+0.0D+0 1.5D-04 9.3D-04
+% TA2(0) TA2(1) ...
+0.0D+0
+% T2INF
+-99
+1
+2
+-1
+0 1
+-1
+0
+% NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR LPRWF
+0 0
+% IV(1) IJ(1)
+12 24
+1 2
+0
+1
+% IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+’Case 2.b: PE-MLR fx for MgD w. BOB corrn: from JPCA 117, 13373 (2013)’
+0.0005d0
+0.50 99.d0
+1.d-05
+% RH RMIN RMAX EPS
+0
+0
+0
+0.0d0
+% NTP LPPOT IOMEG VLIM
+4
+4 5
+12 -1
+1
+% IPOTL QPAR PPAR Nbeta APSE IBOB
+11104.25d0
+1.7296854D0
+2.74d0
+% DSCM REQ Rref
+3 0.81 -2
+1
+% NCMM rhoAB IVSR IDSTT
+6 2.77550D+05
+8 3.45490D+06
+10 4.61400D+07
+% MMLR CMM
+1.170475460D+00 1.08015790D+00 2.67329710D+00
+2.483590D+00
+7.401300000D-01 1.91470000D-01 6.03830000D-01 -2.48730D+00
+-7.665300000D+00 -5.7310000D+00 2.83900000D+00
+6.05400D+00
+2.400000000D+00
+% PARM(i=0,13)
+24 1
+4 6
+3 13
+4 -1 7
+% MN1R MN2R qAD pAD NU1 NU2 qNA NT1 NT2
+1.310D+00 4.180D+00 2.670D+00 4.0D+00
+% U1i(i)
+0.0D+0
+% U2INF
+-1.5183D+01 3.7524D+01 -1.1607D+01 3.2200D+01 6.0570D+01 2.2950D+02
+-1.5610D+03 -2.0130D+03 1.2530D+04 5.3600D+03 -4.9740D+04 1.0500D+04
+7.110D+04 -4.70D+04
+% U2i(i)
+0.0D+0
+% U2INF
+0.0D+00 7.266D-04 2.70D-04 9.110D-04 2.970D-03 -1.90D-03 -7.20D-03
+2.30D-02
+% T2i(i)
+0.0D+0
+% T2INF
+-99
+1
+1
+-1 0 1
+1
+0
+0
+% NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR LPRWF
+0 0
+% IV(1) IJ(1)
+11 23 1 1 0 1
+% IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+’Case 2.c: SE-MLR potential for NaH X^1Sigma^+: see betaFIT paper in JQSRT’
+0.001d0 0.4d0 50.d0 5.d-08
+% RH RMIN RMAX EPS
+0 -0 0
+0.d0
+% NTP LPPOT IOMEG VLIM
+4 3 6 16 16 0
+% IPOTL PPAR QPAR APSE Nbeta IBOB
+15793.4d0 1.88681084d0 3.6d0
+% DSCM REQ Rref
+3 0.69 -2 1
+% NCMM rhoAB IVSR IDSTT
+6 3.57502D+05
+8 5.41796D+06
+10 1.12920D+8
+% (MMLR(I) CMM(I) I= 1,NCMM)
+-1.0000000
+-1.4436321033D-03
+-0.9300000
+5.5253175808D-02
+-0.8700000
+5.2283859294D-02
+-0.8100000
+4.4152720636D-02
+-0.7900000
+4.1302296514D-02
+-0.6300000
+3.2224967101D-02
+-0.4800000
+3.7117729038D-02
+-0.3200000
+6.2549013369D-02
+-0.1600000
+1.2724804641D-01
+0.0000000
+2.5944401578D-01
+0.1500000
+4.6902225016D-01
+0.3100000
+7.9765582107D-01
+0.4700000
+1.2594053426D+00
+0.6300000
+1.9422405193D+00
+0.7900000
+2.7670029551D+00
+1.0000000
+3.0169976694D+00
+-99
+1
+1
+-1 0 1
+1
+0
+0
+% NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR LPRWF
+
+Appendix C.2 : Input/Output files for Several Families of Analytic Potentials
+22
+0 0
+% IV(1) IJ(1)
+3 7
+3 7
+0
+1
+% IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+’Case 2.d: DELR(8) for Li2(B) [see JCP 119, 7398 (2003)]’
+0.005 1.5
+60.
+1.d-8
+% RH RMIN RMAX EPS
+-1
+0 1 0.d0
+% NTP LPPOT IOMEG VLIM
+5
+3 3
+8 -1
+1
+% IPOTL PPAR QPAR APSE Nbeta IBOB
+2986.600d0 2.935961d0
+3.6d0
+% DSCM REQ Rref
+4 0.54d0
+-0
+1
+% NCMM rhoAB IVSR IDSTT
+3 -1.788d5
+% MMCM(1) CMM(1)
+6 6.97586d6
+% MMCM(2) CMM(2)
+8 1.378d8
+% MMCM(3) CMM(3)
+10 3.445d9
+% MMCM(4) CMM(4)
+1.0585149D+00 3.70878D-01 2.77660D-01 1.1109D-01 -1.3076D-01 -2.805D-01
+-8.69D-02
+3.29D-01
+1.61D-01
+7 7
+3
+3
+2
+2
+3
+-1 -1
+% MN1R MN2R pAD qAD NU1 NU2 QNA NT1 NT2
+2.52D-01 -3.29D+00 1.40D+00
+% U1(0) U1(1)
+1.05578d0
+% U1INF
+2.52D-01 -3.29D+00 1.40D+00
+% U2(0) U2(1)
+1.05578d0
+% U2INF
+-99 1
+2
+0
+0
+1
+-1
+0
+% NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR LPRWF
+0
+0
+% IV(i) IJ(i)
+20 40
+20 40
+0
+1
+% IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+’Case 2.e: "Tiemann-type" potential for Ca2(X) [Phys.Rev. A66, 042503(2002)’
+0.0005
+3.0
+80.
+1.d-08
+% RH RMIN RMAX EPS
+-1
+0
+0
+1102.096077d0
+% NTP LPPOT IOMEG VLIM
+8 1 1
+20 -1
+0
+% IPOTL PPAR QPAR APSE Nbeta IBOB
+1102.096077d0 4.277277d0
+0.d0
+% DSCM REQ
+Rref
+2
+0.d0
+-2
+1
+% NCMM rhoAB IVSR IDSTT
+6 -1.074d7
+% MMLR(1) CMM(1)
+8 -2.4505d8
+% MMLR(2) CMM(2)
+0.00042747d0
+-0.254083092764773077d01
+0.379611002601149221d04
+0.382070302022495241d03
+-0.274390396954679318d04 -0.322736334190800926d04
+0.363113805693018548d03
+0.634370542189755270d04 -0.740151835960846893d04 -0.190738913003729067d05
+0.542347392433017594d05
+0.440392304373011066d05 -0.155387944954526116d06
+-0.836628381353236182d05
+0.213831067083156871d06
+0.155922449222826835d06
+-0.156260872999483137d06 -0.146711120959219668d06
+0.277542999772230869d05
+0.712908015579339117d05 -0.126115550408998979d04
+-0.5929d0
+3.66d0
+10.d0
+%
+b
+R{inn}
+R{out}
+-99 1
+2
+0
+0 1
+-1
+0
+% NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR LPRWF
+0
+0
+% IV(i) IJ(i)
+10 20
+36 84
+0
+1
+% IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+’Case 2.f: Barrow-Aziz HFD-B(6,8,10,12) for {20}Ne{84}Xe [JCP 91, 6348 (1989)]’
+0.001
+1.5
+29.
+1.d-08
+% RH RMIN RMAX EPS
+-1 00
+0
+0.d0
+49.75d0
+% NTP LPPOT IOMEG VLIM
+6
+0 0
+5 0
+0
+% IPOTL PPAR QPAR APSE Nbeta IBOB
+51.5750d0
+3.861d0
+0.d0
+% DSCM REQ Rref
+4
+0.d0
+-2
+1
+% NCMM rhoAB IVSR IDSTT
+6 1.892088392d5
+% MMLR(1) CMM(1)
+8 1.032416239d6
+% MMLR(2) CMM(2)
+10 9.939199461d6
+% MMLR(3) CMM(3)
+12 1.693237609d8
+% MMLR(4) CMM(4)
+1.d0
+3.872583d0
+2.d0
+0.1324d0
+0.d0
+% alpha_i (i=1-3),beta2,gamma
+-99 1 2
+0
+0 1
+-1
+0
+% NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR LPRW
+0
+0
+% IV(i) IJ(i)
+10 20
+36 84
+0
+1
+% IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+
+Appendix C.2 : Input/Output files for Several Families of Analytic Potentials
+23
+’Case 2.g:
+Generalized Tang-Toennies PEC for Ar2 [Jaeger Mol.Phys. 107, 2181]’
+0.001
+1.5
+29.
+1.d-08
+% RH RMIN RMAX EPS
+-1 00
+0
+0.d0
+49.75d0
+% NTP LPPOT IOMEG VLIM
+7
+0 0
+9 0
+0
+% IPOTL PPAR QPAR Nbeta APSE IBOB
+99.4734d0
+3.762d0
+0.d0
+% DSCM REQ Rref
+6
+4.02517211d0
++2
+0
+% NCMM rhoAB IVSR IDSTT
+6 3.077697440d+05
+% MMLR(1) CMM(1)
+8 2.270731967d+06
+% MMLR(2) CMM(2)
+10 1.707398322d+07
+% MMLR(3) CMM(3)
+12 1.308376851d+08
+% MMLR(4) CMM(4)
+14 1.021785836d+09
+% MMLR(5) CMM(5)
+16 8.132347553d+09
+% MMLR(6) CMM(6)
+2.98337630d0
+0.097120881d0
+-2.75206827d-1
+1.01489050d0
+3.206404873d+07
+0.d0
+0.d0
+0.d0
+0.d0
+% \beta1 - \beta9
+-99 1 2
+0
+0 1
+-1
+0
+% NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR LPRW
+0
+0
+% IV(i) IJ(i)
+Standard Channel-6 output for Introductory Illustrative Cases 2(a) − 2(g)
+Case 2.a: EMO potential for {109}AgD w. BOB corrn [JCP 123, 204304(2005)]
+================================================================================
+Generate
+ZMU=
+1.97752904306(u)
+&
+BZ= 1.173076605D-01((1/cm-1)(1/Ang**2))
+from atomic masses: 108.90475530000
+&
+2.01410177812(u)
+Integrate from
+RMIN=
+0.800
+to
+RMAX=
+30.00
+with mesh
+RH= 0.001000(Angst)
+Potential #1 for Ag(109)- D(
+2)
+================================
+State has
+OMEGA= 0
+and energy asymptote:
+Y(lim)= 19250.00000(cm-1)
+BOB adiabatic potential correction for atom-2
+of mass
+2.01410177812
+consists of mass factor
+[1- MASS(
+1 H)/MASS(
+2 H)]
+multiplying all of:
+u1INF=
+0.000000
+times
+y3= [(r**3 - Re**3)/(r**3 + Re**3)]
+plus
+[1 - y3]
+times an order
+3 polynomial in
+y3=[(r**3 - Re**3)/(r**3 + Re**3)]
+with the
+4 coefficients:
+0.000000000D+00
+1.175000000D+01
+1.756000000D+01 -1.270000000D+01
+BOB centrifugal correction for atom-2
+of mass
+2.01410177812
+consists of mass factor
+[MASS(
+1 H)/MASS(
+2 H)]
+multiplying all of:
+q2INF=
+0.000000000D+00 times
+y3= [(r**3 - Re**3)/(r**3 + Re**3)]
+plus [1 - y3] times an order
+2 polynomial in y3(r) with the
+3 coefficients:
+0.000000000D+00
+1.500000000D-04
+9.300000000D-04
+EMO_3 Potential with
+De= 19250.0000
+Re= 1.61791620
+Rref= 1.61791620
+Exponent coeft: order- 7 power series in
+y=(r**3 - Rref**3)/(r**3 + Rref**3)
+with
+8 coefficients:
+1.543580950D+00
+3.738600000D-02
+1.664240000D-01
+9.803000000D-02
+1.708900000D-01
+6.020000000D-02
+1.400000000D-01
+2.240000000D-01
+----------------------------------------------------------------------------
+Calculate properties of the single potential described above
+Potential-1 uses inner boundary condition of
+zero value
+at
+RMIN
+Eigenvalue convergence criterion is
+EPS= 1.0D-06(cm-1)
+Airy function at 3-rd turning point is quasibound outer boundary condition
+Since state-1 has (projected) electronic angular momentum
+OMEGA= 0
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 0]/r**2
+For
+J=
+0, seek the first 100 levels of Potential-1
+with
+VLIM= 19250.000
+ALF finds the highest calculated level is
+E(v= 25)=
+1.9244508D+04
+E(v=
+0, J=
+0)=
+621.527
+Bv=
+3.2205459
+-Dv= -8.7936D-05
+Hv=
+1.3523D-09
+Lv= -3.8730D-14
+Mv=
+2.8933D-19
+Nv= -2.8833D-23
+Ov= -1.2833D-27
+E(v=
+1, J=
+0)=
+1837.802
+Bv=
+3.1483027
+-Dv= -8.7227D-05
+Hv=
+1.2955D-09
+Lv= -3.9617D-14
+Mv=
+8.9664D-20
+Nv= -3.7762D-23
+Ov= -1.4750D-27
+E(v=
+2, J=
+0)=
+3019.707
+Bv=
+3.0762265
+-Dv= -8.6598D-05
+Hv=
+1.2322D-09
+Lv= -4.1154D-14
+Mv= -1.2066D-19
+Nv= -5.3964D-23
+Ov= -2.2640D-27
+E(v=
+3, J=
+0)=
+4167.280
+Bv=
+3.0042163
+-Dv= -8.6064D-05
+Hv=
+1.1614D-09
+Lv= -4.3541D-14
+Mv= -3.8002D-19
+Nv= -7.8139D-23
+Ov= -3.7304D-27
+E(v=
+4, J=
+0)=
+5280.497
+Bv=
+2.9321578
+-Dv= -8.5642D-05
+Hv=
+1.0814D-09
+Lv= -4.7039D-14
+Mv= -7.2433D-19
+Nv= -1.1204D-22
+Ov= -6.1362D-27
+E(v=
+5, J=
+0)=
+6359.267
+Bv=
+2.8599186
+-Dv= -8.5352D-05
+Hv=
+9.8985D-10
+Lv= -5.1964D-14
+Mv= -1.1935D-18
+Nv= -1.5921D-22
+Ov= -9.9956D-27
+E(v=
+6, J=
+0)=
+7403.421
+Bv=
+2.7873437
+-Dv= -8.5219D-05
+Hv=
+8.8331D-10
+Lv= -5.8715D-14
+Mv= -1.8395D-18
+Nv= -2.2594D-22
+Ov= -1.6211D-26
+E(v=
+7, J=
+0)=
+8412.700
+Bv=
+2.7142503
+-Dv= -8.5273D-05
+Hv=
+7.5763D-10
+Lv= -6.7817D-14
+Mv= -2.7376D-18
+Nv= -3.2294D-22
+Ov= -2.6337D-26
+E(v=
+8, J=
+0)=
+9386.744
+Bv=
+2.6404234
+-Dv= -8.5549D-05
+Hv=
+6.0753D-10
+Lv= -7.9999D-14
+Mv= -4.0023D-18
+Nv= -4.6800D-22
+Ov= -4.3071D-26
+E(v=
+9, J=
+0)= 10325.075
+Bv=
+2.5656104
+-Dv= -8.6092D-05
+Hv=
+4.2622D-10
+Lv= -9.6308D-14
+Mv= -5.8127D-18
+Nv= -6.9092D-22
+Ov= -7.1230D-26
+
+Appendix C.2 : Input/Output files for Several Families of Analytic Potentials
+24
+E(v= 10, J=
+0)= 11227.083
+Bv=
+2.4895158
+-Dv= -8.6955D-05
+Hv=
+2.0474D-10
+Lv= -1.1829D-13
+Mv= -8.4541D-18
+Nv= -1.0426D-21
+Ov= -1.1967D-25
+E(v= 11, J=
+0)= 12092.012
+Bv=
+2.4117931
+-Dv= -8.8203D-05
+Hv= -6.9065D-11
+Lv= -1.4829D-13
+Mv= -1.2391D-17
+Nv= -1.6122D-21
+Ov= -2.0531D-25
+E(v= 12, J=
+0)= 12918.934
+Bv=
+2.3320360
+-Dv= -8.9920D-05
+Hv= -4.1216D-10
+Lv= -1.8994D-13
+Mv= -1.8402D-17
+Nv= -2.5624D-21
+Ov= -3.6175D-25
+E(v= 13, J=
+0)= 13706.737
+Bv=
+2.2497650
+-Dv= -9.2210D-05
+Hv= -8.4892D-10
+Lv= -2.4898D-13
+Mv= -2.7830D-17
+Nv= -4.2008D-21
+Ov= -6.5890D-25
+E(v= 14, J=
+0)= 14454.090
+Bv=
+2.1644091
+-Dv= -9.5214D-05
+Hv= -1.4153D-09
+Lv= -3.3481D-13
+Mv= -4.3090D-17
+Nv= -7.1385D-21
+Ov= -1.2503D-24
+E(v= 15, J=
+0)= 15159.423
+Bv=
+2.0752796
+-Dv= -9.9120D-05
+Hv= -2.1663D-09
+Lv= -4.6337D-13
+Mv= -6.8730D-17
+Nv= -1.2658D-20
+Ov= -2.4951D-24
+E(v= 16, J=
+0)= 15820.880
+Bv=
+1.9815321
+-Dv= -1.0419D-04
+Hv= -3.1883D-09
+Lv= -6.6291D-13
+Mv= -1.1381D-16
+Nv= -2.3634D-20
+Ov= -5.2999D-24
+E(v= 17, J=
+0)= 16436.280
+Bv=
+1.8821097
+-Dv= -1.1081D-04
+Hv= -4.6243D-09
+Lv= -9.8634D-13
+Mv= -1.9764D-16
+Nv= -4.7051D-20
+Ov= -1.2176D-23
+E(v= 18, J=
+0)= 17003.044
+Bv=
+1.7756548
+-Dv= -1.1955D-04
+Hv= -6.7223D-09
+Lv= -1.5397D-12
+Mv= -3.6498D-16
+Nv= -1.0165D-19
+Ov= -3.0940D-23
+E(v= 19, J=
+0)= 17518.114
+Bv=
+1.6603681
+-Dv= -1.3130D-04
+Hv= -9.9432D-09
+Lv= -2.5552D-12
+Mv= -7.3137D-16
+Nv= -2.4462D-19
+Ov= -8.9823D-23
+E(v= 20, J=
+0)= 17977.832
+Bv=
+1.5337691
+-Dv= -1.4758D-04
+Hv= -1.5222D-08
+Lv= -4.6021D-12
+Mv= -1.6407D-15
+Nv= -6.8287D-19
+Ov= -3.1333D-22
+E(v= 21, J=
+0)= 18377.770
+Bv=
+1.3922564
+-Dv= -1.7116D-04
+Hv= -2.4701D-08
+Lv= -9.3190D-12
+Mv= -4.3405D-15
+Nv= -2.3671D-18
+Ov= -1.4293D-21
+E(v= 22, J=
+0)= 18712.468
+Bv=
+1.2302153
+-Dv= -2.0777D-04
+Hv= -4.4238D-08
+Lv= -2.2676D-11
+Mv= -1.4927D-14
+Nv= -1.1578D-17
+Ov= -9.9942D-21
+E(v= 23, J=
+0)= 18975.036
+Bv=
+1.0378809
+-Dv= -2.7179D-04
+Hv= -9.5322D-08
+Lv= -7.6990D-11
+Mv= -8.2964D-14
+Nv= -1.0641D-16
+Ov= -1.5297D-19
+E(v= 24, J=
+0)= 19156.482
+Bv=
+0.7945156
+-Dv= -4.1659D-04
+Hv= -3.2127D-07
+Lv= -5.8062D-10
+Mv= -1.4623D-12
+Nv= -4.4539D-15
+Ov= -1.5359D-17
+E(v= 25, J=
+0)= 19244.508
+Bv=
+0.4195501
+-Dv= -1.4775D-03
+Hv= -1.4620D-05
+Lv= -3.4825D-07
+Mv= -1.1158D-08
+Nv= -4.1855D-10
+Ov= -1.7371D-11
+Find
+26 Potential-1 vibrational levels with
+J=
+0
+v
+E(v)
+v
+E(v)
+v
+E(v)
+v
+E(v)
+--------------
+--------------
+--------------
+--------------
+0
+621.5267
+7
+8412.7004
+14
+14454.0900
+21
+18377.7702
+1
+1837.8022
+8
+9386.7439
+15
+15159.4225
+22
+18712.4681
+2
+3019.7070
+9
+10325.0747
+16
+15820.8804
+23
+18975.0358
+3
+4167.2795
+10
+11227.0834
+17
+16436.2800
+24
+19156.4822
+4
+5280.4968
+11
+12092.0119
+18
+17003.0435
+25
+19244.5078
+5
+6359.2672
+12
+12918.9344
+19
+17518.1136
+6
+7403.4212
+13
+13706.7365
+20
+17977.8324
+An
+n=99
+N-D theory extrapolation from
+v=
+24 &
+25
+implies
+vD =
+25.332
+===============================================================================
+Case 2.b: PE-MLR fx for MgD w. BOB corrn: from JPCA 117, 13373 (2013)
+================================================================================
+Generate
+ZMU=
+1.85807333140(u)
+&
+BZ= 1.102215091D-01((1/cm-1)(1/Ang**2))
+from atomic masses:
+23.98504169800
+&
+2.01410177812(u)
+Integrate from
+RMIN=
+0.500
+to
+RMAX=
+99.00
+with mesh
+RH= 0.000500(Angst)
+Potential #1 for Mg( 24)- D(
+2)
+================================
+State has
+OMEGA= 0
+and energy asymptote:
+Y(lim)=
+0.00000(cm-1)
+BOB adiabatic potential correction for atom-1
+of mass
+23.98504169800
+consists of mass factor
+[1- MASS( 24Mg)/MASS( 24Mg)]
+multiplying all of:
+u1INF=
+0.000000
+times
+y6= [(r**6 - Re**6)/(r**6 + Re**6)]
+plus
+[1 - y6]
+times an order
+3 polynomial in
+y4=[(r**4 - Re**4)/(r**4 + Re**4)]
+with the
+4 coefficients:
+1.310000000D+00
+4.180000000D+00
+2.670000000D+00
+4.000000000D+00
+BOB adiabatic potential correction for atom-2
+of mass
+2.01410177812
+consists of mass factor
+[1- MASS(
+1 H)/MASS(
+2 H)]
+multiplying all of:
+u1INF=
+0.000000
+times
+y6= [(r**6 - Re**6)/(r**6 + Re**6)]
+plus
+[1 - y6]
+times an order 13 polynomial in
+y4=[(r**4 - Re**4)/(r**4 + Re**4)]
+with the
+14 coefficients:
+-1.518300000D+01
+3.752400000D+01 -1.160700000D+01
+3.220000000D+01
+6.057000000D+01
+2.295000000D+02 -1.561000000D+03 -2.013000000D+03
+1.253000000D+04
+5.360000000D+03 -4.974000000D+04
+1.050000000D+04
+7.110000000D+04 -4.700000000D+04
+BOB centrifugal correction for atom-2
+of mass
+2.01410177812
+consists of mass factor
+[MASS(
+1 H)/MASS(
+2 H)]
+multiplying all of:
+q2INF=
+0.000000000D+00 times
+y4= [(r**4 - Re**4)/(r**4 + Re**4)]
+plus [1 - y4] times an order
+7 polynomial in y4(r) with the
+8 coefficients:
+0.000000000D+00
+7.266000000D-04
+2.700000000D-04
+9.110000000D-04
+2.970000000D-03 -1.900000000D-03 -7.200000000D-03
+2.300000000D-02
+uLR inverse-power terms incorporate DS-type damping with
+rhoAB= 0.810000
+defined to give very short-range
+Dm(r)*Cm/r^m
+behaviour
+r^{-2/2}
+Dm(r)= [1 - exp(- 3.30(rhoAB*r)/m - 0.423(rhoAB*r)^2/sqrt{m})]^{m -2/2}
+uLR(r) has
+3 inverse-power terms:
+C6 =
+2.77550000D+05
+C8 =
+3.45490000D+06
+C10=
+4.61400000D+07
+MLR(q=4, p=5) Potential with:
+De=11104.2500[cm-1]
+Re=
+1.72968540[A]
+with PE-MLR exponent coefft:
+beta(r)= beta{INF}*y5 + [1-y5]*Sum{beta_i*y4^i}
+exponent power series of order 12 in a variable in which
+Rref= 2.74000
+with 13 coefficients:
+1.170475460D+00
+1.080157900D+00
+2.673297100D+00
+2.483590000D+00
+7.401300000D-01
+1.914700000D-01
+6.038300000D-01
+-2.487300000D+00 -7.665300000D+00 -5.731000000D+00
+2.839000000D+00
+6.054000000D+00
+2.400000000D+00
+Generate
+betaINF=
+2.046201180015
+from uLR(Re)= 2.8698906226D+03
+----------------------------------------------------------------------------
+
+Appendix C.2 : Input/Output files for Several Families of Analytic Potentials
+25
+Calculate properties of the single potential described above
+Potential-1 uses inner boundary condition of
+zero value
+at
+RMIN
+Eigenvalue convergence criterion is
+EPS= 1.0D-05(cm-1)
+Airy function at 3-rd turning point is quasibound outer boundary condition
+Since state-1 has (projected) electronic angular momentum
+OMEGA= 0
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 0]/r**2
+For
+J=
+0, seek the first 100 levels of Potential-1
+with
+VLIM=
+0.000
+E(v=
+0,J=
+0)=-10576.9713
+E(v=
+1,J=
+0)= -9531.1273
+E(v=
+2,J=
+0)= -8517.5782
+E(v=
+3,J=
+0)= -7537.4551
+E(v=
+4,J=
+0)= -6592.2479
+E(v=
+5,J=
+0)= -5683.9300
+E(v=
+6,J=
+0)= -4815.1134
+E(v=
+7,J=
+0)= -3989.2702
+E(v=
+8,J=
+0)= -3211.0590
+E(v=
+9,J=
+0)= -2486.8045
+E(v= 10,J=
+0)= -1825.1989
+E(v= 11,J=
+0)= -1238.3300
+E(v= 12,J=
+0)=
+-743.1449
+E(v= 13,J=
+0)=
+-363.0851
+E(v= 14,J=
+0)=
+-126.0360
+E(v= 15,J=
+0)=
+-30.5770
+E(v= 16,J=
+0)=
+-2.7309
+Find highest level of this potential is
+E(v= 16)= -2.7309323395D+00
+ALF finds the highest calculated level is
+E(v= 16)= -2.7309323D+00
+E(v=
+0,J=
+0)=-10576.9713
+E(v=
+0, J=
+0)=-10576.971
+Bv=
+3.0009468
+-Dv= -9.6194D-05
+Hv=
+2.0891D-09
+Lv= -1.0297D-13
+Mv=
+1.8787D-18
+Nv= -2.8462D-22
+Ov= -3.9837D-27
+E(v=
+1,J=
+0)= -9531.1273
+E(v=
+1, J=
+0)= -9531.127
+Bv=
+2.9333876
+-Dv= -9.6337D-05
+Hv=
+1.9600D-09
+Lv= -1.1534D-13
+Mv=
+6.7506D-19
+Nv= -4.0035D-22
+Ov= -1.8539D-26
+E(v=
+2,J=
+0)= -8517.5782
+E(v=
+2, J=
+0)= -8517.578
+Bv=
+2.8643763
+-Dv= -9.6828D-05
+Hv=
+1.7810D-09
+Lv= -1.3369D-13
+Mv= -1.4522D-18
+Nv= -7.1077D-22
+Ov= -4.9236D-26
+E(v=
+3,J=
+0)= -7537.4551
+E(v=
+3, J=
+0)= -7537.455
+Bv=
+2.7933659
+-Dv= -9.7786D-05
+Hv=
+1.5280D-09
+Lv= -1.6404D-13
+Mv= -5.2122D-18
+Nv= -1.2423D-21
+Ov= -1.3838D-25
+E(v=
+4,J=
+0)= -6592.2479
+E(v=
+4, J=
+0)= -6592.248
+Bv=
+2.7196297
+-Dv= -9.9396D-05
+Hv=
+1.1631D-09
+Lv= -2.1360D-13
+Mv= -1.2452D-17
+Nv= -2.3423D-21
+Ov= -3.4728D-25
+E(v=
+5,J=
+0)= -5683.9300
+E(v=
+5, J=
+0)= -5683.930
+Bv=
+2.6421849
+-Dv= -1.0193D-04
+Hv=
+6.2174D-10
+Lv= -2.9701D-13
+Mv= -2.6867D-17
+Nv= -4.8363D-21
+Ov= -8.5123D-25
+E(v=
+6,J=
+0)= -4815.1134
+E(v=
+6, J=
+0)= -4815.113
+Bv=
+2.5596786
+-Dv= -1.0579D-04
+Hv= -2.0991D-10
+Lv= -4.4425D-13
+Mv= -5.6382D-17
+Nv= -1.0793D-20
+Ov= -2.1867D-24
+E(v=
+7,J=
+0)= -3989.2702
+E(v=
+7, J=
+0)= -3989.270
+Bv=
+2.4701994
+-Dv= -1.1164D-04
+Hv= -1.5383D-09
+Lv= -7.1777D-13
+Mv= -1.1988D-16
+Nv= -2.6016D-20
+Ov= -6.1356D-24
+E(v=
+8,J=
+0)= -3211.0590
+E(v=
+8, J=
+0)= -3211.059
+Bv=
+2.3709745
+-Dv= -1.2055D-04
+Hv= -3.7550D-09
+Lv= -1.2572D-12
+Mv= -2.6769D-16
+Nv= -6.8839D-20
+Ov= -1.9375D-23
+E(v=
+9,J=
+0)= -2486.8045
+E(v=
+9, J=
+0)= -2486.804
+Bv=
+2.2578703
+-Dv= -1.3439D-04
+Hv= -7.6602D-09
+Lv= -2.4088D-12
+Mv= -6.5150D-16
+Nv= -2.0617D-19
+Ov= -7.1509D-23
+E(v= 10,J=
+E(v= 10, J=0)= -1825.1989
+0)= -1825.199
+Bv=
+2.1245297
+-Dv= -1.5657D-04
+Hv= -1.5062D-08
+Lv= -5.1513D-12
+Mv= -1.8077D-15
+Nv= -7.3449D-19
+Ov= -3.2785D-22
+E(v= 11,J=
+E(v= 11, J=0)= -1238.3300
+0)= -1238.330
+Bv=
+1.9607791
+-Dv= -1.9391D-04
+Hv= -3.0630D-08
+Lv= -1.2783D-11
+Mv= -6.1094D-15
+Nv= -3.3875D-18
+Ov= -2.0746D-21
+E(v= 12,J=
+0)=
+-743.1449
+E(v= 12, J=
+0)=
+-743.145
+Bv=
+1.7495212
+-Dv= -2.6164D-04
+Hv= -6.8835D-08
+Lv= -3.9679D-11
+Mv= -2.8259D-14
+Nv= -2.3600D-17
+Ov= -2.1938D-20
+E(v= 13,J=
+0)=
+-363.0851
+E(v= 13, J=
+0)=
+-363.085
+Bv=
+1.4609104
+-Dv= -3.9887D-04
+Hv= -1.8763D-07
+Lv= -1.7762D-10
+Mv= -2.2062D-13
+Nv= -3.2568D-16
+Ov= -5.3844D-19
+E(v= 14,J=
+0)=
+-126.0360
+E(v= 14, J=
+0)=
+-126.036
+Bv=
+1.0524948
+-Dv= -6.9579D-04
+Hv= -6.2944D-07
+Lv= -1.1429D-09
+Mv= -2.8624D-12
+Nv= -8.7147D-15
+Ov= -3.0196D-17
+E(v= 15,J=
+0)=
+-30.5770
+E(v= 15, J=
+0)=
+-30.577
+Bv=
+0.6130777
+-Dv= -9.3162D-04
+Hv= -1.4581D-06
+Lv= -7.8253D-09
+Mv= -5.6840D-11
+Nv= -4.6701D-13
+Ov= -4.2484D-15
+E(v= 16,J=
+0)=
+-2.7309
+E(v= 16, J=
+0)=
+-2.731
+Bv=
+0.2852832
+-Dv= -2.1746D-03
+Hv= -2.9685D-05
+Lv= -9.2968D-07
+Mv= -3.9645D-08
+Nv= -1.9920D-09
+Ov= -1.1090D-10
+Find
+17 Potential-1 vibrational levels with
+J=
+0
+v
+E(v)
+v
+E(v)
+v
+E(v)
+v
+E(v)
+--------------
+--------------
+--------------
+--------------
+0 -10576.9713
+5
+-5683.9300
+10
+-1825.1989
+15
+-30.5770
+1
+-9531.1273
+6
+-4815.1134
+11
+-1238.3300
+16
+-2.7309
+2
+-8517.5782
+7
+-3989.2702
+12
+-743.1449
+3
+-7537.4551
+8
+-3211.0590
+13
+-363.0851
+4
+-6592.2479
+9
+-2486.8045
+14
+-126.0360
+An
+n= 6
+N-D theory extrapolation from
+v=
+15 &
+16
+implies
+vD =
+16.808
+===============================================================================
+Case 2.c: SE-MLR potential for NaH X^1Sigma^+: see betaFIT paper in JQSRT
+================================================================================
+
+Appendix C.2 : Input/Output files for Several Families of Analytic Potentials
+26
+Generate
+ZMU=
+0.96549948567(u)
+&
+BZ= 5.727374080D-02((1/cm-1)(1/Ang**2))
+from atomic masses:
+22.98976928200
+&
+1.00782503223(u)
+Integrate from
+RMIN=
+0.400
+to
+RMAX=
+50.00
+with mesh
+RH= 0.001000(Angst)
+Potential #1 for Na( 23)- H(
+1)
+================================
+State has
+OMEGA= 0
+and energy asymptote:
+Y(lim)=
+0.00000(cm-1)
+uLR inverse-power terms incorporate DS-type damping with
+rhoAB= 0.690000
+defined to give very short-range
+Dm(r)*Cm/r^m
+behaviour
+r^{-2/2}
+Dm(r)= [1 - exp(- 3.30(rhoAB*r)/m - 0.423(rhoAB*r)^2/sqrt{m})]^{m -2/2}
+uLR(r) has
+3 inverse-power terms:
+C6 =
+3.57502000D+05
+C8 =
+5.41796000D+06
+C10=
+1.12920000D+08
+MLR(q=3, p=6) Potential with:
+De=15793.4000[cm-1]
+Re=
+1.88681084[A]
+with SE-MLR exponent coefft
+beta(r)=
+y6^{eq} *{Spline through the 16 function values} beta_i =
+-0.14436321D-02
+0.55253176D-01
+0.52283859D-01
+0.44152721D-01
+0.41302297D-01
+0.32224967D-01
+0.37117729D-01
+0.62549013D-01
+0.12724805D+00
+0.25944402D+00
+0.46902225D+00
+0.79765582D+00
+0.12594053D+01
+0.19422405D+01
+0.27670030D+01
+0.30169977D+01
+at distances defined by y_3(r; RREF) =
+0.36000000D+01 -0.10000000D+01 -0.93000000D+00 -0.87000000D+00
+-0.81000000D+00 -0.79000000D+00 -0.63000000D+00 -0.48000000D+00
+-0.32000000D+00 -0.16000000D+00
+0.00000000D+00
+0.15000000D+00
+0.31000000D+00
+0.47000000D+00
+0.63000000D+00
+0.79000000D+00
+Generate0.10000000D+01
+betaINF=
+2.992811377060
+from uLR(Re)= 1.5839598324D+03
+----------------------------------------------------------------------------
+Calculate properties of the single potential described above
+Potential-1 uses inner boundary condition of
+zero value
+at
+RMIN
+Eigenvalue convergence criterion is
+EPS= 5.0D-08(cm-1)
+Airy function at 3-rd turning point is quasibound outer boundary condition
+Since state-1 has (projected) electronic angular momentum
+OMEGA= 0
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 0]/r**2
+For
+J=
+0, seek the first 100 levels of Potential-1
+with
+VLIM=
+0.000
+E(v=
+0,J=
+0)=-15205.1139
+E(v=
+1,J=
+0)=-14059.9108
+E(v=
+2,J=
+0)=-12954.1908
+E(v=
+3,J=
+0)=-11887.6945
+E(v=
+4,J=
+0)=-10859.4081
+E(v=
+5,J=
+0)= -9868.5071
+E(v=
+6,J=
+0)= -8914.4586
+E(v=
+7,J=
+0)= -7997.0494
+E(v=
+8,J=
+0)= -7116.3661
+E(v=
+9,J=
+0)= -6272.7065
+E(v= 10,J=
+0)= -5466.5854
+E(v= 11,J=
+0)= -4698.9715
+E(v= 12,J=
+0)= -3971.4345
+E(v= 13,J=
+0)= -3286.1933
+E(v= 14,J=
+0)= -2646.3120
+E(v= 15,J=
+0)= -2055.9614
+E(v= 16,J=
+0)= -1520.8021
+E(v= 17,J=
+0)= -1048.1654
+E(v= 18,J=
+0)=
+-647.3388
+E(v= 19,J=
+0)=
+-330.1624
+E(v= 20,J=
+0)=
+-111.1142
+E(v= 21,J=
+0)=
+-7.5824
+Find highest level of this potential is
+E(v= 21)= -7.5824289234D+00
+ALF finds the highest calculated level is
+E(v= 21)= -7.5824289D+00
+E(v=
+0,J=
+0)=-15205.1139
+E(v=
+0, J=
+0)=-15205.114
+Bv=
+4.8331668
+-Dv= -3.3310D-04
+Hv=
+1.9277D-08
+Lv= -1.6555D-12
+Mv=
+2.2203D-16
+Nv= -3.9992D-20
+Ov=
+2.4754D-24
+E(v=
+1,J=
+0)=-14059.9108
+E(v=
+1, J=
+0)=-14059.911
+Bv=
+4.6941582
+-Dv= -3.2844D-04
+Hv=
+2.0000D-08
+Lv= -2.1257D-12
+Mv=
+2.1432D-16
+Nv=
+2.6476D-20
+Ov= -7.9004D-24
+E(v=
+2,J=
+0)=-12954.1908
+E(v=
+2, J=
+0)=-12954.191
+Bv=
+4.5586852
+-Dv= -3.2535D-04
+Hv=
+2.0353D-08
+Lv= -1.7867D-12
+Mv=
+5.5906D-17
+Nv= -3.3163D-20
+Ov=
+3.7621D-23
+E(v=
+3,J=
+0)=-11887.6945
+E(v=
+3, J=
+0)=-11887.695
+Bv=
+4.4257375
+-Dv= -3.2148D-04
+Hv=
+1.9969D-08
+Lv= -1.7212D-12
+Mv=
+2.0411D-16
+Nv= -1.6028D-19
+Ov=
+6.3876D-23
+E(v=
+4,J=
+0)=-10859.4081
+E(v=
+4, J=
+0)=-10859.408
+Bv=
+4.2945424
+-Dv= -3.1731D-04
+Hv=
+1.9479D-08
+Lv= -2.1157D-12
+Mv=
+6.0713D-16
+Nv= -2.2889D-19
+Ov= -1.4273D-23
+E(v=
+5,J=
+0)= -9868.5071
+E(v=
+5, J=
+0)= -9868.507
+Bv=
+4.1645485
+-Dv= -3.1354D-04
+Hv=
+1.9600D-08
+Lv= -2.9019D-12
+Mv=
+7.0236D-16
+Nv= -1.0183D-19
+Ov= -1.4209D-23
+E(v=
+6,J=
+0)= -8914.4586
+E(v=
+6, J=
+0)= -8914.459
+Bv=
+4.0355776
+-Dv= -3.1085D-04
+Hv=
+1.9839D-08
+Lv= -3.5138D-12
+Mv=
+7.0500D-16
+Nv= -1.0195D-19
+Ov=
+4.0625D-23
+E(v=
+7,J=
+0)= -7997.0494
+E(v=
+7, J=
+0)= -7997.049
+Bv=
+3.9071118
+-Dv= -3.0945D-04
+Hv=
+1.9995D-08
+Lv= -3.9581D-12
+Mv=
+8.2102D-16
+Nv= -1.4751D-19
+Ov= -9.2558D-24
+E(v=
+8,J=
+0)= -7116.3661
+E(v=
+8, J=
+0)= -7116.366
+Bv=
+3.7784456
+-Dv= -3.0925D-04
+Hv=
+2.0222D-08
+Lv= -4.4146D-12
+Mv=
+7.4436D-16
+Nv= -1.8574D-19
+Ov= -5.6741D-23
+E(v=
+9,J=
+0)= -6272.7065
+E(v=
+9, J=
+0)= -6272.707
+Bv=
+3.6489419
+-Dv= -3.1027D-04
+Hv=
+2.0001D-08
+Lv= -5.2227D-12
+Mv=
+5.8585D-16
+Nv=
+2.6970D-20
+Ov= -1.3817D-22
+
+Appendix C.2 : Input/Output files for Several Families of Analytic Potentials
+27
+E(v= 10,J=
+E(v= 10, J=0)= -5466.5854
+0)= -5466.585
+Bv=
+3.5175361
+-Dv= -3.1331D-04
+Hv=
+1.8882D-08
+Lv= -5.9354D-12
+Mv=
+3.9491D-16
+Nv=
+2.8319D-19
+Ov= -1.0225D-22
+E(v= 11,J=
+E(v= 11, J=0)= -4698.9715
+0)= -4698.971
+Bv=
+3.3824634
+-Dv= -3.1910D-04
+Hv=
+1.7026D-08
+Lv= -6.2479D-12
+Mv= -1.7939D-16
+Nv= -8.7693D-20
+Ov=
+2.1916D-22
+E(v= 12,J=
+E(v= 12, J=0)= -3971.4345
+0)= -3971.434
+Bv=
+3.2416371
+-Dv= -3.2807D-04
+Hv=
+1.3791D-08
+Lv= -7.1829D-12
+Mv= -5.2298D-16
+Nv= -2.1715D-19
+Ov=
+2.1104D-22
+E(v= 13,J=
+E(v= 13, J=0)= -3286.1933
+0)= -3286.193
+Bv=
+3.0923821
+-Dv= -3.4152D-04
+Hv=
+8.6767D-09
+Lv= -8.6163D-12
+Mv= -1.2237D-15
+Nv= -1.1067D-18
+Ov=
+2.0155D-22
+E(v= 14,J=
+E(v= 14, J=0)= -2646.3120
+0)= -2646.312
+Bv=
+2.9311694
+-Dv= -3.6133D-04
+Hv=
+2.8620D-10
+Lv= -1.2034D-11
+Mv= -2.1016D-15
+Nv= -1.2972D-18
+Ov= -3.4999D-22
+E(v= 15,J=
+E(v= 15, J=0)= -2055.9614
+0)= -2055.961
+Bv=
+2.7530085
+-Dv= -3.9095D-04
+Hv= -1.2843D-08
+Lv= -1.7209D-11
+Mv= -4.1249D-15
+Nv= -2.7177D-18
+Ov= -1.2986D-21
+E(v= 16,J=
+E(v= 16, J=0)= -1520.8021
+0)= -1520.802
+Bv=
+2.5512339
+-Dv= -4.3431D-04
+Hv= -3.2942D-08
+Lv= -2.7298D-11
+Mv= -1.1300D-14
+Nv= -8.9361D-18
+Ov= -5.2467D-21
+E(v= 17,J=
+E(v= 17, J=0)= -1048.1654
+0)= -1048.165
+Bv=
+2.3174627
+-Dv= -4.9839D-04
+Hv= -6.9505D-08
+Lv= -5.3828D-11
+Mv= -3.1131D-14
+Nv= -2.3355D-17
+Ov= -2.1422D-20
+E(v= 18,J=
+0)=
+-647.3388
+E(v= 18, J=
+0)=
+-647.339
+Bv=
+2.0391708
+-Dv= -5.9924D-04
+Hv= -1.4274D-07
+Lv= -1.2066D-10
+Mv= -1.0524D-13
+Nv= -1.1615D-16
+Ov= -1.4195D-19
+E(v= 19,J=
+0)=
+-330.1624
+E(v= 19, J=
+0)=
+-330.162
+Bv=
+1.6970822
+-Dv= -7.6935D-04
+Hv= -3.2068D-07
+Lv= -3.8549D-10
+Mv= -5.9131D-13
+Nv= -1.0961D-15
+Ov= -2.2057D-18
+E(v= 20,J=
+0)=
+-111.1142
+E(v= 20, J=
+0)=
+-111.114
+Bv=
+1.2568292
+-Dv= -1.1313D-03
+Hv= -1.0898D-06
+Lv= -2.7861D-09
+Mv= -9.8299D-12
+Nv= -4.2384D-14
+Ov= -2.0574D-16
+E(v= 21,J=
+0)=
+-7.5824
+E(v= 21, J=
+0)=
+-7.582
+Bv=
+0.6000757
+-Dv= -3.2026D-03
+Hv= -2.9845D-05
+Lv= -7.0675D-07
+Mv= -2.2843D-08
+Nv= -8.6687D-10
+Ov= -3.6386D-11
+Find
+22 Potential-1 vibrational levels with
+J=
+0
+v
+E(v)
+v
+E(v)
+v
+E(v)
+v
+E(v)
+--------------
+--------------
+--------------
+--------------
+0 -15205.1139
+6
+-8914.4586
+12
+-3971.4345
+18
+-647.3388
+1 -14059.9108
+7
+-7997.0494
+13
+-3286.1933
+19
+-330.1624
+2 -12954.1908
+8
+-7116.3661
+14
+-2646.3120
+20
+-111.1142
+3 -11887.6945
+9
+-6272.7065
+15
+-2055.9614
+21
+-7.5824
+4 -10859.4081
+10
+-5466.5854
+16
+-1520.8021
+5
+-9868.5071
+11
+-4698.9715
+17
+-1048.1654
+An
+n= 6
+N-D theory extrapolation from
+v=
+20 &
+21
+implies
+vD =
+21.691
+===============================================================================
+Case 2.d: DELR(8) for Li2(B) [see JCP 119, 7398 (2003)]
+================================================================================
+Generate
+ZMU=
+3.50800171850(u)
+&
+BZ= 2.080957930D-01((1/cm-1)(1/Ang**2))
+from atomic masses:
+7.01600343700
+&
+7.01600343700(u)
+Integrate from
+RMIN=
+1.500
+to
+RMAX=
+60.00
+with mesh
+RH= 0.005000(Angst)
+Potential #1 for Li(
+7)-Li(
+7)
+================================
+State has
+OMEGA= 1
+and energy asymptote:
+Y(lim)=
+0.00000(cm-1)
+BOB adiabatic potential correction for atom-1
+of mass
+7.01600343700
+consists of mass factor
+[1- MASS(
+7Li)/MASS(
+7Li)]
+multiplying all of:
+u1INF=
+1.055780
+times
+y3= [(r**3 - Re**3)/(r**3 + Re**3)]
+plus
+[1 - y3]
+times an order
+2 polynomial in
+y3=[(r**3 - Re**3)/(r**3 + Re**3)]
+with the
+3 coefficients:
+2.520000000D-01 -3.290000000D+00
+1.400000000D+00
+BOB adiabatic potential correction for atom-2
+of mass
+7.01600343700
+consists of mass factor
+[1- MASS(
+7Li)/MASS(
+7Li)]
+multiplying all of:
+u1INF=
+1.055780
+times
+y3= [(r**3 - Re**3)/(r**3 + Re**3)]
+plus
+[1 - y3]
+times an order
+2 polynomial in
+y3=[(r**3 - Re**3)/(r**3 + Re**3)]
+with the
+3 coefficients:
+2.520000000D-01 -3.290000000D+00
+1.400000000D+00
+uLR inverse-power terms incorporate DS-type damping with
+rhoAB= 0.540000
+defined to give very short-range
+Dm(r)*Cm/r^m
+behaviour
+r^{ 0/2}
+Dm(r)= [1 - exp(- 3.95(rhoAB*r)/m - 0.390(rhoAB*r)^2/sqrt{m})]^{m +0/2}
+uLR(r) has
+4 inverse-power terms:
+C3 = -1.78800000D+05
+C6 =
+6.97586000D+06
+C 8=
+1.37800000D+08
+C10=
+3.44500000D+09
+DELR(q= 3) Potential with
+De=
+2986.6000[cm-1]
+Re= 2.93596100[A]
+where
+exponent coefft. has power series order
+8
+with polynomial coefficients
+1.05851490D+00
+3.70878000D-01
+2.77660000D-01
+1.11090000D-01
+-1.30760000D-01
+-2.80500000D-01
+-8.69000000D-02
+3.29000000D-01
+1.61000000D-01
+where the radial variable
+y_3= (r**3 - Rref**3)/(r**3 + Rref**3)
+is defined w.r.t.
+Rref= 3.60000000
+Generate A(DELR)=
+3.595299321D+03
+B(DELR)=
+8.493929499D+03
+from uLR defined by 4 inverse-power terms
+----------------------------------------------------------------------------
+Calculate properties of the single potential described above
+Potential-1 uses inner boundary condition of
+zero value
+at
+RMIN
+Eigenvalue convergence criterion is
+EPS= 1.0D-08(cm-1)
+
+Appendix C.2 : Input/Output files for Several Families of Analytic Potentials
+28
+Airy function at 3-rd turning point is quasibound outer boundary condition
+Since state-1 has (projected) electronic angular momentum
+OMEGA= 1
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 1]/r**2
+For
+J=
+0, seek the first 100 levels of Potential-1
+with
+VLIM=
+0.000
+Case 2.d: DELR(8) for Li2(B) [see JCP 119, 7398 (2003)]
+for Li(
+7)-Li(
+7)
+============================================================================================================================
+Although
+OMEGA=
+1, these band constants obtained for
+[J(J+1) - OMEGA^2] = 0
+============================================================================================================================
+v
+J
+E
+Bv
+-Dv
+Hv
+Lv
+Mv
+Nv
+Ov
+============================================================================================================================
+ALF finds the highest calculated level is
+E(v= 17)=
+4.7570998D+02
+E(v=
+0, J=
+0)= -2852.038
+Bv=
+0.5532317
+-Dv= -9.4985D-06
+Hv=
+1.2218D-10
+Lv= -4.4026D-15
+Mv=
+7.3145D-20
+Nv= -5.4567D-24
+Ov=
+8.8161D-29
+E(v=
+1, J=
+0)= -2587.420
+Bv=
+0.5445462
+-Dv= -9.6053D-06
+Hv=
+1.1744D-10
+Lv= -4.8761D-15
+Mv=
+6.7107D-20
+Nv= -7.2329D-24
+Ov=
+4.7341D-29
+E(v=
+2, J=
+0)= -2329.158
+Bv=
+0.5355791
+-Dv= -9.7359D-06
+Hv=
+1.1133D-10
+Lv= -5.4803D-15
+Mv=
+5.1407D-20
+Nv= -9.6568D-24
+Ov= -4.6601D-29
+E(v=
+3, J=
+0)= -2077.485
+Bv=
+0.5262880
+-Dv= -9.8948D-06
+Hv=
+1.0327D-10
+Lv= -6.2617D-15
+Mv=
+2.1592D-20
+Nv= -1.3222D-23
+Ov= -2.4070D-28
+E(v=
+4, J=
+0)= -1832.661
+Bv=
+0.5166217
+-Dv= -1.0088D-05
+Hv=
+9.2527D-11
+Lv= -7.2904D-15
+Mv= -3.0040D-20
+Nv= -1.8801D-23
+Ov= -6.2656D-28
+E(v=
+5, J=
+0)= -1594.986
+Bv=
+0.5065187
+-Dv= -1.0323D-05
+Hv=
+7.8113D-11
+Lv= -8.6766D-15
+Mv= -1.1683D-19
+Nv= -2.7998D-23
+Ov= -1.3898D-27
+E(v=
+6, J=
+0)= -1364.801
+Bv=
+0.4959047
+-Dv= -1.0610D-05
+Hv=
+5.8653D-11
+Lv= -1.0597D-14
+Mv= -2.6233D-19
+Nv= -4.3886D-23
+Ov= -2.9237D-27
+E(v=
+7, J=
+0)= -1142.500
+Bv=
+0.4846894
+-Dv= -1.0963D-05
+Hv=
+3.2132D-11
+Lv= -1.3345D-14
+Mv= -5.0959D-19
+Nv= -7.2654D-23
+Ov= -6.1073D-27
+E(v=
+8, J=
+0)=
+-928.539
+Bv=
+0.4727617
+-Dv= -1.1399D-05
+Hv= -4.5249D-12
+Lv= -1.7424D-14
+Mv= -9.4086D-19
+Nv= -1.2748D-22
+Ov= -1.3033D-26
+E(v=
+9, J=
+0)=
+-723.447
+Bv=
+0.4599828
+-Dv= -1.1945D-05
+Hv= -5.6223D-11
+Lv= -2.3747D-14
+Mv= -1.7227D-18
+Nv= -2.3841D-22
+Ov= -2.9080D-26
+E(v= 10, J=
+0)=
+-527.850
+Bv=
+0.4461745
+-Dv= -1.2638D-05
+Hv= -1.3120D-10
+Lv= -3.4054D-14
+Mv= -3.2179D-18
+Nv= -4.8005D-22
+Ov= -6.9492D-26
+E(v= 11, J=
+0)=
+-342.490
+Bv=
+0.4311013
+-Dv= -1.3538D-05
+Hv= -2.4417D-10
+Lv= -5.1946D-14
+Mv= -6.2925D-18
+Nv= -1.0587D-21
+Ov= -1.8317D-25
+E(v= 12, J=
+0)=
+-168.266
+Bv=
+0.4144372
+-Dv= -1.4741D-05
+Hv= -4.2372D-10
+Lv= -8.5655D-14
+Mv= -1.3284D-17
+Nv= -2.6332D-21
+Ov= -5.5532D-25
+E(v= 13, J=
+0)=
+-6.299
+Bv=
+0.3957050
+-Dv= -1.6421D-05
+Hv= -7.3179D-10
+Lv= -1.5682D-13
+Mv= -3.1668D-17
+Nv= -7.7763D-21
+Ov= -2.0724D-24
+E(v= 14, J=
+0)=
+141.959
+Bv=
+0.3741416
+-Dv= -1.8929D-05
+Hv= -1.3267D-09
+Lv= -3.3549D-13
+Mv= -9.2290D-17
+Nv= -3.0123D-20
+Ov= -1.0817D-23
+E(v= 15, J=
+0)=
+274.497
+Bv=
+0.3483528
+-Dv= -2.3134D-05
+Hv= -2.7377D-09
+Lv= -9.4309D-13
+Mv= -3.9285D-16
+Nv= -1.9411D-19
+Ov= -1.0754D-22
+** CAUTION ** Comparison tests for Hv, Lv & Mv give:
+2.1D-06
+2.5D-05
+8.4D-05
+E(v= 16, J=
+0)=
+388.152
+Bv=
+0.3150520
+-Dv= -3.2224D-05
+Hv= -8.1442D-09
+Lv= -5.4382D-12
+Mv= -5.3802D-15
+Nv= -7.9291D-18
+Ov= -1.7009D-20
+** CAUTION ** Comparison tests for Hv, Lv & Mv give:
+1.4D-03
+2.8D-03
+4.5D-03
+E(v= 17, J=
+0)=
+475.710
+Bv=
+0.2568926
+-Dv= -8.5613D-05
+Hv= -9.0170D-08
+Lv= -8.5881D-11
+Mv=
+9.5157D-14
+Nv=
+6.8551D-16
+Ov=
+1.5784D-18
+Find
+18 Potential-1 vibrational levels with
+J=
+0
+v
+E(v)
+v
+E(v)
+v
+E(v)
+v
+E(v)
+--------------
+--------------
+--------------
+--------------
+0
+-2852.0385
+5
+-1594.9861
+10
+-527.8503
+15
+274.4971
+1
+-2587.4196
+6
+-1364.8012
+11
+-342.4898
+16
+388.1516
+2
+-2329.1579
+7
+-1142.5003
+12
+-168.2661
+17
+475.7100
+3
+-2077.4845
+8
+-928.5388
+13
+-6.2994
+4
+-1832.6611
+9
+-723.4475
+14
+141.9588
+===============================================================================
+Case 2.e: "Tiemann-type" potential for Ca2(X) [Phys.Rev. A66, 042503(2002)
+================================================================================
+Generate
+ZMU= 19.98129543200(u)
+&
+BZ= 1.185296888D+00((1/cm-1)(1/Ang**2))
+from atomic masses:
+39.96259086400
+&
+39.96259086400(u)
+Integrate from
+RMIN=
+3.000
+to
+RMAX=
+103.00
+with mesh
+RH= 0.000500(Angst)
+Potential #1 for Ca( 40)-Ca( 40)
+================================
+State has
+OMEGA= 0
+and energy asymptote:
+Y(lim)=
+1102.09608(cm-1)
+uLR(r) inverse-power terms inlude NO individual-term damping
+uLR(r) has
+2 inverse-power terms:
+C6 = -1.07400000D+07
+C8 = -2.45050000D+08
+Tiemann-type potential with
+De=
+1102.0961
+Rm= 4.277277
+is a power series
+in
+(r - Re)/(r
+-0.59290*Re) of order 20
+with the 21 coefficients:
+0.42747000D-03 -0.25408309D+01
+0.37961100D+04
+0.38207030D+03 -0.27439040D+04
+-0.32273633D+04
+0.36311381D+03
+0.63437054D+04 -0.74015184D+04 -0.19073891D+05
+0.54234739D+05
+0.44039230D+05 -0.15538794D+06 -0.83662838D+05
+0.21383107D+06
+0.15592245D+06 -0.15626087D+06 -0.14671112D+06
+0.27754300D+05
+0.71290802D+05
+-0.12611555D+04
+where for
+r < Rinn= 3.6600
+V=
++950.7477 +4.305315D+00/R**12
+and
+for
+r > Rout= 10.000
+V= VLIM
+-1.074000D+07/r** 6
+-2.450500D+08/r** 8
+-1.169444D+10/r**10
+----------------------------------------------------------------------------
+Calculate properties of the single potential described above
+Potential-1 uses inner boundary condition of
+zero value
+at
+RMIN
+Eigenvalue convergence criterion is
+EPS= 1.0D-08(cm-1)
+Airy function at 3-rd turning point is quasibound outer boundary condition
+Since state-1 has (projected) electronic angular momentum
+OMEGA= 0
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 0]/r**2
+For
+J=
+0, seek the first 100 levels of Potential-1
+with
+VLIM=
+1102.096
+
+Appendix C.2 : Input/Output files for Several Families of Analytic Potentials
+29
+** CAUTION ** For
+J=
+0
+E= 1.102096D+03
+WF(NEND)/WF(Max)= 5.7D-01 > 1.0D-09
+& initialization quality test
+1.2D-01 > 1.D-3
+so RMAX may be too small
+ALF finds the highest calculated level is
+E(v= 40)=
+1.1020959D+03
+E(v=
+0, J=
+0)=
+32.204
+Bv=
+0.0457401
+-Dv= -9.4654D-08
+Hv= -3.3305D-13
+Lv= -3.3246D-18
+Mv= -4.0622D-23
+Nv= -5.6827D-28
+Ov= -8.5755D-33
+E(v=
+1, J=
+0)=
+95.054
+Bv=
+0.0450062
+-Dv= -9.8341D-08
+Hv= -3.7684D-13
+Lv= -3.9526D-18
+Mv= -5.0319D-23
+Nv= -7.5985D-28
+Ov= -1.2498D-32
+E(v=
+2, J=
+0)=
+155.798
+Bv=
+0.0442590
+-Dv= -1.0221D-07
+Hv= -4.2344D-13
+Lv= -4.7010D-18
+Mv= -6.3142D-23
+Nv= -9.9740D-28
+Ov= -1.7691D-32
+E(v=
+3, J=
+0)=
+214.445
+Bv=
+0.0434991
+-Dv= -1.0630D-07
+Hv= -4.7409D-13
+Lv= -5.5623D-18
+Mv= -7.9639D-23
+Nv= -1.3062D-27
+Ov= -2.4535D-32
+E(v=
+4, J=
+0)=
+271.006
+Bv=
+0.0427269
+-Dv= -1.1060D-07
+Hv= -5.3001D-13
+Lv= -6.5442D-18
+Mv= -1.0030D-22
+Nv= -1.7194D-27
+Ov= -3.3662D-32
+E(v=
+5, J=
+0)=
+325.494
+Bv=
+0.0419425
+-Dv= -1.1515D-07
+Hv= -5.9239D-13
+Lv= -7.6705D-18
+Mv= -1.2566D-22
+Nv= -2.2786D-27
+Ov= -4.6134D-32
+E(v=
+6, J=
+0)=
+377.924
+Bv=
+0.0411461
+-Dv= -1.1994D-07
+Hv= -6.6232D-13
+Lv= -8.9811D-18
+Mv= -1.5651D-22
+Nv= -3.0327D-27
+Ov= -6.3729D-32
+E(v=
+7, J=
+0)=
+428.311
+Bv=
+0.0403376
+-Dv= -1.2499D-07
+Hv= -7.4089D-13
+Lv= -1.0532D-17
+Mv= -1.9417D-22
+Nv= -4.0386D-27
+Ov= -8.9291D-32
+E(v=
+8, J=
+0)=
+476.674
+Bv=
+0.0395169
+-Dv= -1.3032D-07
+Hv= -8.2923D-13
+Lv= -1.2392D-17
+Mv= -2.4081D-22
+Nv= -5.3626D-27
+Ov= -1.2710D-31
+.............................................................................
+.................... omit 44 lines ..........................................
+.............................................................................
+E(v= 31, J=
+0)=
+1079.635
+Bv=
+0.0154215
+-Dv= -6.7120D-07
+Hv= -5.1856D-11
+Lv= -7.9288D-15
+Mv= -1.6245D-18
+Nv= -3.8921D-22
+Ov= -1.0265D-25
+E(v= 32, J=
+0)=
+1086.072
+Bv=
+0.0139305
+-Dv= -7.7955D-07
+Hv= -7.5399D-11
+Lv= -1.4677D-14
+Mv= -3.7909D-18
+Nv= -1.1253D-21
+Ov= -3.6457D-25
+E(v= 33, J=
+0)=
+1091.201
+Bv=
+0.0123769
+-Dv= -9.2059D-07
+Hv= -1.1401D-10
+Lv= -2.8196D-14
+Mv= -9.2413D-18
+Nv= -3.6481D-21
+Ov= -1.6459D-24
+E(v= 34, J=
+0)=
+1095.127
+Bv=
+0.0107672
+-Dv= -1.1012D-06
+Hv= -1.7891D-10
+Lv= -6.1402D-14
+Mv= -2.8932D-17
+Nv= -1.5615D-20
+Ov= -9.1350D-24
+E(v= 35, J=
+0)=
+1097.986
+Bv=
+0.0091176
+-Dv= -1.3486D-06
+Hv= -3.1207D-10
+Lv= -1.5448D-13
+Mv= -1.0323D-16
+Nv= -8.1857D-20
+Ov= -7.1549D-23
+E(v= 36, J=
+0)=
+1099.934
+Bv=
+0.0074345
+-Dv= -1.7140D-06
+Hv= -6.1272D-10
+Lv= -4.7939D-13
+Mv= -5.0339D-16
+Nv= -6.2338D-19
+Ov= -8.5943D-22
+E(v= 37, J=
+0)= 1101.14
+Bv=
+0.0057239
+-Dv= -2.3165D-06
+Hv= -1.4545D-09
+Lv= -2.0275D-12
+Mv= -3.8107D-15
+Nv= -8.4656D-18
+Ov= -2.0996D-20
+E(v= 38, J=
+0)= 1101.79
+Bv=
+0.0039883
+-Dv= -3.5003D-06
+Hv= -4.8270D-09
+Lv= -1.4991D-11
+Mv= -6.3394D-14
+Nv= -3.1918D-16
+Ov= -1.8021D-18
+E(v= 39, J=
+0)= 1102.05
+Bv=
+0.0022213
+-Dv= -6.8558D-06
+Hv= -3.4745D-08
+Lv= -4.0813D-10
+Mv= -6.6059D-12
+Nv= -1.2744D-13
+Ov= -2.7477D-15
+** CAUTION ** For
+J=
+0
+E= 1.102096D+03
+WF(NEND)/WF(Max)= 5.7D-01 > 1.0D-09
+& initialization quality test
+1.2D-01 > 1.D-3
+so RMAX may be too small
+** CAUTION ** CDJOEL orthogonality tests OV01,OV02 & OV03:
+4.4D+01 -2.9D+00
+4.4D-02
+** CAUTION ** Comparison tests for Hv, Lv & Mv give:
+4.8D-01
+1.5D+00
+2.5D+00
+E(v= 40, J=
+0)= 1102.10
+Bv=
+0.0003267
+-Dv= -1.9045D-05
+Hv=
+3.3129D-07
+Lv=
+1.4042D-07
+Mv= -1.1500D-08
+Nv= -1.7039D-09
+Ov=
+1.7270D-10
+Find
+41 Potential-1 vibrational levels with
+J=
+0
+v
+E(v)
+v
+E(v)
+v
+E(v)
+v
+E(v)
+--------------
+--------------
+--------------
+--------------
+0
+32.2039
+11
+609.8189
+22
+953.1705
+33
+1091.2007
+1
+95.0542
+12
+650.2901
+23
+973.7409
+34
+1095.1269
+2
+155.7982
+13
+688.8432
+24
+992.6240
+35
+1097.9858
+3
+214.4453
+14
+725.5009
+25
+1009.8399
+36
+1099.9340
+4
+271.0063
+15
+760.2858
+26
+1025.4107
+37
+1101.1416
+5
+325.4942
+16
+793.2205
+27
+1039.3608
+38
+1101.7856
+6
+377.9236
+17
+824.3270
+28
+1051.7191
+39
+1102.0451
+7
+428.3109
+18
+853.6268
+29
+1062.5203
+40
+1102.0959
+8
+476.6741
+19
+881.1410
+30
+1071.8076
+9
+523.0327
+20
+906.8899
+31
+1079.6353
+10
+567.4071
+21
+930.8932
+32
+1086.0717
+An
+n= 6
+N-D theory extrapolation from
+v=
+39 &
+40
+implies
+vD =
+40.176
+===============================================================================
+Case 2.f: Barrow-Aziz HFD-B(6,8,10,12) for {20}Ne{84}Xe [JCP 91, 6348 (1989)]
+================================================================================
+Generate
+ZMU= 16.14564021596(u)
+&
+BZ= 9.577645835D-01((1/cm-1)(1/Ang**2))
+from atomic masses:
+19.99244017620
+&
+83.91149772800(u)
+Integrate from
+RMIN=
+1.500
+to
+RMAX=
+29.00
+with mesh
+RH= 0.001000(Angst)
+Potential #1 for Ne( 20)-Kr( 84)
+================================
+State has
+OMEGA= 0
+and energy asymptote:
+Y(lim)=
+0.00000(cm-1)
+uLR(r) inverse-power terms inlude NO individual-term damping
+uLR(r) has
+4 inverse-power terms:
+C6 =
+1.89208839D+05
+C8 =
+1.03241624D+06
+C10=
+9.93919946D+06
+C12=
+1.69323761D+08
+and overall damping function:
+D(r)= exp[ -1.000000*( 3.87258300/r -1.0)** 2.00]
+Potential is Generalized HFD-ABC
+with
+radial power
+gamma= 0.000000
+De=
+51.5750[cm-1]
+Re= 3.861000[Ang.],
+with
+exponential-term factors:
+beta1= 2.85717137
+beta= 0.13240000
+and A(pre-
+----------------------------------------------------------------------------
+Calculate properties of the single potential described above
+Potential-1 uses inner boundary condition of
+zero value
+at
+RMIN
+Eigenvalue convergence criterion is
+EPS= 1.0D-08(cm-1)
+Airy function at 3-rd turning point is quasibound outer boundary condition
+Since state-1 has (projected) electronic angular momentum
+OMEGA= 0
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 0]/r**2
+For
+J=
+0, seek the first 100 levels of Potential-1
+with
+VLIM=
+0.000
+For J=
+0
+ETRY=
+0.0032 > VMAX=
+-0.0003
+find onee turn point:
+R=
+3.46
+
+Appendix C.2 : Input/Output files for Several Families of Analytic Potentials
+30
+*** CAUTION for
+v=999
+J=
+0
+SCHRQ doesn’t converge by
+ITER=30
+DE=-6.40D-05
+*** SCHRQ FAILS in ALF when searching for
+v=
+5 J=
+0
+with
+EO=
+-0.000
+E(v=Check range and/or contact R.J. Le Roy [leroy@uwaterloo.ca]
+0, J=
+0)=
+-39.839
+Bv=
+0.0662725
+-Dv= -2.7537D-06
+Hv= -4.9208D-10
+Lv= -1.7301D-13
+Mv= -7.9564D-17
+Nv= -4.2802D-20
+Ov= -2.5532D-23
+E(v=
+1, J=
+0)=
+-21.463
+Bv=
+0.0578380
+-Dv= -4.6900D-06
+Hv= -1.5922D-09
+Lv= -1.0039D-12
+Mv= -8.0955D-16
+Nv= -7.5504D-19
+Ov= -7.7801D-22
+E(v=
+2, J=
+0)=
+-9.445
+Bv=
+0.0475245
+-Dv= -8.9746D-06
+Hv= -6.0767D-09
+Lv= -7.3617D-12
+Mv= -1.1521D-14
+Nv= -2.1084D-17
+Ov= -4.2986D-20
+E(v=
+3, J=
+0)=
+-2.941
+Bv=
+0.0348686
+-Dv= -1.9514D-05
+Hv= -3.0794D-08
+Lv= -9.0233D-11
+Mv= -3.5340D-13
+Nv= -1.6458D-15
+Ov= -8.6004D-18
+E(v=
+4, J=
+0)=-.426588
+Bv=
+0.0198498
+-Dv= -5.4842D-05
+Hv= -3.4307D-07
+Lv= -4.4460D-09
+Mv= -7.8830D-11
+Nv= -1.6610D-12
+Ov= -3.9046D-14
+Find
+5 Potential-1 vibrational levels with
+J=
+0
+v
+E(v)
+v
+E(v)
+v
+E(v)
+v
+E(v)
+--------------
+--------------
+--------------
+--------------
+0
+-39.8395
+2
+-9.4449
+4
+-0.4266
+1
+-21.4627
+3
+-2.9410
+An
+n= 6
+N-D theory extrapolation from
+v=
+3 &
+4
+implies
+vD =
+5.107
+===============================================================================
+Case 2.g:
+Generalized Tang-Toennies PEC for Ar2 [Jaeger Mol.Phys. 107, 2181]
+================================================================================
+Generate
+ZMU= 16.14564021596(u)
+&
+BZ= 9.577645835D-01((1/cm-1)(1/Ang**2))
+from atomic masses:
+19.99244017620
+&
+83.91149772800(u)
+Integrate from
+RMIN=
+1.500
+to
+RMAX=
+29.00
+with mesh
+RH= 0.001000(Angst)
+Potential #1 for Ne( 20)-Kr( 84)
+================================
+State has
+OMEGA= 0
+and energy asymptote:
+Y(lim)=
+0.00000(cm-1)
+uLR inverse-power terms incorporate TT-type damping with
+rhoAB= 4.0251721100
+defined to give very short-range
+Dm(r)*Cm/r^m
+behaviour
+r^{ 1}
+Dm(r)= [1 - exp(-bTT*r)*SUM{(bTT*r)^k/k!}]
+where
+bTT= rhoAB
+uLR(r) has
+6 inverse-power terms:
+C6 =
+3.07769744D+05
+C8 =
+2.27073197D+06
+C10=
+1.70739832D+07
+C12=
+1.30837685D+08
+C14=
+1.02178584D+09
+C16=
+8.13234755D+09
+Generalized Tang-Tonnies Potential function with exponent function
+- {{ +2.98337630000*r +0.09712088100*r^2 -0.27520682700/r +1.01489050000/r^2}}
+and pre-exp factor:
+{{+3.20640487D+07 +0.00000000D+00*r +0.00000000D+00/r +0.00000000D+00*r^2
++0.00000000D+00*r^3}}
+Input
+DSCM=
+99.4734
+REQ= 3.762000
+Actual
+DSCM=
+99.4756
+REQ= 3.761825
+----------------------------------------------------------------------------
+Calculate properties of the single potential described above
+Potential-1 uses inner boundary condition of
+zero value
+at
+RMIN
+Eigenvalue convergence criterion is
+EPS= 1.0D-08(cm-1)
+Airy function at 3-rd turning point is quasibound outer boundary condition
+Since state-1 has (projected) electronic angular momentum
+OMEGA= 0
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 0]/r**2
+For
+J=
+0, seek the first 100 levels of Potential-1
+with
+VLIM=
+0.000
+** CAUTION ** For
+J=
+0
+E=-1.531965D-03
+WF(NEND)/WF(Max)= 7.8D-01 > 1.0D-09
+& initialization quality test
+1.7D+00 > 1.D-3
+so RMAX may be too small
+ALF finds the highest calculated level is
+E(v=
+7)= -1.5319646D-03
+E(v=
+0, J=
+0)=
+-83.056
+Bv=
+0.0709971
+-Dv= -1.5817D-06
+Hv= -1.3654D-10
+Lv= -2.3775D-14
+Mv= -5.4168D-18
+Nv= -1.4376D-21
+Ov= -4.2174D-25
+E(v=
+1, J=
+0)=
+-55.113
+Bv=
+0.0649167
+-Dv= -2.2323D-06
+Hv= -3.0495D-10
+Lv= -8.0158D-14
+Mv= -2.7074D-17
+Nv= -1.0537D-20
+Ov= -4.5027D-24
+E(v=
+2, J=
+0)=
+-33.559
+Bv=
+0.0579472
+-Dv= -3.3313D-06
+Hv= -7.2758D-10
+Lv= -2.9172D-13
+Mv= -1.4903D-16
+Nv= -8.7685D-20
+Ov= -5.6762D-23
+E(v=
+3, J=
+0)=
+-18.081
+Bv=
+0.0498513
+-Dv= -5.3022D-06
+Hv= -1.9203D-09
+Lv= -1.2440D-12
+Mv= -1.0337D-15
+Nv= -9.9732D-19
+Ov= -1.0659D-21
+E(v=
+4, J=
+0)=
+-8.097
+Bv=
+0.0404110
+-Dv= -9.0846D-06
+Hv= -5.9100D-09
+Lv= -6.9579D-12
+Mv= -1.0733D-14
+Nv= -1.9480D-17
+Ov= -3.9467D-20
+E(v=
+5, J=
+0)=
+-2.654
+Bv=
+0.0295445
+-Dv= -1.7235D-05
+Hv= -2.4255D-08
+Lv= -6.5523D-11
+Mv= -2.3848D-13
+Nv= -1.0333D-15
+Ov= -5.0240D-18
+E(v=
+6, J=
+0)=-.442120
+Bv=
+0.0172872
+-Dv= -4.1499D-05
+Hv= -2.0780D-07
+Lv= -2.1990D-09
+Mv= -3.1958D-11
+Nv= -5.5340D-13
+Ov= -1.0713D-14
+** CAUTION ** For
+J=
+0
+E=-1.531965D-03
+WF(NEND)/WF(Max)= 7.8D-01 > 1.0D-09
+& initialization quality test
+1.7D+00 > 1.D-3
+so RMAX may be too small
+** CAUTION ** CDJOEL orthogonality tests OV01,OV02 & OV03:
+1.6D+01 -2.3D+00 -1.4D-01
+** CAUTION ** Comparison tests for Hv, Lv & Mv give:
+1.4D+00
+1.6D+00
+9.7D+00
+E(v=
+7, J=
+0)=-.153196E-02
+Bv=
+0.0031793
+-Dv= -7.2632D-05
+Hv=
+7.7691D-07
+Lv=
+4.6342D-07
+Mv= -5.2140D-08
+Nv= -1.6843D-09
+Ov=
+6.1002D-10
+Find
+8 Potential-1 vibrational levels with
+J=
+0
+v
+E(v)
+v
+E(v)
+v
+E(v)
+v
+E(v)
+--------------
+--------------
+--------------
+--------------
+0
+-83.0560
+2
+-33.5594
+4
+-8.0969
+6
+-0.4421
+1
+-55.1130
+3
+-18.0807
+5
+-2.6540
+7
+-0.0015
+An
+n= 6
+N-D theory extrapolation from
+v=
+6 &
+7
+implies
+vD =
+7.178
+===============================================================================
+
+Appendix C.3 : Input/Output files for for Illustrative linelist “production run”
+31
+Appendix C 3 :
+Input/Output files for for Illustrative linelist “production run”
+Case 3 . This is a data set for an illustrative line-list “production run” for the case of two pointwise
+potentials (NUMPOT = 2 in Read #1 and NTP > 0 in Read #6) which generates the predicted
+transition energies and Einstein emission coefficients for some 267 555 lines in the B(3Π+
+0u) −
+X(1Σ+
+g ) spectrum of Br2 . This case again exploits the capability of the NLEV1 < 0 option
+for locating automatically the first |NLEV1| + 1 levels of a given potential. It also illustrates
+a use of the NJM > 0 option to find many (or all) rotational sublevels for each v , and of the
+application of rotational selection rules to calculate transitions between two different electronic
+states. The input data file is listed in below, followed by parts of the main Channel–6 output
+and a portion of the associated Channel–8 output file. This calculation of 267 555 matrix
+elements coupling levels of the two electronic states consumed 23.64 s of CPU time on our
+decade-old SGI UNIX server.
+35 79
+35 79
+0
+2
+% IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+’Case 3:
+Predict emission for B-X Br2 based on Gerstenkorn (1987) constants’
+0.0015 1.85
+15.0
+1.d-4
+% RH RMIN RMAX EPS
+123
+0
+0
+19742.072d0
+% NTP LPPOT IOMEG VLIM
+10 0
+4
+5 1.8D+05
+% NUSE IR2 ILR NCN CNN
+1.D0 1.D0
+15902.4802d0
+% RFACT EFACT VSHIFT & B-state turn. pnts.
+2.32483352887883
+3834.348717
+2.32492725139916
+3831.646866
+2.32505070817846
+3828.090070
+2.32520875281731
+3823.540508
+2.32540641247184
+3817.856430
+2.32564885907544
+3810.893306
+.................................................................
+.......... skip 56 lines listing 112 more turning points ........
+.................................................................
+6.87678817820732
+3817.856430
+7.25492791418183
+3823.540508
+7.69918940093639
+3828.090070
+8.22965127226713
+3831.646866
+8.87579778305112
+3834.348717
+47
+0
+0
+16056.926D0
+% NTP2 LPPOT2 IOMEG2 VLIM2
+10 0
+0
+6 0.D0
+% NUSE2 IR22 ILR2 NCN2 CNN2
+1.D0 1.D0
+0.d0
+% RFACT EFACT VSHIFT2
+2.05649830399176
+4483.356304
+2.06283295581950
+4189.629584
+2.06951602200031
+3893.539190
+2.07659093472317
+3595.104297
+.................................................................
+.......... skip 20 lines listing 36 more turning points .........
+.................................................................
+2.60140908192717
+3893.539190
+2.61738272682198
+4189.629584
+2.63310768612594
+4483.356304
+-40
+1
+0
+-4
+999 1
+-1 0
+% NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR LPRWF
+0 0
+% IV(1) IJ(1)
+1
+0
+1.D0
+% MORDR IRFN RREF
+-0.219 0.265
+% DM(0) DM(1)
+15
+1
+-1 +1 2
+% NLEV2 AUTO2 J2DL J2DU J2DD
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14
+% {IV2(i)}
+Standard Channel-6 output for Illustrative linelist “production run”
+The largest piece of output for this case consists of a listing of the transition frequencies and
+Einstein A–coefficients for some 267 555 transitions (yielding a line-list of that length) written
+to Channel–8. A small segment of this output file is presente at the end of this Appendix.
+Since the associated “standard” output to Channel–6 is also moderately lengthy (some 3221
+
+Appendix C.3 : Input/Output files for for Illustrative linelist “production run”
+32
+lines), the listing of it presented below is also considerably truncated. However, this output
+illustrates some of the (normally not serious) warning messages that may be generated by
+the program. In particular, for v′ = 34 , J′ = 100 − 103 of the truncated listing below,
+warnings occur for quasibound levels for which RMAX is smaller than the outermost turning
+point at which the program was attempting to apply the Airy function boundary condition
+(see Section II.B). This warning is printed once each iteration as SCHRQ converges on the
+associated eigenvalue;
+as it indicates, in this case the Airy function boundary condition
+is replaced by use of the WKB wave function initialization of Eq. (4). The second type of
+warning (“. . . so tunneling calculation uses. . . ”) is printed following convergence on
+the eigenvalue for such a level, as a reminder that the width calculation for this case uses
+an approximation estimate of the portion of the exponent integral from the end of the range
+to the actual outermost turning point. However, when this situation arises, the associated
+tunneling level widths are usually extremely small, and although the resulting predicted width
+may be slightly in error, the calculated eigenvalue is normally quite accurate.
+A different type of problem gives rise to the lines beginning with “ CAUTION for . . . ” “SCHRQ
+doesn’t converge by ...’’, seen here for v = 34 , J = 127 . This is the highest quasibound
+level for this v; it lies very close to the centrifugal barrier maximum, and after 30 iterations
+from each of two separate starting points, the Airy function boundary condition was unable
+to achieve full convergence to EPS for this particular level. In spite of this problem, however,
+the last eigenvalue change of “ DE= 1.75D-03 ” cm−1 is considerably smaller than the width
+(FWHM = 0.90 cm−1) of this tunneling predissociation level, so the lack of full convergence has
+negligible effect on the true accuracy of the resulting eigenvalue.
+Another type of warning message is that seen for v = 40 when J = 93 (“. . . “find onee
+turn point: . . . ”). This message appears when the automatic search for ever higher rota-
+tional sublevels goes past the top of the (centrifugal) barrier maximum. In this case the code
+makes additional tries to place a level marginally below the barrier maximum, an effort that
+sometimes succeeds, but always eventually fails (as it did for this case).
+Case 3:
+Predict emission for B-X Br2 based on Gerstenkorn (1987) constants
+================================================================================
+Generate
+ZMU= 39.45916880000(u)
+&
+BZ= 2.340730616D+00((1/cm-1)(1/Ang**2))
+from atomic masses:
+78.91833760000
+&
+78.91833760000(u)
+Integrate from
+RMIN=
+1.850
+to
+RMAX=
+15.00
+with mesh
+RH= 0.001500(Angst)
+Potential #1 for Br( 79)-Br( 79)
+================================
+State has
+OMEGA= 0
+and energy asymptote:
+Y(lim)= 19742.07200(cm-1)
+Perform 10-point piecewise polynomial interpolation over
+123 input points
+Beyond read-in points extrapolate to limiting asymptotic behaviour:
+Y(r)
+=
+Y(lim) - (
+To make input points Y(i) consistent with0.1800000D+06)/r** 5
+Y(lim),
+add
+Y(shift)=
+15902.4802
+Scale input points:
+(distance)* 1.000000000D+00
+&
+(energy)* 1.000000000D+00
+to get required internal units
+[Angstroms & cm-1 for potentials]
+r(i)
+Y(i)
+r(i)
+Y(i)
+r(i)
+Y(i)
+----------------------
+----------------------
+----------------------
+2.32483353
+3834.3487
+2.42191370
+1696.7527
+3.22507343
+1821.0440
+2.32492725
+3831.6469
+2.43001839
+1568.5519
+3.26089292
+1941.3789
+...........................................................................
+........................ skip 37 lines of this listing ....................
+...........................................................................
+2.40751394
+1941.3789
+3.15509529
+1568.5519
+8.22965127
+3831.6469
+2.41443578
+1821.0440
+3.18985642
+1696.7527
+8.87579778
+3834.3487
+----------------------------------------------------------------------------
+Extrapolate to
+X .le. 2.3249
+with
+Y=
+14763.263
++3.552602D+09 * exp(-5.797858D+00*X)
+Function for
+X .GE.
+8.230
+generated by
+4-point inverse-power interpolation
+with leading term
+1/r**5
+relative to dissociation limit
+YLIM=
+19742.072
+and (dimensionless) leading coefficient fixed as
+C5=
+180000.00
+----------------------------------------------------------------------------
+Get matrix elements between levels of Potential-1 (above) & Potential-2 (below)
+------------------------------------------------------------------------------
+For Potential #2:
+=================
+
+Appendix C.3 : Input/Output files for for Illustrative linelist “production run”
+33
+State has
+OMEGA= 0
+and energy asymptote:
+Y(lim)= 16056.92600(cm-1)
+Perform 10-point piecewise polynomial interpolation over
+47 input points
+To make input points Y(i) consistent with
+Y(lim),
+add
+Y(shift)=
+0.0000
+Scale input points:
+(distance)* 1.000000000D+00
+&
+(energy)* 1.000000000D+00
+to get required internal units
+[Angstroms & cm-1 for potentials]
+r(i)
+Y(i)
+r(i)
+Y(i)
+r(i)
+Y(i)
+----------------------
+----------------------
+----------------------
+2.05649830
+4483.3563
+2.18626063
+646.2909
+2.42013527
+966.1727
+2.06283296
+4189.6296
+2.19810575
+485.5309
+2.43259119
+1125.2912
+2.06951602
+3893.5392
+2.21248391
+324.2269
+2.44438269
+1283.8592
+2.07659093
+3595.1043
+2.22316187
+227.1840
+2.45563605
+1441.8751
+2.08411094
+3294.3433
+2.23177061
+162.3804
+2.46644318
+1599.3372
+2.09214251
+2991.2740
+2.24253421
+97.4903
+2.47687343
+1756.2436
+2.10077036
+2685.9133
+2.25851483
+32.5137
+2.49680783
+2068.3827
+2.11010533
+2378.2776
+2.28102606
+0.0000
+2.51575473
+2378.2776
+2.12029713
+2068.3827
+2.30436129
+32.5137
+2.53392724
+2685.9133
+2.13155647
+1756.2436
+2.32199230
+97.4903
+2.55147764
+2991.2740
+2.13767849
+1599.3372
+2.33440900
+162.3804
+2.56851941
+3294.3433
+2.14419655
+1441.8751
+2.34467357
+227.1840
+2.58514009
+3595.1043
+2.15117974
+1283.8592
+2.35784040
+324.2269
+2.60140908
+3893.5392
+2.15871971
+1125.2912
+2.37638051
+485.5309
+2.61738273
+4189.6296
+2.16694249
+966.1727
+2.39240504
+646.2909
+2.63310769
+4483.3563
+2.17602973
+806.5054
+2.40683303
+806.5054
+----------------------------------------------------------------------------
+Extrapolate to
+X .le. 2.0628
+with
+Y=
+-2292.367
++1.200354D+10 * exp(-6.996051D+00*X)
+Function for
+X .GE.
+2.6174
+generated as
+Y=
+16056.9260 - ( 1.657906D+06) * r** 22.046446
+* exp{-(
+9.991684*r)}
+----------------------------------------------------------------------------
+Potential-1 uses inner boundary condition of
+zero value
+at
+RMIN
+Eigenvalue convergence criterion is
+EPS= 1.0D-04(cm-1)
+Airy function at 3-rd turning point is quasibound outer boundary condition
+Since state-1 has (projected) electronic angular momentum
+OMEGA= 0
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 0]/r**2
+For
+J=
+0, seek the first
+41 levels of Potential-1
+with
+VLIM= 19742.072
+and automatically increment
+J
+in steps of
+1 to a maximum value of 999
+Matrix element arguments are powers of the distance
+r (in Angstroms)
+Coefficients of expansion for radial matrix element/expectation value argument:
+-2.190000D-01
+2.650000D-01
+Potential-2 uses inner boundary condition of
+zero value
+at
+RMIN
+Using the rotational selection rule:
+delta(J)= -1 to 1 with increment 2
+calculate matrix elements for coupling to the
+15 vibrational levels of
+Potential-2:
+v =
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+Since state-2 has (projected) electronic angular momentum
+OMEGA= 0
+eigenvalue calculations use centrifugal potential
+[J*(J+1) - 0]/r**2
+...............................................................................
+........... skip 2724 lines summarizing results for v= 1-33 ...................
+...............................................................................
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+*** For
+J=100
+E= 19743.24
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J=100
+E= 19743.22
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J=100
+E= 19743.22
+R(3-rd) beyond range so tunneling calculation uses
+pure centrifugal potential with
+J(app)=
+99.17
+for
+R > R(max)=
+15.00
+*** For
+J=101
+E= 19748.69
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J=101
+E= 19748.67
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J=101
+E= 19748.67
+R(3-rd) beyond range so tunneling calculation uses
+pure centrifugal potential with
+J(app)= 100.17
+for
+R > R(max)=
+15.00
+*** For
+J=102
+E= 19754.16
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J=102
+E= 19754.15
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J=102
+E= 19754.15
+R(3-rd) beyond range so tunneling calculation uses
+pure centrifugal potential with
+J(app)= 101.18
+for
+R > R(max)=
+15.00
+*** For
+J=103
+E= 19759.66
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J=103
+E= 19759.65
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J=103
+E= 19759.65
+R(3-rd) beyond range so tunneling calculation uses
+pure centrifugal potential with
+J(app)= 102.19
+for
+R > R(max)=
+15.00
+For J=127
+ETRY= 19891.7867 > VMAX= 19891.7746
+find onee turn point:
+R=
+2.37
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT=
+7, so halve
+DE= -3.22D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT=
+8, so halve
+DE=
+1.80D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 10, so halve
+DE= -3.51D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 12, so halve
+DE= -3.40D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 14, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 16, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 18, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 20, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 22, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 24, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 26, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 28, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 29, so halve
+DE=
+1.70D-03
+*** CAUTION for
+v= 34
+J=127
+SCHRQ doesn’t converge by
+ITER=30
+DE= 1.01D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT=
+6, so halve
+DE= -3.22D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT=
+7, so halve
+DE=
+1.80D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT=
+9, so halve
+DE= -3.51D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 11, so halve
+DE= -3.40D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 13, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 15, so halve
+DE= -3.39D-03
+
+Appendix C.3 : Input/Output files for for Illustrative linelist “production run”
+34
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 17, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 19, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 21, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 23, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 25, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 27, so halve
+DE= -3.39D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 28, so halve
+DE=
+1.70D-03
+** @ J=127
+E= 1.99D+04 SCHRQ has cgce prob at
+IT= 30, so halve
+DE= -3.52D-03
+*** CAUTION for
+v= -1
+J=127
+SCHRQ doesn’t converge by
+ITER=30
+DE=-1.76D-03
+For vibrational level
+v = 34
+of Potential-1
+J
+E
+J
+E
+J
+E
+J
+E
+J
+E
+--------------
+--------------
+--------------
+--------------
+--------------
+0
+19443.803
+26
+19466.021
+52
+19529.969
+78
+19632.179
+104
+19765.173
+1
+19443.867
+27
+19467.723
+53
+19533.224
+79
+19636.793
+105
+19770.719
+2
+19443.994
+28
+19469.486
+54
+19536.537
+80
+19641.452
+106
+19776.284
+3
+19444.185
+29
+19471.312
+55
+19539.905
+81
+19646.158
+107
+19781.868
+4
+19444.439
+30
+19473.198
+56
+19543.330
+82
+19650.908
+108
+19787.469
+5
+19444.756
+31
+19475.147
+57
+19546.811
+83
+19655.702
+109
+19793.083
+6
+19445.138
+32
+19477.157
+58
+19550.347
+84
+19660.539
+110
+19798.709
+7
+19445.582
+33
+19479.228
+59
+19553.939
+85
+19665.420
+111
+19804.345
+8
+19446.090
+34
+19481.360
+60
+19557.585
+86
+19670.343
+112
+19809.988
+9
+19446.662
+35
+19483.553
+61
+19561.286
+87
+19675.307
+113
+19815.634
+10
+19447.297
+36
+19485.806
+62
+19565.042
+88
+19680.311
+114
+19821.282
+11
+19447.995
+37
+19488.120
+63
+19568.851
+89
+19685.356
+115
+19826.927
+12
+19448.756
+38
+19490.495
+64
+19572.714
+90
+19690.440
+116
+19832.565
+13
+19449.581
+39
+19492.930
+65
+19576.629
+91
+19695.561
+117
+19838.191
+14
+19450.468
+40
+19495.425
+66
+19580.598
+92
+19700.721
+118
+19843.802
+15
+19451.419
+41
+19497.979
+67
+19584.619
+93
+19705.916
+119
+19849.390
+16
+19452.433
+42
+19500.594
+68
+19588.692
+94
+19711.148
+120
+19854.948
+17
+19453.510
+43
+19503.267
+69
+19592.816
+95
+19716.413
+121
+19860.467
+18
+19454.650
+44
+19506.000
+70
+19596.992
+96
+19721.713
+122
+19865.936
+19
+19455.852
+45
+19508.792
+71
+19601.218
+97
+19727.044
+123
+19871.337
+20
+19457.117
+46
+19511.643
+72
+19605.494
+98
+19732.407
+124
+19876.643
+21
+19458.445
+47
+19514.552
+73
+19609.820
+99
+19737.800
+125
+19881.820
+22
+19459.836
+48
+19517.520
+74
+19614.196
+100
+19743.222
+126
+19886.844
+23
+19461.289
+49
+19520.546
+75
+19618.620
+101
+19748.672
+24
+19462.804
+50
+19523.629
+76
+19623.092
+102
+19754.148
+25
+19464.381
+51
+19526.770
+77
+19627.612
+103
+19759.649
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+...............................................................................
+........... skip 230 lines summarizing results for v= 35-39 ...................
+...............................................................................
+*** For
+J= 74
+E= 19742.97
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J= 74
+E= 19742.96
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J= 74
+E= 19742.96
+R(3-rd) beyond range so tunneling calculation uses
+pure centrifugal potential with
+J(app)=
+72.87
+for
+R > R(max)=
+15.00
+*** For
+J= 75
+E= 19746.03
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J= 75
+E= 19746.02
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J= 75
+E= 19746.02
+R(3-rd) beyond range so tunneling calculation uses
+pure centrifugal potential with
+J(app)=
+73.89
+for
+R > R(max)=
+15.00
+*** For
+J= 76
+E= 19749.10
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J= 76
+E= 19749.09
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J= 76
+E= 19749.09
+R(3-rd) beyond range so tunneling calculation uses
+pure centrifugal potential with
+J(app)=
+74.90
+for
+R > R(max)=
+15.00
+*** For
+J= 77
+E= 19752.19
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J= 77
+E= 19752.18
+R(3-rd) > RMAX
+& E < V(N)
+so try WKB B.C. @ RMAX
+*** For
+J= 77
+E= 19752.18
+R(3-rd) beyond range so tunneling calculation uses
+pure centrifugal potential with
+J(app)=
+75.92
+for
+R > R(max)=
+15.00
+For J= 93
+ETRY= 19800.6818 > VMAX= 19800.4705
+find onee turn point:
+R=
+2.35
+For J= 93
+ETRY= 19800.6892 > VMAX= 19800.4705
+find onee turn point:
+R=
+2.35
+For J= 93
+ETRY= 19800.6892 > VMAX= 19800.4705
+find onee turn point:
+R=
+2.35
+For J= 93
+ETRY= 19800.6892 > VMAX= 19800.4705
+find onee turn point:
+R=
+2.35
+For vibrational level
+v = 40
+of Potential-1
+J
+E
+J
+E
+J
+E
+J
+E
+J
+E
+--------------
+--------------
+--------------
+--------------
+--------------
+0
+19616.873
+19
+19626.163
+38
+19652.625
+57
+19694.708
+76
+19749.092
+1
+19616.922
+20
+19627.136
+39
+19654.470
+58
+19697.304
+77
+19752.181
+2
+19617.020
+21
+19628.157
+40
+19656.358
+59
+19699.935
+78
+19755.283
+3
+19617.168
+22
+19629.225
+41
+19658.289
+60
+19702.600
+79
+19758.395
+4
+19617.364
+23
+19630.341
+42
+19660.263
+61
+19705.297
+80
+19761.516
+5
+19617.609
+24
+19631.503
+43
+19662.279
+62
+19708.027
+81
+19764.642
+6
+19617.904
+25
+19632.713
+44
+19664.337
+63
+19710.788
+82
+19767.771
+7
+19618.247
+26
+19633.970
+45
+19666.437
+64
+19713.579
+83
+19770.899
+8
+19618.639
+27
+19635.273
+46
+19668.577
+65
+19716.401
+84
+19774.022
+9
+19619.081
+28
+19636.623
+47
+19670.759
+66
+19719.250
+85
+19777.138
+10
+19619.571
+29
+19638.019
+48
+19672.980
+67
+19722.128
+86
+19780.239
+11
+19620.109
+30
+19639.461
+49
+19675.242
+68
+19725.033
+87
+19783.320
+12
+19620.697
+31
+19640.949
+50
+19677.543
+69
+19727.963
+88
+19786.373
+13
+19621.333
+32
+19642.482
+51
+19679.882
+70
+19730.918
+89
+19789.385
+14
+19622.017
+33
+19644.061
+52
+19682.260
+71
+19733.896
+90
+19792.337
+15
+19622.750
+34
+19645.685
+53
+19684.676
+72
+19736.896
+91
+19795.203
+16
+19623.531
+35
+19647.353
+54
+19687.130
+73
+19739.918
+92
+19797.968
+17
+19624.360
+36
+19649.066
+55
+19689.620
+74
+19742.958
+18
+19625.238
+37
+19650.824
+56
+19692.146
+75
+19746.017
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Find
+41 Potential-1 vibrational levels with
+J=
+0
+v
+E(v)
+v
+E(v)
+v
+E(v)
+v
+E(v)
+--------------
+--------------
+--------------
+--------------
+0
+15985.8099
+11
+17599.2328
+22
+18743.5515
+33
+19404.8742
+1
+16150.1163
+12
+17723.5255
+23
+18822.9413
+34
+19443.8033
+2
+16311.0672
+13
+17843.8623
+24
+18898.2750
+35
+19479.6566
+3
+16468.6043
+14
+17960.1998
+25
+18969.6004
+36
+19512.5503
+4
+16622.6712
+15
+18072.4992
+26
+19036.9760
+37
+19542.6009
+5
+16773.2113
+16
+18180.7266
+27
+19100.4706
+38
+19569.9259
+6
+16920.1678
+17
+18284.8542
+28
+19160.1627
+39
+19594.6434
+
+Appendix C.3 : Input/Output files for for Illustrative linelist “production run”
+35
+7
+17063.4841
+18
+18384.8610
+29
+19216.1394
+40
+19616.8729
+8
+17203.1035
+19
+18480.7338
+30
+19268.4954
+9
+17338.9707
+20
+18572.4682
+31
+19317.3318
+10
+17471.0312
+21
+18660.0691
+32
+19362.7547
+An
+n= 5
+N-D theory extrapolation from
+v=
+39 &
+40
+implies
+vD =
+59.899
+===============================================================================
+Standard Channel-8 output for Illustrative linelist “production run”
+Case 3:
+Predict emission for B-X Br2 based on Gerstenkorn (1987) constants
+============================================================
+Note that (v’,J’) & (v",J") strictly label the upper and lower levels, resp.,
+and
+E(lower)=E"
+but
+E(2)-E(1)
+is:
+(energy of State-2 level) - (energy of State-1 level)
+Band
+dJ(J")
+v’
+v"
+E(lower)
+E(2)-E(1)
+A(Einstein)
+F-C Factor
+<v’j’|M|v"j">
+------
+-------
+--------
+--------
+-----------
+-----------
+-----------
+P(
+1)
+0 -
+0
+162.54
+-15823.27
+7.51655D-05
+3.26301D-10
+7.77793D-06
+P(
+1)
+0 -
+1
+485.69
+-15500.12
+1.98479D-03
+9.03473D-09
+4.12243D-05
+P(
+1)
+0 -
+2
+806.67
+-15179.14
+2.56291D-02
+1.22429D-07
+1.52860D-04
+P(
+1)
+0 -
+3
+1125.45
+-14860.36
+2.15688D-01
+1.08216D-06
+4.57792D-04
+P(
+1)
+0 -
+4
+1442.03
+-14543.78
+1.33030D+00
+7.01609D-06
+1.17424D-03
+P(
+1)
+0 -
+5
+1756.40
+-14229.41
+6.41089D+00
+3.55737D-05
+2.66365D-03
+P(
+1)
+0 -
+6
+2068.54
+-13917.27
+2.51332D+01
+1.46864D-04
+5.45245D-03
+P(
+1)
+0 -
+7
+2378.43
+-13607.38
+8.24026D+01
+5.07537D-04
+1.02119D-02
+P(
+1)
+0 -
+8
+2686.06
+-13299.75
+2.30523D+02
+1.49801D-03
+1.76763D-02
+P(
+1)
+0 -
+9
+2991.42
+-12994.39
+5.58669D+02
+3.83406D-03
+2.84933D-02
+P(
+1)
+0 - 10
+3294.49
+-12691.32
+1.18684D+03
+8.61075D-03
+4.30264D-02
+P(
+1)
+0 - 11
+3595.25
+-12390.56
+2.23108D+03
+1.71302D-02
+6.11533D-02
+P(
+1)
+0 - 12
+3893.69
+-12092.12
+3.73965D+03
+3.04191D-02
+8.21222D-02
+P(
+1)
+0 - 13
+4189.78
+-11796.03
+5.62413D+03
+4.85201D-02
+1.04526D-01
+...............................................................................
+...................... omit 267521 lines ......................................
+...............................................................................
+R( 91)
+40 -
+5
+2427.17
+-17370.80
+4.55940D+01
+3.22713D-04
+-7.46819D-03
+P( 93)
+40 -
+5
+2456.75
+-17341.21
+4.45961D+01
+3.13842D-04
+-7.36500D-03
+R( 91)
+40 -
+6
+2736.53
+-17061.44
+1.63941D+01
+1.20264D-04
+4.60057D-03
+P( 93)
+40 -
+6
+2765.99
+-17031.98
+1.74563D+01
+1.27340D-04
+4.73392D-03
+R( 91)
+40 -
+7
+3043.63
+-16754.34
+8.11570D+01
+6.22525D-04
+1.05187D-02
+P( 93)
+40 -
+7
+3072.96
+-16725.00
+8.14359D+01
+6.21159D-04
+1.05076D-02
+R( 91)
+40 -
+8
+3348.45
+-16449.52
+6.05804D+00
+4.87388D-05
+2.95411D-03
+P( 93)
+40 -
+8
+3377.66
+-16420.31
+5.45704D+00
+4.36756D-05
+2.79608D-03
+R( 91)
+40 -
+9
+3650.98
+-16146.99
+4.46439D+01
+3.71936D-04
+-8.24583D-03
+P( 93)
+40 -
+9
+3680.06
+-16117.91
+4.60071D+01
+3.81203D-04
+-8.34820D-03
+R( 91)
+40 - 10
+3951.19
+-15846.78
+4.35551D+01
+3.79843D-04
+-8.37720D-03
+P( 93)
+40 - 10
+3980.15
+-15817.82
+4.27258D+01
+3.70610D-04
+-8.27501D-03
+R( 91)
+40 - 11
+4249.08
+-15548.89
+4.25958D+00
+3.84497D-05
+2.69541D-03
+P( 93)
+40 - 11
+4277.91
+-15520.06
+4.87948D+00
+4.38321D-05
+2.87733D-03
+R( 91)
+40 - 12
+4544.62
+-15253.35
+5.56357D+01
+5.28869D-04
+1.00258D-02
+P( 93)
+40 - 12
+4573.32
+-15224.64
+5.60365D+01
+5.29892D-04
+1.00359D-02
+R( 91)
+40 - 13
+4837.80
+-14960.17
+6.82655D+00
+6.82839D-05
+3.61565D-03
+P( 93)
+40 - 13
+4866.37
+-14931.60
+6.15591D+00
+6.12800D-05
+3.42476D-03
+R( 91)
+40 - 14
+5128.60
+-14669.37
+2.97279D+01
+3.08674D-04
+-7.77062D-03
+P( 93)
+40 - 14
+5157.04
+-14640.93
+3.09159D+01
+3.19393D-04
+-7.90463D-03
+=================================================================================
+
+Appendix D : Program Structure
+36
+Appendix D : Program Structure
+The present section lists the names and outlines the functions of the various subroutines used by
+LEVEL, and indicates their hierarchy. In particular, the level of indentation in this list indicates
+which subroutines call which others; unless stated otherwise, each subroutine is called exclusively
+by the immediately preceding routine having one lower level of indentation.
+LEVEL : The main program which reads input data and instructions, and calls the potential
+preparation, eigenfunction determination, and overlap integral routines.
+MASSES : A data subroutine containing accurate atomic masses and other properties of all
+stable atomic isotopes. For normal cases, its presence obviates the need for a user to look
+up and type precise particle masses into the input data file. It is lso called by POTGEN
+to define mass-scaling of BOB functions.
+ALF : For any smooth single-minimum, shelf-state or double-minimum potential, ALF
+(Automatic Level Finder) uses multiple calls to subroutine SCHRQ (see below) to deter-
+mine the vibrational energies of all levels from v = 0 up to some maximum v specified
+by its input parameter KVMAX. If fewer than the specified number of levels are found,
+warnings are printed.
+SCECOR : uses first-order semiclassical estimates of ( v + 1/2) and dG(v)/dv (see
+Eqs. (10) and (11), and sometimes more brute force methods, to generate a trial
+eigenvalue for the ‘next’ level of interest.
+SCHRQ : Solves the Schr¨odinger equation to determine the eigenvalue and (unit normalized)
+eigenfunction of the vibrational level lying closest to the input trial energy.
+QBOUND : For quasibound levels (those lying above the potential asymptote, but
+behind a potential barrier), applies the Airy function boundary condition at the
+third turning point to initiate the inward inward integration of the wave function
+for such levels [8, 9].
+WIDTH : Calculates the tunneling predissociation lifetime or width of a quasibound
+level [9–11].
+LEVQAD : Called by WIDTH to evaluate the near-turning-point contributions to
+the semiclassical quadratures over the potential well and the barrier to tunneling
+which are required for calculating the predissociation rate.
+CDJOEL : Calculates the diatomic molecule centrifugal distortion constants of Eq. (8). The
+required input is the effective (centrifugally-distorted, if appropriate) radial potential,
+and the eigenvalue and eigenfunction of the level in question (as calculated by SCHRQ).
+LEVXPC : Calculates the desired diagonal expectation values of powers of the specified
+distance coordinate or (interpolated) radial function RFN(r) (see Read #26 in Appendix
+B).
+MATXEL : Calculates the desired off-diagonal matrix elements of powers of the specified
+radial function or distance coordinate, and the radiative lifetime or Einstein emission
+coefficient A [s−1].
+PREPOT : The subroutine that oversees reading of the parameters defining the potential
+and generating the required potential array at the N distances specified by the input
+distance array.
+
+Appendix D : Program Structure
+37
+GENINT : Uses piecewise polynomial or cubic spline functions to interpolate over a set
+of read-in turning points to yield the potential function array at the equally-spaced
+radial mesh required by SCHRQ . If necessary, it extrapolates beyond the range of
+the given points with analytic functions (see options for parameter ILR of Read
+#7).
+PLYINTRP : Performs piecewise polynomial interpolation on a given array of
+point, and returns the function value and (if desired) its derivatives at a speci-
+fied point. It is used by GENINT to interpolate for the potential for cases with
+NUSE > 0 . This routine is also used by SPLINT to define the first derivatives at
+the inner and outer ends of the interpolation region, R = XI(1) and XI(NTP),
+respectively.
+SPLINT : Calls subroutine SPLINE to generate the 4 × (NTP − 1) coefficients
+required to define the cubic spline through the NTP given turning points, and
+then uses these coefficients to generate the desired interpolated function values
+at the specified integration mesh points.
+SPLINE : Generates the coefficients defining the cubic spline function through
+the given NTP turning points.
+POTGEN : For the various analytic potential function specified by input parameter
+IPOTL (see Read #10), reads in the parameters defining those functions and gen-
+erates the desired array of potential function values on the specified radial grid. If
+BOB correction functions are to be included, also reads in the parameters defining
+them and incorporates them into the effective adiabatic potential used by SCHRQ.
+DAMPF : Generates the damping functions of Eqs. (25) and (26) utilized in defin-
+ing the tails of the MLR, DELR and HPP potential energy functions.
+AFdiag : Performs the 2 × 2 or 3 × 3 diagonalization used to define the long-range
+tail of a potential energy function the case or interstate coupling near the nS+nP
+asymptote of a homonuclear alkali dimer [33, 49–51].
+LKoef : Asen Pashov’s subroutine to generate the array of Nbeta × Nbeta coeffi-
+cients that define his spline ‘basis functions’ [45].
+Scalc : A function subroutine to generate the Sm(x) ’basis functions’ used by Pashov
+to generate values of a spline function.
+ludcmp : A subroutine used by LKoef.

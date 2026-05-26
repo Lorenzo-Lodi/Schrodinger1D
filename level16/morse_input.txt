@@ -1,0 +1,10 @@
+ -1 0  -1 0   0   1                  % IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+ 'L1' 30.34373256D0                  % NAME1 MASS1
+ 'J2' 30.34373256D0                  % NAME2 MASS2
+'Case 1.a: For a model L.J.(12,6) get all vib. levels and their CDCs'
+ 0.0020  0.6  20.  1.d-6             % RH RMIN RMAX EPS
+ 0  0  0  0.D0                       % NTP LPPOT IOMEG VLIM 
+ 1  12 6  0  0  0                    % IPOTL PPAR QPAR APSE Nbeta IBOB
+  1000.d0   1.d0  1.d0               % DSCM REQ Rref
+-999  1  1  -1  0 1  -1 0            % NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR LPRWF
+  0 0                                % IV(1) IJ(1)
