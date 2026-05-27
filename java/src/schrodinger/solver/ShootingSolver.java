@@ -187,12 +187,13 @@ public class ShootingSolver {
             refineByBisection(l, nOfDesiredNodes, toHartree(1.0), 4);
 
             OutputManager.write("Bisection finished. The new brackets are:");
-            OutputManager.write(String.format("Initial LOWER energy is: %23.14f (%25.6f cm-1)", l.lowerBound, toInverseCm(l.lowerBound)));
-            OutputManager.write(String.format("Initial GUESS energy is: %23.14f (%25.6f cm-1)", l.energy, toInverseCm(l.energy)));
-            OutputManager.write(String.format("Initial UPPER energy is: %23.14f (%25.6f cm-1)", l.upperBound, toInverseCm(l.upperBound)));
+            OutputManager.write(String.format("LOWER energy is: %23.14f (%25.6f cm-1)", l.lowerBound, toInverseCm(l.lowerBound)));
+            OutputManager.write(String.format("GUESS energy is: %23.14f (%25.6f cm-1)", l.energy, toInverseCm(l.energy)));
+            OutputManager.write(String.format("UPPER energy is: %23.14f (%25.6f cm-1)", l.upperBound, toInverseCm(l.upperBound)));
 
             // It seems preferable to compute the matching index once and for all
             matchIndex = findMatchingIndex(l.energy);
+            OutputManager.write(String.format("Energy refinement stage (initialization). Macro iteration = %10d", i));
             OutputManager.write(String.format("Matching index set to %10d", matchIndex));
 
             // Here we compute the current derivative difference for the upper/lower energies
@@ -209,7 +210,6 @@ public class ShootingSolver {
             info.iterations++;
 
             OutputManager.writeBlankLine();
-            OutputManager.write(String.format("Energy refinement stage (initalization). Macroiteration = %10d", i));
             OutputManager.write(String.format("Derivative mismatch for UPPER energy: %25.12f (%25.8f cm-1/a0)", diffUpper, toInverseCm(diffUpper)));
             OutputManager.write(String.format("Derivative mismatch for LOWER energy: %25.12f (%25.8f cm-1/a0)", diffLower, toInverseCm(diffLower)));
 

@@ -1,0 +1,11 @@
+ -1 0  -1 0   0   1                  % IAN1 IMN1 IAN2 IMN2 CHARGE NUMPOT
+ 'M1' 200.0D0                        % NAME1 MASS1
+ 'M2' 200.0D0                        % NAME2 MASS2
+'Morse D=50000, req=2.0bohr, xe=0.0026, m=100amu'
+ 0.0010  0.5291772109D0 6.3501265311D0 1.d-6 % RH RMIN RMAX EPS
+ 0  0  0  50000.D0                   % NTP LPPOT IOMEG VLIM 
+ 3  1 0  0  0  0                     % IPOTL PPAR QPAR APSE Nbeta IBOB
+  50000.d0   1.0583544218D0 1.0583544218D0 % DSCM REQ Rref
+  2.834589185678444D0                % PARM(1)
+-99  1  0  0  0 1  0 0               % NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR LPRWF
+  0 0                                % IV(1) IJ(1)

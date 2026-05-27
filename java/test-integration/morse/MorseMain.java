@@ -13,6 +13,7 @@ import schrodinger.solver.RefinementStrategy;
 import schrodinger.solver.ShootingSolver;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import static schrodinger.PhysicalConstants.*;
 
@@ -33,59 +34,59 @@ public class MorseMain {
         double xe = omega0 / (4. * De);
         double A = 1. / xe;
         int nOfBoundStates = (int) ((A + 1.) * 0.5);
-//        System.out.printf("omega0=%20.8f cm-1; xe=%20.8f nOfBoundStates=%10d\n", toInverseCm(omega0), xe, nOfBoundStates);
+        System.out.printf("omega0=%20.8f cm-1; xe=%20.8f nOfBoundStates=%10d\n", toInverseCm(omega0), xe, nOfBoundStates);
 
         double xmin = 1.0;
         double xmax = 12.;
-//        double step = 0.005;
-//        int nOfPoints = 1 + (int) ((xmax - xmin) / step);
-//        System.out.printf("%15s %5s %5s %18s %18s %18s %18s %15s %15s %15s %10s %15s %18s\n", "ClassName", "n", "np", "step", "exact", "calc", "exact-calc", "innerInv", "outerInv",
-//                "span", "eff.points", "minStep", "step/minStep");
-//        System.out.println(toInverseCm(potential.value(xmin)) + " " + toInverseCm(potential.value(xmax)));
+        double step = 0.001;
+        int nOfPoints = 1 + (int) ((xmax - xmin) / step);
+        System.out.printf("%15s %5s %5s %18s %18s %18s %18s %15s %15s %15s %10s %15s %18s\n", "ClassName", "n", "np", "step", "exact", "calc", "exact-calc", "innerInv", "outerInv",
+                "span", "eff.points", "minStep", "step/minStep");
+        System.out.println(toInverseCm(potential.value(xmin)) + " " + toInverseCm(potential.value(xmax)));
 
         RefinementStrategy strategy = RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL;
 
-//        Integrator integrator = IntegratorFactory.getCowell8();
-        for (Integrator integrator : IntegratorFactory.getAll()) {
+        for (Integrator integrator : List.of(IntegratorFactory.getNumerov())) {
             String className = integrator.getClass().getSimpleName();
             long t0 = System.nanoTime();
-            for (int nOfPoints = 5000; nOfPoints <= 5000; nOfPoints += 1) {
 
-                String logFilename = "Morse_" + className + "_" + xmin + "_" + xmax + "_" + nOfPoints + "_"
-                        + strategy.toString().toLowerCase() + ".log";
-                Path logFile = TEST_SRC_ROOT.resolve("outputs/" + logFilename);
-                OutputManager.initCommonOutputFile(logFile.toString());
+            String logFilename = "Morse_" + className + "_" + xmin + "_" + xmax + "_" + nOfPoints + "_"
+                    + strategy.toString().toLowerCase() + ".log";
+            Path logFile = TEST_SRC_ROOT.resolve("outputs/" + logFilename);
+            OutputManager.initCommonOutputFile(logFile.toString());
 
-                double step = (xmax - xmin) / (nOfPoints - 1);
+            Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
+            SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
+            system.setCachingUTilde(false);
+            System.out.printf("Maximum step size for ALL states to dissociation (hCriticalAllowed) = %20.8f \n", system.hMaxAllowedRegion);
 
-                Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
-                SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
-                system.setCachingUTilde(false);
-//            System.out.printf("minimum step size for all states = %20.8f \n", system.hCriticalAllowed);
-
-                ShootingSolver finder = new ShootingSolver(system, integrator);
+            ShootingSolver finder = new ShootingSolver(system, integrator);
 
 //        for (int nOfDesiredNodes = 0; nOfDesiredNodes < nOfBoundStates; nOfDesiredNodes++) {
-                for (int nOfDesiredNodes = 0; nOfDesiredNodes < 101; nOfDesiredNodes++) {
-                    QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, strategy);
-                    double exact = omega0 * (nOfDesiredNodes + 0.5) * (1. - xe * (nOfDesiredNodes + 0.5));
+            for (int nOfDesiredNodes = 0; nOfDesiredNodes < 101; nOfDesiredNodes++) {
+                QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, strategy);
+                double exact = omega0 * (nOfDesiredNodes + 0.5) * (1. - xe * (nOfDesiredNodes + 0.5));
 
-                    double innerInversionPoint = rmin - Math.log(1. + Math.sqrt(exact / De)) / a;
-                    double outerInversionPoint = rmin - Math.log(1. - Math.sqrt(exact / De)) / a;
-                    double span = outerInversionPoint - innerInversionPoint;
-                    int nEffPoints = (int) (span / step);
-                    double diff = exact - ek.energy;
-                    double maxStep = ek.maximumStepSize();
-                    String msg = (step < maxStep) ? "OK" : "!";
-//                    System.out.printf("%15s %5d %5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %15.3f %2s\n", className, nOfDesiredNodes, nOfPoints, step, toInverseCm(exact),
-//                            toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, maxStep, step / maxStep, msg);
-                }
-//            int hits = system.getCacheUTilde().nOfCacheHits;
-//            int misses = system.getCacheUTilde().nOfCacheMisses;
-//            double totCache = hits + misses;
-//            System.out.printf("Cache hits   = %12d (%7.3f %%)\n", hits, 100. * hits / totCache);
-//            System.out.printf("Cache misses = %12d (%7.3f %%)\n", misses, 100. * misses / totCache);
+                double innerInversionPoint = rmin - Math.log(1. + Math.sqrt(exact / De)) / a;
+                double outerInversionPoint = rmin - Math.log(1. - Math.sqrt(exact / De)) / a;
+                double span = outerInversionPoint - innerInversionPoint;
+                int nEffPoints = (int) (span / step);
+                double diff = exact - ek.energy;
+                double maxStep = ek.maximumStepSize();
+                String msg = (step < maxStep) ? "OK" : "!";
+                System.out.printf("%15s %5d %5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %15.3f %2s\n", className, nOfDesiredNodes, nOfPoints, step, toInverseCm(exact),
+                        toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, maxStep, step / maxStep, msg);
             }
+            int hits = system.getCacheUTilde().nOfCacheHits;
+            int misses = system.getCacheUTilde().nOfCacheMisses;
+            double totCache = hits + misses;
+            double hitRate  = (totCache == 0) ? 0.0 : 100. * hits / totCache;
+            double missRate = (totCache == 0) ? 0.0 : 100. * misses / totCache;
+            System.out.printf(
+                    "Cache hits = %12d (%7.3f %%), misses = %12d (%7.3f %%)%n",
+                    hits, hitRate, misses, missRate
+            );
+
             long elapsedNanos = System.nanoTime() - t0;
             double elapsedSeconds = elapsedNanos * 1e-9;
             System.out.printf("%15s wall-time seconds = %25.6f\n", className, elapsedSeconds);

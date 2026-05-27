@@ -32,14 +32,14 @@ public class SchrodingerSystem {
     //    EFNFixedBeta           3.0
     //    PC8i1                  3.0
     //    PC6                    2.5
-    private final static double hCriticalForbidden = 2.5;
-    public double hCriticalAllowed = 0;
+    private final static double hMaxForbiddenRegion = 2.5;
+    public double hMaxAllowedRegion = 0;
 
     public SchrodingerSystem(PhysicalPotential physicalPotential, double mass, Grid grid) {
         this.physicalPotential = physicalPotential;
         this.mass = mass;
         this.grid = grid;
-        qMin = -Math.pow(hCriticalForbidden / grid.getStepSizeYCoordinate(), 2);
+        qMin = -Math.pow(hMaxForbiddenRegion / grid.getStepSizeYCoordinate(), 2);
         this.estimateEnergyScale(); // Pre-compute the energy scale
     }
 
@@ -111,7 +111,7 @@ public class SchrodingerSystem {
         double kMax = Math.sqrt(Math.max(0, 2. * mass * (uMaxRight - uMin)));
         // Minimum step size for all states up to uMaxRight (for Morse-like potential, the dissociation energy of the potential)
         // For potentials which are not-Morse like, this is wrong.
-        hCriticalAllowed = Math.PI / (4. * kMax); // The number at the denominator is somewhat arbitrary, values for 2 to 4 are reasonable.
+        hMaxAllowedRegion = 2. * Math.PI / (8. * kMax); // The number at the denominator is somewhat arbitrary, values for 4 to 8 are reasonable.
 
         // 2. Estimate Step Size (Energy Scale)
 
