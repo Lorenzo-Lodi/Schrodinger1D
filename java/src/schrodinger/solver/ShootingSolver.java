@@ -98,7 +98,7 @@ public class ShootingSolver {
             int nodes = countNodes(level);
             {
                 String msg = ((nodes - nOfDesiredNodes) < 0) ? " too few" : " OK";
-                OutputManager.write(String.format("Trying to find an upper bound. Current energy = %20.6f, nodes = %10d, " +
+                OutputManager.write(String.format("Trying to find an upper bound. Current energy = %20.6f cm-1, nodes = %10d, " +
                                 "(nodes - nOfDesiredNodes) = %10d, so nodes is %s",
                         toInverseCm(currentEnergy), nodes, (nodes - nOfDesiredNodes), msg));
             }
@@ -392,12 +392,12 @@ public class ShootingSolver {
                 // and numerical noise is about to take over.
                 // Let us fill the wavefunction with extrapolated values (maybe not necessary, but it could be useful
                 // for correct node-counting and for later computing matrix elements with this wavefunction.
-                OutputManager.write("I stopped integrating into the forbidden region because I reached the gamma threshold at n =" + n);
                 double decayFactor = level.psi[n] / level.psi[n + 1];
+                OutputManager.write("Stopping integrating into the forbidden region because the gamma threshold was reached" +
+                        " at n = " + n + "; extrapolating the remaining points using decayFactor = " + decayFactor);
                 for (int k = n + 1; k < nPoints - 1; k++) {
                     level.psi[k + 1] = level.psi[k] * decayFactor;
                 }
-                OutputManager.write("I extrapolated the remaining points using decayFactor = " + decayFactor);
                 break;
             }
 
