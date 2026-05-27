@@ -57,7 +57,7 @@ public class MorseMain {
 
             Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
-            system.setCachingUTilde(false);
+            system.setCachingUTilde(true);
             System.out.printf("Maximum step size for ALL states to dissociation (hCriticalAllowed) = %20.8f \n", system.hMaxAllowedRegion);
 
             ShootingSolver finder = new ShootingSolver(system, integrator);

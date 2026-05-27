@@ -136,6 +136,16 @@ public class ShootingSolver {
         info2.iterations = 0;
         level.convergenceInfo.add(info2);
 
+
+        // Tentative code for linear interpolation-search (should be better)
+//        {
+//            double span = level.nodesUpper - level.nodesLower;
+//            double fraction = (nodes - level.nodesLower) / span;
+//            double epsilon = 0.5 / span;
+//            fraction = Math.clamp(fraction, epsilon, 1.0 - epsilon);
+//            level.energy = level.lowerBound + fraction * (level.upperBound - level.lowerBound);
+//        }
+
         for (int i = 1; i <= MAXIMUM_NUMBER_OF_BISECTIONS; i++) {
 
             level.energy = (level.lowerBound + level.upperBound) * 0.5;
