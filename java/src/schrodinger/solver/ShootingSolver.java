@@ -96,6 +96,12 @@ public class ShootingSolver {
             // Update the energy in the system
             level.energy = currentEnergy;
             int nodes = countNodes(level);
+            {
+                String msg = ((nodes - nOfDesiredNodes) < 0) ? " too few" : " OK";
+                OutputManager.write(String.format("Trying to find an upper bound. Current energy = %20.6f, nodes = %10d, " +
+                                "(nodes - nOfDesiredNodes) = %10d, so nodes is %s",
+                        toInverseCm(currentEnergy), nodes, (nodes - nOfDesiredNodes), msg));
+            }
             info.iterations++;
 
             if (nodes > nOfDesiredNodes) {

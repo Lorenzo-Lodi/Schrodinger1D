@@ -1,5 +1,6 @@
 package morse;
 
+import schrodinger.OutputManager;
 import schrodinger.QuantumLevel;
 import schrodinger.SchrodingerSystem;
 import schrodinger.grid.Grid;
@@ -11,9 +12,13 @@ import schrodinger.potential.PhysicalPotentialMorse;
 import schrodinger.solver.RefinementStrategy;
 import schrodinger.solver.ShootingSolver;
 
+import java.nio.file.Path;
+
 import static schrodinger.PhysicalConstants.*;
 
 public class MorseMain {
+    private static final Path PROJECT_ROOT = Path.of(System.getProperty("user.dir"));
+    private static final Path TEST_SRC_ROOT = PROJECT_ROOT.resolve("test-integration/morse");
 
     public static void main(String[] args) {
 
@@ -38,12 +43,19 @@ public class MorseMain {
 //                "span", "eff.points", "minStep", "step/minStep");
 //        System.out.println(toInverseCm(potential.value(xmin)) + " " + toInverseCm(potential.value(xmax)));
 
+        RefinementStrategy strategy = RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL;
+
 //        Integrator integrator = IntegratorFactory.getCowell8();
         for (Integrator integrator : IntegratorFactory.getAll()) {
             String className = integrator.getClass().getSimpleName();
-
             long t0 = System.nanoTime();
             for (int nOfPoints = 5000; nOfPoints <= 5000; nOfPoints += 1) {
+
+                String logFilename = "Morse_" + className + "_" + xmin + "_" + xmax + "_" + nOfPoints + "_"
+                        + strategy.toString().toLowerCase() + ".log";
+                Path logFile = TEST_SRC_ROOT.resolve("outputs/" + logFilename);
+                OutputManager.initCommonOutputFile(logFile.toString());
+
                 double step = (xmax - xmin) / (nOfPoints - 1);
 
                 Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
@@ -53,10 +65,9 @@ public class MorseMain {
 
                 ShootingSolver finder = new ShootingSolver(system, integrator);
 
-
 //        for (int nOfDesiredNodes = 0; nOfDesiredNodes < nOfBoundStates; nOfDesiredNodes++) {
                 for (int nOfDesiredNodes = 0; nOfDesiredNodes < 101; nOfDesiredNodes++) {
-                    QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL);
+                    QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, strategy);
                     double exact = omega0 * (nOfDesiredNodes + 0.5) * (1. - xe * (nOfDesiredNodes + 0.5));
 
                     double innerInversionPoint = rmin - Math.log(1. + Math.sqrt(exact / De)) / a;

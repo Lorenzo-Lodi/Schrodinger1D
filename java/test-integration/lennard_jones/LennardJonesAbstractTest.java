@@ -57,7 +57,7 @@ public abstract class LennardJonesAbstractTest {
         } catch (NumberFormatException e) {
             System.err.println("Invalid double value in file " + filePath);
         }
-
+        System.out.println("Loaded " + refEnergies.size() + " reference energies from " + inputFile);
     }
 
     public LennardJonesAbstractTest(RefinementStrategy strategy, boolean isPrintOnlyBad) {
