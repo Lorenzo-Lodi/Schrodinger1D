@@ -7,5 +7,5 @@
  3  1 0  0  0  0                     % IPOTL PPAR QPAR APSE Nbeta IBOB
   50000.d0   1.0583544218D0 1.0583544218D0 % DSCM REQ Rref
   2.834589185678444D0                % PARM(1)
--99  1  0  0  0 1  0 0               % NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR LPRWF
+-100  1  0  0  50 1  0 0              % NLEV1 AUTO1 LCDC LXPCT NJM JDJR IWR LPRWF
   0 0                                % IV(1) IJ(1)

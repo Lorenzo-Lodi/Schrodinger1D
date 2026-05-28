@@ -22,6 +22,11 @@ public class MorseMain {
     private static final Path TEST_SRC_ROOT = PROJECT_ROOT.resolve("test-integration/morse");
 
     public static void main(String[] args) {
+        morse_core();
+    }
+
+
+    private static void morse_core() {
 
         double a = 1.5;
         double rmin = 2.;
@@ -47,6 +52,7 @@ public class MorseMain {
         RefinementStrategy strategy = RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL;
 
         for (Integrator integrator : List.of(IntegratorFactory.getNumerov())) {
+            int totalScans = 0;
             String className = integrator.getClass().getSimpleName();
             long t0 = System.nanoTime();
 
@@ -62,7 +68,6 @@ public class MorseMain {
 
             ShootingSolver finder = new ShootingSolver(system, integrator);
 
-//        for (int nOfDesiredNodes = 0; nOfDesiredNodes < nOfBoundStates; nOfDesiredNodes++) {
             for (int nOfDesiredNodes = 0; nOfDesiredNodes < 101; nOfDesiredNodes++) {
                 QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, strategy);
                 double exact = omega0 * (nOfDesiredNodes + 0.5) * (1. - xe * (nOfDesiredNodes + 0.5));
@@ -73,23 +78,24 @@ public class MorseMain {
                 int nEffPoints = (int) (span / step);
                 double diff = exact - ek.energy;
                 double maxStep = ek.maximumStepSize();
+                totalScans += ek.countTotalScans();
                 String msg = (step < maxStep) ? "OK" : "!";
-                System.out.printf("%15s %5d %5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %15.3f %2s\n", className, nOfDesiredNodes, nOfPoints, step, toInverseCm(exact),
-                        toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, maxStep, step / maxStep, msg);
+                System.out.printf("%15s %5d %5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %15.3f %2s %6d\n", className, nOfDesiredNodes, nOfPoints, step, toInverseCm(exact),
+                        toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, maxStep, step / maxStep, msg, ek.countTotalScans());
             }
             int hits = system.getCacheUTilde().nOfCacheHits;
             int misses = system.getCacheUTilde().nOfCacheMisses;
             double totCache = hits + misses;
-            double hitRate  = (totCache == 0) ? 0.0 : 100. * hits / totCache;
+            double hitRate = (totCache == 0) ? 0.0 : 100. * hits / totCache;
             double missRate = (totCache == 0) ? 0.0 : 100. * misses / totCache;
-            System.out.printf(
-                    "Cache hits = %12d (%7.3f %%), misses = %12d (%7.3f %%)%n",
-                    hits, hitRate, misses, missRate
-            );
-
+//            System.out.printf(
+//                    "Cache hits = %12d (%7.3f %%), misses = %12d (%7.3f %%)%n",
+//                    hits, hitRate, misses, missRate
+//            );
             long elapsedNanos = System.nanoTime() - t0;
             double elapsedSeconds = elapsedNanos * 1e-9;
-            System.out.printf("%15s wall-time seconds = %25.6f\n", className, elapsedSeconds);
+            System.out.printf("%15s wall-time seconds = %25.6f ; Cache hit rate = %7.3f %%; Total scans = %12d \n", className, elapsedSeconds,
+                    hitRate, totalScans);
         }
     }
 
