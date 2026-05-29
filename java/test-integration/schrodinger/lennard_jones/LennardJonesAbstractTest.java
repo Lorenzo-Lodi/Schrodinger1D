@@ -1,4 +1,4 @@
-package lennard_jones;
+package schrodinger.lennard_jones;
 
 import org.junit.jupiter.api.Test;
 import schrodinger.OutputManager;
@@ -24,10 +24,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static schrodinger.PhysicalConstants.*;
+import static schrodinger.Utils.stepMsg;
 
 public abstract class LennardJonesAbstractTest {
     private static final Path PROJECT_ROOT = Path.of(System.getProperty("user.dir"));
-    private static final Path TEST_SRC_ROOT = PROJECT_ROOT.resolve("test-integration/lennard_jones");
+    private static final Path TEST_SRC_ROOT = PROJECT_ROOT.resolve("test-integration/schrodinger/lennard_jones");
 
     private static final double wellDepthInverseCm = 4050;
     private static final double wellDepthHartree = wellDepthInverseCm / HARTREE_TO_INVERSE_CM;
@@ -61,8 +62,8 @@ public abstract class LennardJonesAbstractTest {
     }
 
     public LennardJonesAbstractTest(RefinementStrategy strategy, boolean isPrintOnlyBad) {
-//        this.integrators = IntegratorFactory.getAll();
-        this.integrators = List.of(IntegratorFactory.getEFN());
+        this.integrators = IntegratorFactory.getAll();
+//        this.integrators = List.of(IntegratorFactory.getEFN());
         this.strategy = strategy;
         this.isPrintOnlyBad = isPrintOnlyBad;
     }
@@ -200,23 +201,6 @@ public abstract class LennardJonesAbstractTest {
         sb.append((int) grid.getLastYValue()).append("_");
         sb.append(nOfNodes);
         return sb.toString();
-    }
-
-    private String stepMsg(double stepRatio) {
-        if (stepRatio > 2.) {
-            return "!!";
-        }
-        if (stepRatio > 1.) {
-            return "!";
-        }
-        if (stepRatio > 0.5) {
-            return "close";
-        }
-        if (stepRatio > 0.2) {
-            return "ok";
-        }
-
-        return "OK";
     }
 
 }

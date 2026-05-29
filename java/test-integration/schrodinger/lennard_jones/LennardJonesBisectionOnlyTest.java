@@ -1,4 +1,4 @@
-package lennard_jones;
+package schrodinger.lennard_jones;
 
 import schrodinger.solver.RefinementStrategy;
 

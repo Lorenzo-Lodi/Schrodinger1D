@@ -1,4 +1,4 @@
-package morse;
+package schrodinger.morse;
 
 import schrodinger.OutputManager;
 import schrodinger.QuantumLevel;
@@ -16,10 +16,11 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static schrodinger.PhysicalConstants.*;
+import static schrodinger.Utils.stepMsg;
 
 public class MorseMain {
     private static final Path PROJECT_ROOT = Path.of(System.getProperty("user.dir"));
-    private static final Path TEST_SRC_ROOT = PROJECT_ROOT.resolve("test-integration/morse");
+    private static final Path TEST_SRC_ROOT = PROJECT_ROOT.resolve("test-integration/schrodinger/morse");
 
     public static void main(String[] args) {
         morse_core();
@@ -43,7 +44,7 @@ public class MorseMain {
 
         double xmin = 1.0;
         double xmax = 12.;
-        double step = 0.001;
+        double step = 0.005;
         int nOfPoints = 1 + (int) ((xmax - xmin) / step);
         System.out.printf("%15s %5s %5s %18s %18s %18s %18s %15s %15s %15s %10s %15s %18s\n", "ClassName", "n", "np", "step", "exact", "calc", "exact-calc", "innerInv", "outerInv",
                 "span", "eff.points", "minStep", "step/minStep");
@@ -51,7 +52,7 @@ public class MorseMain {
 
         RefinementStrategy strategy = RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL;
 
-        for (Integrator integrator : List.of(IntegratorFactory.getNumerov())) {
+        for (Integrator integrator : List.of(IntegratorFactory.getCFMagnus4())) {
             int totalScans = 0;
             String className = integrator.getClass().getSimpleName();
             long t0 = System.nanoTime();
@@ -64,8 +65,8 @@ public class MorseMain {
             Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             system.setCachingUTilde(true);
-            System.out.printf("Maximum step size for ALL states to dissociation (hCriticalAllowed) = %20.8f \n", system.hMaxAllowedRegion);
-
+            int nOffsets = integrator.getFractionalOffsets().length;
+            System.out.printf("Maximum step size for ALL states to dissociation = %20.8f \n", system.maxStepSizeAllowedRegion / nOffsets);
             ShootingSolver finder = new ShootingSolver(system, integrator);
 
             for (int nOfDesiredNodes = 0; nOfDesiredNodes < 101; nOfDesiredNodes++) {
@@ -77,9 +78,9 @@ public class MorseMain {
                 double span = outerInversionPoint - innerInversionPoint;
                 int nEffPoints = (int) (span / step);
                 double diff = exact - ek.energy;
-                double maxStep = ek.maximumStepSize();
+                double maxStep = ek.maximumStepSize() / nOffsets;
                 totalScans += ek.countTotalScans();
-                String msg = (step < maxStep) ? "OK" : "!";
+                String msg = stepMsg(step /maxStep);
                 System.out.printf("%15s %5d %5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %15.3f %2s %6d\n", className, nOfDesiredNodes, nOfPoints, step, toInverseCm(exact),
                         toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, maxStep, step / maxStep, msg, ek.countTotalScans());
             }

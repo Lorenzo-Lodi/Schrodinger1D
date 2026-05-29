@@ -32,14 +32,15 @@ public class SchrodingerSystem {
     //    EFNFixedBeta           3.0
     //    PC8i1                  3.0
     //    PC6                    2.5
-    private final static double hMaxForbiddenRegion = 2.5;
-    public double hMaxAllowedRegion = 0;
+    private final static double MAX_STEP_SIZE_FORBIDDEN_REGION = 2.5;
+    public double maxStepSizeAllowedRegion = 0;
+    private final static double MINIMUM_NUMBER_OF_POINTS_PER_WAVELENGTH = 8.;  // Values for 4 to 10 are reasonable.
 
     public SchrodingerSystem(PhysicalPotential physicalPotential, double mass, Grid grid) {
         this.physicalPotential = physicalPotential;
         this.mass = mass;
         this.grid = grid;
-        qMin = -Math.pow(hMaxForbiddenRegion / grid.getStepSizeYCoordinate(), 2);
+        qMin = -Math.pow(MAX_STEP_SIZE_FORBIDDEN_REGION / grid.getStepSizeYCoordinate(), 2);
         this.estimateEnergyScale(); // Pre-compute the energy scale
     }
 
@@ -108,10 +109,10 @@ public class SchrodingerSystem {
         }
         OutputManager.write(String.format("I scanned the potential and found a maximum value %23.14f (%25.6f cm-1) right of the minimum",
                 uMaxRight, toInverseCm(uMaxRight)));
-        double kMax = Math.sqrt(Math.max(0, 2. * mass * (uMaxRight - uMin)));
+        double kMax = Math.sqrt(Math.max(0, 2. * mass * (uMaxRight - uMin))); // TODO add the geometric factors and/or call the Q function
         // Minimum step size for all states up to uMaxRight (for Morse-like potential, the dissociation energy of the potential)
         // For potentials which are not-Morse like, this is wrong.
-        hMaxAllowedRegion = 2. * Math.PI / (8. * kMax); // The number at the denominator is somewhat arbitrary, values for 4 to 8 are reasonable.
+        maxStepSizeAllowedRegion = 2. * Math.PI / (MINIMUM_NUMBER_OF_POINTS_PER_WAVELENGTH * kMax);
 
         // 2. Estimate Step Size (Energy Scale)
 
