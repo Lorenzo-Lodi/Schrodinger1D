@@ -78,9 +78,9 @@ public class MorseMain {
                 double span = outerInversionPoint - innerInversionPoint;
                 int nEffPoints = (int) (span / step);
                 double diff = exact - ek.energy;
-                double maxStep = ek.maximumStepSize() / nOffsets;
+                double maxStep = ek.maximumStepSize() * nOffsets;
                 totalScans += ek.countTotalScans();
-                String msg = stepMsg(step /maxStep);
+                String msg = stepMsg(step / maxStep);
                 System.out.printf("%15s %5d %5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %15.3f %2s %6d\n", className, nOfDesiredNodes, nOfPoints, step, toInverseCm(exact),
                         toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, maxStep, step / maxStep, msg, ek.countTotalScans());
             }
