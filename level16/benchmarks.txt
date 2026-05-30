@@ -1,0 +1,2 @@
+GNU Fortran (GCC) 4.7.0 20110813 (experimental) [trunk revision 177736] Intel(R) Core(TM) i5-4460  CPU @ 3.20GHz - Windows 11 gitbash
+Bench is: run J=0-50, v=0 - 100
