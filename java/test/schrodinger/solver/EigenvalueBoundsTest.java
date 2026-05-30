@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class BoundsTest {
+public class EigenvalueBoundsTest {
 
     private static final double EPS = 1e-10;
 
@@ -21,7 +21,7 @@ public class BoundsTest {
 // 6.5    6
     @Test
     public void test01() {
-        Bounds bounds = new Bounds(5);
+        EigenvalueBounds bounds = new EigenvalueBounds(5);
         double newValue = 0.25;
         bounds.updateBounds(newValue, 0);
         for (int v = 0; v < 5; v++) {

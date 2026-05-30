@@ -24,7 +24,7 @@ public class ShootingSolver {
     private final SchrodingerSystem system;
     private final Integrator integratorBest = IntegratorFactory.getBestOneStepIntegrator();
     private RefinementStrategy strategy;
-    public Bounds bounds;
+    public EigenvalueBounds bounds;
 
     public ShootingSolver(SchrodingerSystem system, Integrator integrator) {
         this.system = system;
@@ -34,10 +34,9 @@ public class ShootingSolver {
 
     public List<QuantumLevel> findEigenvaluesUpTo(int maximumQuantumNumber, RefinementStrategy refinementStrategy) {
         List<QuantumLevel> quantumLevels = new ArrayList<>();
-        bounds = new Bounds(maximumQuantumNumber);
+        bounds = new EigenvalueBounds(maximumQuantumNumber);
 
-
-        for (int v = maximumQuantumNumber; v >= 0; v--) {
+        for (int v = 0; v <= maximumQuantumNumber; v++) {
             QuantumLevel level = findEigenvalue(v, refinementStrategy);
             quantumLevels.add(level);
         }
@@ -93,12 +92,20 @@ public class ShootingSolver {
                     integrator.getClass().getSimpleName()));
         }
         double energyScale = system.estimateEnergyScale();
+        if (bounds.isLowerBoundDefined(nOfDesiredNodes) && bounds.isUpperBoundDefined(nOfDesiredNodes)) {
+            level.nodesLower = bounds.getLowerNodes(nOfDesiredNodes);
+            level.lowerBound = bounds.getLowerBound(nOfDesiredNodes);
+
+            level.nodesUpper = bounds.getUpperNodes(nOfDesiredNodes);
+            level.upperBound = bounds.getUpperBound(nOfDesiredNodes);
+            return level;
+        }
 
         // Set minimum a bit lower than minimum of the potential on the grid
         level.lowerBound = system.UTildeMinimumGridValue - energyScale * 0.05;
         level.nodesLower = 0; // Should be always correct
         bounds.updateBounds(level.lowerBound, level.nodesLower);
-        bounds.updateBounds(system.uMaxRight, nOfDesiredNodes);
+        bounds.updateBounds(system.uMaxRight, 1000000); // TODO Also compute uMaxLeft for "inverted" Morse-like
 
         // 3. Exponential Scan to find upper bound to the energy
         double currentEnergy = level.lowerBound + energyScale * (nOfDesiredNodes + 1);
@@ -168,6 +175,7 @@ public class ShootingSolver {
 
             level.energy = (level.lowerBound + level.upperBound) * 0.5;
             int nodes = countNodes(level);
+            bounds.updateBounds(level.energy, nodes);
 
             OutputManager.write(String.format("Bisection refinement. i = %5d; nodes= %5d %22.10f %22.10f %22.10f", i, nodes,
                     toInverseCm(level.lowerBound), toInverseCm(level.energy), toInverseCm(level.upperBound)));
