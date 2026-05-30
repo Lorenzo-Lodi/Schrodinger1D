@@ -1,2 +1,21 @@
-GNU Fortran (GCC) 4.7.0 20110813 (experimental) [trunk revision 177736] Intel(R) Core(TM) i5-4460  CPU @ 3.20GHz - Windows 11 gitbash
+
 Bench is: run J=0-50, v=0 - 100
+
+1. GNU Fortran (GCC) 4.7.0 20110813 (experimental) [trunk revision 177736]; Intel(R) Core(TM) i5-4460  CPU @ 3.20GHz ; Windows 11 gitbash
+2. GNU Fortran (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0                    ; Intel(R) Core(TM) i5-4460  CPU @ 3.20GHz ; Linux Mint 21.3 x86_64
+
+With system 1. I get error on input (end of input). In system 2 it works okay
+
+System 2, multiple runs, default compiler options
+time ./a.out < morse_potential_input.txt > tmp.txt 
+REAL   USER    SYS
+0.865  0.852   0.014
+0.864  0.861   0.004
+0.869  0.865   0.005
+
+With -O3 -march=native
+0.299	0.289	0.009
+0.296	0.295	0.002
+0.299	0.293	0.006
+
+THERE'S A HUGE BOOST WITH THESE OPTIONS!!!
