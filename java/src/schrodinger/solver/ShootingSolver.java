@@ -8,7 +8,9 @@ import schrodinger.grid.Grid;
 import schrodinger.integrator.Integrator;
 import schrodinger.SchrodingerSystem;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
 import static schrodinger.PhysicalConstants.toHartree;
@@ -20,14 +22,27 @@ public class ShootingSolver {
     private static final double PSI_MAX = 1e140; // rescale if psi exceeds this value
     private final Integrator integrator;
     private final SchrodingerSystem system;
-    private RefinementStrategy strategy;
-
     private final Integrator integratorBest = IntegratorFactory.getBestOneStepIntegrator();
+    private RefinementStrategy strategy;
+    public Bounds bounds;
 
     public ShootingSolver(SchrodingerSystem system, Integrator integrator) {
         this.system = system;
         this.integrator = integrator;
         this.system.initializeCache(integrator.getFractionalOffsets());
+    }
+
+    public List<QuantumLevel> findEigenvaluesUpTo(int maximumQuantumNumber, RefinementStrategy refinementStrategy) {
+        List<QuantumLevel> quantumLevels = new ArrayList<>();
+        bounds = new Bounds(maximumQuantumNumber);
+
+
+        for (int v = maximumQuantumNumber; v >= 0; v--) {
+            QuantumLevel level = findEigenvalue(v, refinementStrategy);
+            quantumLevels.add(level);
+        }
+
+        return quantumLevels;
     }
 
     public QuantumLevel findEigenvalue(int nOfDesiredNodes, RefinementStrategy refinementStrategy) {
@@ -82,6 +97,8 @@ public class ShootingSolver {
         // Set minimum a bit lower than minimum of the potential on the grid
         level.lowerBound = system.UTildeMinimumGridValue - energyScale * 0.05;
         level.nodesLower = 0; // Should be always correct
+        bounds.updateBounds(level.lowerBound, level.nodesLower);
+        bounds.updateBounds(system.uMaxRight, nOfDesiredNodes);
 
         // 3. Exponential Scan to find upper bound to the energy
         double currentEnergy = level.lowerBound + energyScale * (nOfDesiredNodes + 1);
@@ -96,6 +113,7 @@ public class ShootingSolver {
             // Update the energy in the system
             level.energy = currentEnergy;
             int nodes = countNodes(level);
+            bounds.updateBounds(level.energy, nodes);
             {
                 String msg = ((nodes - nOfDesiredNodes) < 0) ? " too few" : " OK";
                 OutputManager.write(String.format("Trying to find an upper bound. Current energy = %20.6f cm-1, nodes = %10d, " +
@@ -294,9 +312,9 @@ public class ShootingSolver {
     private double computeM(double fEnergy, double fReplaced) {
 //  Illinois or Pegasus may be more stable. Consider switching to either of them if , eg, iter reaches 20 or so.
 //         return 0.5;  // Illinois method.
-        return fReplaced / (fReplaced + fEnergy); // Pegasus method.
-//        double m = 1.0 - fEnergy / fReplaced;  // Anderson-Björck method.
-//        return (m <= 0.0) ? 0.5 : m;
+//        return fReplaced / (fReplaced + fEnergy); // Pegasus method.
+        double m = 1.0 - fEnergy / fReplaced;  // Anderson-Björck method.
+        return (m <= 0.0) ? 0.5 : m;
     }
 
     private double computeDerivativeMismatch(QuantumLevel level, int matchIndex) {
@@ -338,7 +356,7 @@ public class ShootingSolver {
 
             // Check for potential overflow
             if (n % 16 == 0 && Math.abs(level.psi[n - 1]) > PSI_MAX) {
-                double factor = level.psi[n + 1];
+                double factor = level.psi[n - 1];
                 for (int i = level.psi.length - 1; i >= n - 1; i--) { // Rescale computed points
                     level.psi[i] /= factor;
                 }
@@ -462,5 +480,6 @@ public class ShootingSolver {
     private String fmtEnergy(double energy) {
         return String.format("%25.14f (%25.6f cm-1)", energy, toInverseCm(energy));
     }
+
 
 }

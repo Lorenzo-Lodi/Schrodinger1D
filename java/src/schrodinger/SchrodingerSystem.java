@@ -12,6 +12,7 @@ public class SchrodingerSystem {
     private final double qMin;
     public double UTildeMinimumGridIndex;
     public double UTildeMinimumGridValue;
+    public double uMaxRight;
     private Double energyScale = null;
     private FractionalGridCache cacheUTilde;
     private boolean isCachingUTilde = true;
@@ -100,7 +101,7 @@ public class SchrodingerSystem {
         OutputManager.write(String.format("I scanned the potential and found a minimum value %23.14f (%25.6f cm-1) for i = %d",
                 uMin, toInverseCm(uMin), minIndex));
 
-        double uMaxRight = -(0.5 * Double.MAX_VALUE);
+        uMaxRight = -(0.5 * Double.MAX_VALUE);
         for (int i = minIndex + 1; i < nPoints - 1; i++) {
             double val = UTildeAtGridPoint(i);
             if (val > uMaxRight) {
