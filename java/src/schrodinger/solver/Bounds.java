@@ -11,6 +11,14 @@ public class Bounds {
         }
     }
 
+    public double getUpperBound(int i) {
+        return bounds[i].upperBound;
+    }
+
+    public double getLowerBound(int i) {
+        return bounds[i].lowerBound;
+    }
+
     public int updateBounds(double energy, int nNodes) {
         int updatedBounds = 0;
         for (int v = 0; v < Math.min(nNodes, bounds.length); v++) {
@@ -30,7 +38,7 @@ public class Bounds {
         return updatedBounds;
     }
 
-    private static class Bound {
+    static class Bound {
         double lowerBound = -Double.MAX_VALUE / 16.;
         double upperBound = Double.MAX_VALUE / 16.;
     }
