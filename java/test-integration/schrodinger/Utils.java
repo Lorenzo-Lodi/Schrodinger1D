@@ -7,10 +7,10 @@ public class Utils {
             return "ERROR!";
         }
 
-        if (actualOverMaximumRatio >= 2.0) return "WARNING!    ";
-        if (actualOverMaximumRatio >= 1.0) return "warning!    ";
-        if (actualOverMaximumRatio >= 0.5) return "careful     ";
-        if (actualOverMaximumRatio >= 0.2) return "OK          ";
+        if (actualOverMaximumRatio >= 2.0) return "COARSE!    ";
+        if (actualOverMaximumRatio >= 1.0) return "coarse!    ";
+        if (actualOverMaximumRatio >= 0.5) return "sufficient  ";
+        if (actualOverMaximumRatio >= 0.2) return "Good        ";
         return "Superfine   ";
 
     }
