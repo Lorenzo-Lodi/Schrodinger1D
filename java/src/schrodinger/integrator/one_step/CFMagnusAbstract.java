@@ -8,9 +8,10 @@ public abstract class CFMagnusAbstract {
 
     private final int NODES;
     private final int EXPONENTIALS;
-    private final double[] C; // Gauss-Legendre nodes
-    private final double[][] W; // Weights
+    private final double[] C;
+    private final double[][] W;
     private final double[] A1W;
+    private final double[] Q; // pre-allocated to avoid per-step allocation
 
 
     public CFMagnusAbstract(int nodes, int exponentials, double[] c, double[][] w, double[] a1W) {
@@ -19,6 +20,7 @@ public abstract class CFMagnusAbstract {
         C = c;
         W = w;
         A1W = a1W;
+        Q = new double[NODES];
     }
 
     public double propagate(double[] psi, double[] currentPsiPrime, int n, double step,
@@ -31,8 +33,6 @@ public abstract class CFMagnusAbstract {
         double y = psi[n];
         double yp = currentPsiPrime[0];
 
-        // 1. Evaluate Q(x) at the Gauss-Legendre nodes
-        double[] Q = new double[NODES];
         for (int k = 0; k < NODES; k++) {
             Q[k] = qTilde.applyAsDouble(n + C[k] * direction.getValue());
         }

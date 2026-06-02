@@ -9,7 +9,6 @@ import schrodinger.integrator.Integrator;
 import schrodinger.SchrodingerSystem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
@@ -328,14 +327,15 @@ public class ShootingSolver {
     private double computeDerivativeMismatch(QuantumLevel level, int matchIndex) {
         double hy = system.getGrid().getStepSizeYCoordinate();
         DoubleUnaryOperator qTildeFunction = level::QTildeAtGridPoint;
+        DoubleUnaryOperator qtPrimeFn = level::QTildePrimeAtGridPoint;
+        DoubleUnaryOperator qtDoublePrimeFn = level::QTildeDoublePrimeAtGridPoint;
 
         // --- Shoot Forward
-        Arrays.fill(level.psi, 0.0); // Let us zero the wave function for clarity (not necessary).
         int startIndex = initialize(level, Integrator.Direction.FORWARD);
 
         for (int n = startIndex; n < matchIndex + 1; n++) {
             level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy, qTildeFunction,
-                    level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
+                    qtPrimeFn, qtDoublePrimeFn,
                     Integrator.Direction.FORWARD);
 
             // Check for potential overflow
@@ -350,16 +350,14 @@ public class ShootingSolver {
         }
 
         double forwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (2. * hy);
-        double forwardPsiAtMatchIndexMinusOne = level.psi[matchIndex - 1];
         double forwardPsiAtMatchIndex = level.psi[matchIndex];
 
         // --- Shoot Backward
-        int np = system.getGrid().getNumberOfPoints();
         startIndex = initialize(level, Integrator.Direction.BACKWARD);
 
         for (int n = startIndex; n > matchIndex - 1; n--) {
             level.psi[n - 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy,
-                    qTildeFunction, level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
+                    qTildeFunction, qtPrimeFn, qtDoublePrimeFn,
                     Integrator.Direction.BACKWARD);
 
             // Check for potential overflow
@@ -374,17 +372,6 @@ public class ShootingSolver {
         }
         double backwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (2. * hy);
         double backwardPsiAtMatchIndex = level.psi[matchIndex];
-
-        // Let us rescale the correct psi (probably unnecessary doing this at each step). It should be done only once
-        // after convergence is reached.
-        level.psi[matchIndex - 1] = forwardPsiAtMatchIndexMinusOne;
-        for (int n = 0; n < matchIndex; n++) {
-            level.psi[n] = level.psi[n] / forwardPsiAtMatchIndex;
-        }
-        for (int n = matchIndex + 1; n < np - 1; n++) {
-            level.psi[n] = level.psi[n] / level.psi[matchIndex];
-        }
-        level.psi[matchIndex] = 1.;
 
         double result = forwardDer / forwardPsiAtMatchIndex - backwardDer / backwardPsiAtMatchIndex; // Return logarithmic derivative
 //        double result = forwardDer * backwardPsiAtMatchIndex - backwardDer * forwardPsiAtMatchIndex; // Return Wroksian; seems to give problems!!!!
@@ -403,10 +390,14 @@ public class ShootingSolver {
             rightmostInversionPoint = 0;
         }
 
+        DoubleUnaryOperator qTildeFn = level::QTildeAtGridPoint;
+        DoubleUnaryOperator qtPrimeFn = level::QTildePrimeAtGridPoint;
+        DoubleUnaryOperator qtDoublePrimeFn = level::QTildeDoublePrimeAtGridPoint;
+
         double gamma = 0.0; // To track how deep into the forbidden region we are
         for (int n = startIndex; n < nPoints - 1; n++) {
-            level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy, level::QTildeAtGridPoint,
-                    level::QTildePrimeAtGridPoint, level::QTildeDoublePrimeAtGridPoint,
+            level.psi[n + 1] = integrator.propagate(level.psi, level.currentPsiPrime, n, hy, qTildeFn,
+                    qtPrimeFn, qtDoublePrimeFn,
                     Integrator.Direction.FORWARD);
 
             // Check for potential overflow

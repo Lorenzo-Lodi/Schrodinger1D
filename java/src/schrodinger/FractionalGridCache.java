@@ -41,11 +41,16 @@ public class FractionalGridCache {
         int baseIndex = (int) i;
         double fraction = i - baseIndex;
 
-        int fractionIndex = -1;
-        for (int f = 0; f < numFractions; f++) {
-            if (Math.abs(fraction - fractionalOffsets[f]) < 1e-9) {
-                fractionIndex = f;
-                break;
+        int fractionIndex;
+        if (fraction == 0.0) {
+            fractionIndex = 0;
+        } else {
+            fractionIndex = -1;
+            for (int f = 0; f < numFractions; f++) {
+                if (Math.abs(fraction - fractionalOffsets[f]) < 1e-9) {
+                    fractionIndex = f;
+                    break;
+                }
             }
         }
         if (fractionIndex >= 0) {

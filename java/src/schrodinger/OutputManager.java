@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Orchestrates writing to a common output file and per‑level files.
- * All files are flushed after each write (adjust if performance becomes an issue).
+ * Files are buffered and flushed only at close time (via shutdown hook).
  */
 public class OutputManager {
     // Common output (static)
@@ -65,7 +65,6 @@ public class OutputManager {
     public static synchronized void write(String msg) {
         if (commonWriter != null) {
             commonWriter.println(timestamp() + " " + msg);
-            commonWriter.flush();
         }
     }
 
@@ -80,7 +79,6 @@ public class OutputManager {
     public static synchronized void writeData(String line) {
         if (commonWriter != null) {
             commonWriter.println(line);
-            commonWriter.flush();
         }
     }
 
@@ -120,7 +118,6 @@ public class OutputManager {
          */
         public void log(String msg) {
             writer.println(timestamp() + " " + msg);
-            writer.flush();
         }
 
         /**
@@ -128,7 +125,6 @@ public class OutputManager {
          */
         public void raw(String line) {
             writer.println(line);
-            writer.flush();
         }
 
         // Called by shutdown hook
