@@ -16,6 +16,7 @@ public class SchrodingerSystem {
     private Double energyScale = null;
     private FractionalGridCache cacheUTilde;
     private boolean isCachingUTilde = true;
+    private int J = 0;
 
     // For now we use a unique hCritical for all integrators. In reality some integrators are very sensitive
     // (PC6 is the most sensitive and requires hCritical=2.5) and some much less (Obrechkoff6 requires hCritical=5.5)
@@ -45,15 +46,26 @@ public class SchrodingerSystem {
         this.estimateEnergyScale(); // Pre-compute the energy scale
     }
 
+    public SchrodingerSystem(PhysicalPotential physicalPotential, double mass, Grid grid, int J) {
+        this(physicalPotential, mass, grid);
+        setJ(J);
+    }
+
     /**
      * Potential U(r) for the equation: -(hbar^2 / 2m) ψ''(r) + U(r) ψ(r) = E ψ(r)
+     * For J > 0, includes the centrifugal term J(J+1)/(2mr²).
      */
     public double U(double r) {
-        return physicalPotential.value(r);
+        double v = physicalPotential.value(r);
+        if (J != 0) {
+            v += (double) J * (J + 1) / (2.0 * mass * r * r);
+        }
+        return v;
     }
 
     private double UTilde(double y) {
-        double u = physicalPotential.value(grid.r(y));
+        double r = grid.r(y);
+        double u = U(r); // includes centrifugal term when J != 0
         double gy = grid.g(y);
         double factor = grid.F(y) / (gy * gy);
         return u - factor / (2.d * mass);
@@ -152,6 +164,25 @@ public class SchrodingerSystem {
 
     public double getMass() {
         return mass;
+    }
+
+    public int getJ() {
+        return J;
+    }
+
+    /**
+     * Sets the rotational quantum number J and re-scans the effective potential.
+     * Invalidates the Q-tilde cache; call system.initializeCache() afterwards
+     * if caching is needed for the new J.
+     */
+    public void setJ(int j) {
+        if (j < 0) {
+            throw new IllegalArgumentException("J must be non-negative, got: " + j);
+        }
+        this.J = j;
+        this.energyScale = null;   // force rescan with the new centrifugal term
+        this.cacheUTilde = null;   // invalidate stale Q-tilde cache
+        this.estimateEnergyScale();
     }
 
     public Grid getGrid() {

@@ -92,6 +92,30 @@ public class QuantumLevel {
         return normalizationFactor;
     }
 
+    /**
+     * Computes the expectation value </1/r> using the same quadrature convention as
+     * normalizePsi(): weight = (psi[i] * g(y_i))^2, integrated over the uniform y-grid.
+     *
+     * For a uniform grid (g = 1 everywhere) this equals the physical ∫ ψ²/r² dr exactly.
+     * For non-uniform grids the same weights are used as in normalizePsi, so the result
+     * is internally consistent for computing the rotational PT energy correction.
+     *
+     * Requires psi to be normalized before calling (i.e. call normalizePsi() first).
+     */
+    public double expectationValueInverseR2() {
+        double h = getGrid().getStepSizeYCoordinate();
+        int maxIndex = getGrid().getNumberOfPoints() - 1;
+        double sum = 0.0;
+        // Boundary points have psi = 0, so their contribution vanishes; skip them.
+        for (int i = 1; i < maxIndex; i++) {
+            double r = getGrid().rAtGridPoint(i);
+            double g = getGrid().gAtGridPoint(i);
+            double val = psi[i] * g;
+            sum += val * val / (r * r);
+        }
+        return sum * h;
+    }
+
     public int countNodes() {
         int nodes = 0;
         for (int n = 0; n < this.psi.length - 1; n++) {

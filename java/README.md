@@ -141,7 +141,9 @@ The central object passed through the entire solver pipeline. Holds:
 
 Key methods:
 
-- `U(double r)` — raw V(r) in Hartree
+- `U(double r)` — effective potential at physical coordinate: $V(r) + J(J+1)/(2mr^2)$ when $J>0$, else $V(r)$
+- `setJ(int j)` — sets rotational quantum number; resets energy-scale cache and Q-tilde cache, then rescans potential; throws `IllegalArgumentException` for $j<0$
+- `getJ()` — returns current J
 - `UTildeAtGridPoint(double i)` — effective potential $\tilde{U}(y_i)$ including mapping correction; uses cache if initialized
 - `Ucapped()` — returns `qMin`-capped value (used when `isCapPotential()` is true)
 - `estimateEnergyScale()` — typical energy scale derived from grid spacing and Q-tilde; used for initial bracket estimation
@@ -164,6 +166,7 @@ Represents one quantum state throughout the solver lifecycle. Passed into integr
 | `psi` | `double[]` | Wavefunction values at grid points |
 | `currentPsiPrime` | `double[]` | Wavefunction derivative (needed by one-step methods) |
 | `perturbativeCorrectionToEnergy` | `double` | Post-hoc PT energy correction |
+| `wavefunctionContinuityError` | `double` | Relative amplitude mismatch at matching point before joining (set by `assembleFinalWavefunction`; quality diagnostic) |
 | `convergenceInfo` | `List<ConvergenceInfo>` | Per-stage iteration counts for diagnostics |
 | `isCapPotential` | `boolean` | Whether Q-tilde capping is active |
 
@@ -172,8 +175,7 @@ Key methods:
 - `Q(double r)` — $Q(r) = 2m(E - V(r))/\hbar^2$
 - `QTilde(double y)` / `QTildeAtGridPoint(double i)` — transformed Q (with capping if `isCapPotential`)
 - `QTildePrimeAtGridPoint(double i)` / `QTildeDoublePrimeAtGridPoint(double i)` — numerical derivatives (used by Obrechkoff6)
-- `normalizePsi()` — normalizes $\psi$ to unit L² norm; returns the norm before normalization
-- `countNodes()` — counts zero crossings in `psi`
+- `normalizePsi()` — normalizes $\psi$ to unit L² norm; returns the norm before normalization- `expectationValueInverseR2()` — computes $\langle r^{-2}\rangle$ using the same quadrature weights as `normalizePsi`; must be called after `normalizePsi`; used by the J-loop to compute the rotational constant $B_{v,J}$- `countNodes()` — counts zero crossings in `psi`
 - `maximumStepSize()` — returns the largest h consistent with accuracy for the current energy
 - `verifyStepSize()` — logs a warning if the grid step exceeds `maximumStepSize()`
 - `countTotalScans()` — sums `convergenceInfo` iteration counts
@@ -468,27 +470,49 @@ Key constants:
 
 #### Algorithm
 
-1. **`findInitialEnergyBracket(int nNodes)`** — scans energies to find an interval $[E_\text{low}, E_\text{high}]$ where the propagated node count brackets the target. Uses `EigenvalueBounds` to reuse information from previously found states.
+1. **`findInitialEnergyBracket(int nNodes)`** — scans energies to find an interval $[E_\text{low}, E_\text{high}]$ where the propagated node count brackets the target. Uses `EigenvalueBounds` to reuse information from previously found states. Lazy-initializes `bounds` if null.
 
 2. **`findEigenvalueByBisection(QuantumLevel, int matchingIndex)`** — pure bisection: trial energy = midpoint, propagate from both ends to `matchingIndex`, count nodes, update bracket until `upperBound − lowerBound < TARGET_ABSOLUTE_ERROR`.
 
 3. **`findEigenvalueByHybridMethod(QuantumLevel, int matchingIndex)`** — same bisection loop but switches to regula falsi (using derivative mismatch as the function) once the bracket is tight enough. Converges faster near the root.
 
-4. **`computeDerivativeMismatch(QuantumLevel, int matchingIndex)`** — propagates ψ from left and right, computes log-derivative $(ψ'/ψ)$ from each side at `matchingIndex`, returns their difference. This is the residual driven to zero.
+4. **`assembleFinalWavefunction(QuantumLevel level)`** — after energy convergence, performs one final forward + backward propagation at `level.energy`, joins both halves so `psi[matchIndex] = 1`, and records the relative amplitude mismatch in `level.wavefunctionContinuityError`. Always called before `normalizePsi()`; ensures a valid full wavefunction regardless of which refinement strategy was used.
 
-5. **`findMatchingIndex(double energy)`** — locates the classical turning point (or a fixed interior point) as the matching location.
+5. **`computeDerivativeMismatch(QuantumLevel, int matchingIndex)`** — propagates ψ from left and right, computes log-derivative $(ψ'/ψ)$ from each side at `matchingIndex`, returns their difference. This is the residual driven to zero.
 
-6. After convergence: calls `PTCorrector.computeAndSet(level)` if the integrator provides one, then `level.normalizePsi()`.
+6. **`findMatchingIndex(double energy)`** — locates the classical turning point (or a fixed interior point) as the matching location.
+
+7. After convergence: calls `PTCorrector.computeAndSet(level)` if the integrator provides one, then `level.normalizePsi()`.
 
 #### Public API
 
 - `findEigenvaluesUpTo(int maxN, RefinementStrategy)` → `List<QuantumLevel>` — find states v=0…maxN
 - `findEigenvalue(int nNodes)` → `QuantumLevel` — find single state with default strategy
 - `findEigenvalue(int nNodes, RefinementStrategy)` → `QuantumLevel` — find single state
+- `findEigenvaluesForJ(int vMax, int jMax)` → `List<List<QuantumLevel>>` — find all (v, J) pairs; see below
 
 ---
 
-### `EigenvalueBounds`
+### `findEigenvaluesForJ` — Rotational J-loop
+
+```
+findEigenvaluesForJ(int vMax, int jMax) → List<List<QuantumLevel>>
+```
+
+Finds all bound levels for $v = 0\ldots v_\text{max}$, $J = 0\ldots J_\text{max}$.
+
+- For $J=0$: calls `findEigenvalue(v)` normally.
+- For $J \geq 1$: uses the converged $(v, J-1)$ wavefunction to compute the rotational constant
+  $$B_{v,J-1} = \frac{\langle r^{-2}\rangle_{v,J-1}}{2m}$$
+  and derives the PT energy guess:
+  $$\Delta E = 2J \cdot B_{v,J-1}, \quad E_\text{guess} = E_{v,J-1} + \Delta E$$
+  with initial bracket $\pm \Delta E/3$. The bracket is validated by node counting and doubled up to 10 times before falling back to a full scan. `SchrodingerSystem.setJ(J)` and `initializeCache` are called before each solve.
+
+Access result: `result.get(v).get(J)`.
+
+---
+
+### `EigenvalueBounds` (`schrodinger.solver.EigenvalueBounds`)
 
 Tracks per-quantum-number energy brackets across successive `findEigenvalue` calls so that the bracket search for state v+1 can reuse the upper bound of state v.
 
