@@ -48,8 +48,19 @@ public class ShootingSolver {
         OutputManager.write("************************************************************************************");
         OutputManager.write(String.format("Finding eigenvalue with %d nodes, strategy %s", nOfDesiredNodes, refinementStrategy.toString()));
         this.strategy = refinementStrategy;
-        QuantumLevel level = this.findInitialEnergyBracket(nOfDesiredNodes);
+        QuantumLevel level = this.findInitialEnergyBracket(nOfDesiredNodes, Double.NaN, 0.0);
+        return performRefinement(level, nOfDesiredNodes);
+    }
 
+    public QuantumLevel findEigenvalue(int nOfDesiredNodes, double energyGuess, double bracketHalfWidth) {
+        OutputManager.write("************************************************************************************");
+        OutputManager.write(String.format("Finding eigenvalue with %d nodes from guess %25.14f", nOfDesiredNodes, energyGuess));
+        this.strategy = RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL;
+        QuantumLevel level = this.findInitialEnergyBracket(nOfDesiredNodes, energyGuess, bracketHalfWidth);
+        return performRefinement(level, nOfDesiredNodes);
+    }
+
+    private QuantumLevel performRefinement(QuantumLevel level, int nOfDesiredNodes) {
         switch (strategy) {
             case BISECTION_ONLY:
                 findEigenvalueByBisection(level, nOfDesiredNodes);
@@ -76,9 +87,14 @@ public class ShootingSolver {
      * Locates the energy interval [lowerBound, upperBound] containing the
      * state with 'nOfDesiredNodes' nodes.
      */
-    private QuantumLevel findInitialEnergyBracket(int nOfDesiredNodes) {
+    private QuantumLevel findInitialEnergyBracket(int nOfDesiredNodes, double energyGuess, double bracketHalfWidth) {
         OutputManager.writeBlankLine();
         OutputManager.write(String.format("Trying to find initial energy bracketing for state with n = %d", nOfDesiredNodes));
+        
+        if (bounds == null) {
+            bounds = new EigenvalueBounds(nOfDesiredNodes + 10);
+        }
+        
         QuantumLevel level = new QuantumLevel(system);
 
         if (integrator.needsPotentialCapping()) {
@@ -91,6 +107,48 @@ public class ShootingSolver {
             OutputManager.write(String.format("Integrator is set to %s, and this integrator does NOT needs potential capping.",
                     integrator.getClass().getSimpleName()));
         }
+
+        if (!Double.isNaN(energyGuess)) {
+            double lowerBound = energyGuess - bracketHalfWidth;
+            double upperBound = energyGuess + bracketHalfWidth;
+            int maxDoublings = 10;
+            for (int attempt = 0; attempt <= maxDoublings; attempt++) {
+                level.energy = lowerBound;
+                int nodesLower = countNodes(level);
+                level.energy = upperBound;
+                int nodesUpper = countNodes(level);
+
+                bounds.updateBounds(lowerBound, nodesLower);
+                bounds.updateBounds(upperBound, nodesUpper);
+
+                OutputManager.write(String.format("PT bracket attempt %d: [%.10f, %.10f], nodes = [%d, %d], target = %d",
+                        attempt, lowerBound, upperBound, nodesLower, nodesUpper, nOfDesiredNodes));
+
+                if (nodesLower <= nOfDesiredNodes && nodesUpper > nOfDesiredNodes) {
+                    level.lowerBound = lowerBound;
+                    level.nodesLower = nodesLower;
+                    level.upperBound = upperBound;
+                    level.nodesUpper = nodesUpper;
+                    level.energy = energyGuess;
+                    level.verifyStepSize();
+                    
+                    QuantumLevel.ConvergenceInfo info = new QuantumLevel.ConvergenceInfo();
+                    info.convergengeStage = "Initial energy bracketing (PT guess)";
+                    info.iterations = attempt;
+                    level.convergenceInfo.add(info);
+                    
+                    return level;
+                }
+
+                if (attempt < maxDoublings) {
+                    bracketHalfWidth *= 2.0;
+                    lowerBound = energyGuess - bracketHalfWidth;
+                    upperBound = energyGuess + bracketHalfWidth;
+                }
+            }
+            OutputManager.write(String.format("WARNING: PT bracket still invalid after %d doublings. Falling back to full scan.", maxDoublings));
+        }
+
         double energyScale = system.estimateEnergyScale();
         if (bounds.isLowerBoundDefined(nOfDesiredNodes) && bounds.isUpperBoundDefined(nOfDesiredNodes)) {
             level.nodesLower = bounds.getLowerNodes(nOfDesiredNodes);
@@ -149,6 +207,10 @@ public class ShootingSolver {
 
     private void findEigenvalueByBisection(QuantumLevel level, int nOfDesiredNodes) {
         refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR, 0);
+        
+        // Ensure the continuous wavefunction is generated exactly for the final (midpoint) energy.
+        // It is already continuous (no jumps) because countNodes uses a single forward sweep with extrapolation.
+        countNodes(level);
     }
 
     private void refineByBisection(QuantumLevel level, int nOfDesiredNodes, double maxAbsError, int extraBisections) {
@@ -375,16 +437,16 @@ public class ShootingSolver {
         double backwardDer = (level.psi[matchIndex + 1] - level.psi[matchIndex - 1]) / (2. * hy);
         double backwardPsiAtMatchIndex = level.psi[matchIndex];
 
-        // Let us rescale the correct psi (probably unnecessary doing this at each step). It should be done only once
-        // after convergence is reached.
+        // Let us rescale the two halves so that they meet exactly at matchIndex with a value of 1.0.
+        // This ensures the wavefunction is consistent and continuous (no jumps) across all iterations.
         level.psi[matchIndex - 1] = forwardPsiAtMatchIndexMinusOne;
         for (int n = 0; n < matchIndex; n++) {
-            level.psi[n] = level.psi[n] / forwardPsiAtMatchIndex;
+            level.psi[n] /= forwardPsiAtMatchIndex;
         }
-        for (int n = matchIndex + 1; n < np - 1; n++) {
-            level.psi[n] = level.psi[n] / level.psi[matchIndex];
+        for (int n = matchIndex + 1; n < np; n++) {
+            level.psi[n] /= backwardPsiAtMatchIndex;
         }
-        level.psi[matchIndex] = 1.;
+        level.psi[matchIndex] = 1.0;
 
         double result = forwardDer / forwardPsiAtMatchIndex - backwardDer / backwardPsiAtMatchIndex; // Return logarithmic derivative
 //        double result = forwardDer * backwardPsiAtMatchIndex - backwardDer * forwardPsiAtMatchIndex; // Return Wroksian; seems to give problems!!!!
@@ -483,6 +545,65 @@ public class ShootingSolver {
 
         return i;
 
+    }
+
+    /**
+     * Finds all bound levels for v = 0..vMax and J = 0..jMax.
+     *
+     * For J = 0 each state is solved normally. For J >= 1 a first-order perturbative
+     * correction based on the converged (v, J-1) wavefunction provides an energy guess,
+     * replacing the expensive initial-bracket scan with a narrow validated bracket.
+     *
+     * The perturbative energy step from J-1 to J is:
+     *   \u0394E = 2J \u00b7 B_{v,J-1}   where B_{v,J-1} = \u27e81/r\u00b2\u27e9_{v,J-1} / (2m)
+     * and the initial bracket is [guess \u00b1 \u0394E/3], doubled up to 10 times if invalid.
+     *
+     * @return results.get(v).get(J)  for v in [0, vMax], J in [0, jMax]
+     */
+    public List<List<QuantumLevel>> findEigenvaluesForJ(int vMax, int jMax) {
+        List<List<QuantumLevel>> result = new ArrayList<>();
+
+        for (int v = 0; v <= vMax; v++) {
+            List<QuantumLevel> jLevels = new ArrayList<>();
+
+            // J = 0: standard solve
+            system.setJ(0);
+            system.initializeCache(integrator.getFractionalOffsets());
+            if (bounds == null) {
+                bounds = new EigenvalueBounds(vMax + 10);
+            }
+            QuantumLevel level0 = findEigenvalue(v);
+            jLevels.add(level0);
+
+            for (int J = 1; J <= jMax; J++) {
+                QuantumLevel prevLevel = jLevels.get(J - 1);
+
+                // B_{v,J-1} = <1/r^2>_{v,J-1} / (2m)
+                double invR2 = prevLevel.expectationValueInverseR2();
+                double B = invR2 / (2.0 * system.getMass());
+
+                // Delta-E for the centrifugal increment from J-1 to J:
+                //   Delta-E = [(J)(J+1) - (J-1)J] / (2m) * <1/r^2>  =  2J * B
+                double deltaE = 2.0 * J * B;
+                double guess = prevLevel.energy + deltaE;
+                double halfWidth = deltaE / 3.0;
+
+                OutputManager.write(String.format(
+                        "v=%d, J=%d: PT guess = %25.14f, deltaE = %25.14f, bracket half-width = %25.14f",
+                        v, J, guess, deltaE, halfWidth));
+
+                system.setJ(J);
+                system.initializeCache(integrator.getFractionalOffsets());
+                QuantumLevel levelJ = findEigenvalue(v, guess, halfWidth);
+                jLevels.add(levelJ);
+            }
+
+            result.add(jLevels);
+        }
+
+        system.setJ(0);
+        system.initializeCache(integrator.getFractionalOffsets());
+        return result;
     }
 
     private String fmtEnergy(double energy) {
