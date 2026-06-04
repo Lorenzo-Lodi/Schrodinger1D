@@ -77,7 +77,7 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       real start_time, end_time
       integer,dimension(8) :: time_and_date_values_start
       integer,dimension(8) :: time_and_date_values_end
-      double precision :: elapsed_sec
+      double precision :: elapsed_sec, t1, t2
       DATA MEL/5.4857990945d-4/
 c** Default (Q-branch) defining J-increments for matrix element calcn.
       DATA J2DL,J2DU,J2DD/0,0,1/
@@ -1141,8 +1141,17 @@ c  any) energies of missing levels
       call date_and_time(values=time_and_date_values_end)
       write(6,*) time_and_date_values_end-time_and_date_values_start
 
-      elapsed_sec = (time_and_date_values_end(8) - 
-     1  time_and_date_values_start(8))/1000.d0
+      t1 = time_and_date_values_start(5)*3600.d0
+      t1 = t1 + time_and_date_values_start(6)*60.d0
+      t1 = t1 + time_and_date_values_start(7)
+      t1 = t1 + time_and_date_values_start(8)/1000.d0
+
+      t2 = time_and_date_values_end(5)*3600.d0
+      t2 = t2 + time_and_date_values_end(6)*60.d0
+      t2 = t2 + time_and_date_values_end(7)
+      t2 = t2 + time_and_date_values_end(8)/1000.d0
+
+      elapsed_sec = t2 - t1
 
       write(6,*) 'Elapsed wall clock time = ', elapsed_sec, ' seconds'
       STOP
