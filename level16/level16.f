@@ -75,6 +75,9 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       CHARACTER*78 TITL
       CHARACTER*2 NAME1,NAME2
       real start_time, end_time
+      integer,dimension(8) :: time_and_date_values_start
+      integer,dimension(8) :: time_and_date_values_end
+      double precision :: elapsed_sec
       DATA MEL/5.4857990945d-4/
 c** Default (Q-branch) defining J-increments for matrix element calcn.
       DATA J2DL,J2DU,J2DD/0,0,1/
@@ -106,8 +109,8 @@ c  potentials & calculate matrix elements coupling levels of one to
 c  levels of the other (for NUMPOT.GE.2).
 c----------------------------------------------------------------------
       call cpu_time(start_time)
-      call cpu_time(end_time)
-      write(6,*) 'Elapsed CPU time = ', start_time-end_time, ' seconds'
+      call date_and_time(VALUES=time_and_date_values_start)
+
     2 READ(5,*,END=999) IAN1, IMN1, IAN2, IMN2, CHARGE, NUMPOT
       IF(CHARGE.NE.0) THEN
           READ(5,*) hCHARGE1,hCHARGE2
@@ -1131,7 +1134,18 @@ c  any) energies of missing levels
           ENDIF
       WRITE(6,601)
       GO TO 2
-  999 STOP
+  999 CONTINUE    
+      call cpu_time(end_time)
+      write(6,*) 'Elapsed CPU time        = ', end_time-start_time,
+     &   ' seconds'
+      call date_and_time(values=time_and_date_values_end)
+      write(6,*) time_and_date_values_end-time_and_date_values_start
+
+      elapsed_sec = (time_and_date_values_end(8) - 
+     1  time_and_date_values_start(8))/1000.d0
+
+      write(6,*) 'Elapsed wall clock time = ', elapsed_sec, ' seconds'
+      STOP
 c-------------------------------------------------------------------
   601 FORMAT(1x,79('=')////)
   602 FORMAT( ' Coefficients of expansion for radial matrix element/expe
