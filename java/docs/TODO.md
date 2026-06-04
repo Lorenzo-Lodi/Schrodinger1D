@@ -1,11 +1,11 @@
 - Write more integration tests, for a combination of states, grids, integrators.
 - Implement the rotational terms (to be added to any potential).   
 - Add benchmarks also for full integration tests.
-- Tighten the thresholds / values in all tests
-- Implement the caching.
+- Implement the caching also for geometric factors (???).
 - Improve logic for initial tight bracketing (especially lower bound estimate)
 - Add checks for minimum step size for avoiding spurious oscillation (in Stormer8 especially) 
 - Add more logs (writes) throughout, especially to write the level-specific values.
+- Tidy up existing logs.
 - Implement new grid mappings linear-switchover-linear, using arctan and using rational function.
 - Implement logic for automatically selecting xmax/xmin and step size.
 - More tests using the grid mappings.
@@ -16,7 +16,7 @@
 - Add front-end for writing the input file.
 - Implement non-adiabatic corrections. Check for H2.
 - Modify the Java code to make conversion to Fortran as easy as possible.
-- Tidy-up / implement code to compute derivatives (used only by Obrechkoff, though...).   
+- Tidy-up / implement code to compute derivatives (used only by Obrechkoff, though. Almost certainly NOT worth it).   
 - Improve the code to evaluate the energy scale.
 - Using Level/duo as a reference, add calculation of matrix elements, einstein coefficients etc.
 - Richardson-extrapolation with finer/standard/coarse grids should be enough.

@@ -74,6 +74,7 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      3 VD,VDMV,XX,ZMU,GI,GB,GBB,WV
       CHARACTER*78 TITL
       CHARACTER*2 NAME1,NAME2
+      real start_time, end_time
       DATA MEL/5.4857990945d-4/
 c** Default (Q-branch) defining J-increments for matrix element calcn.
       DATA J2DL,J2DU,J2DD/0,0,1/
@@ -104,6 +105,9 @@ c  a single potential (when NUMPOT.LE.1), or to generate two independent
 c  potentials & calculate matrix elements coupling levels of one to
 c  levels of the other (for NUMPOT.GE.2).
 c----------------------------------------------------------------------
+      call cpu_time(start_time)
+      call cpu_time(end_time)
+      write(6,*) 'Elapsed CPU time = ', start_time-end_time, ' seconds'
     2 READ(5,*,END=999) IAN1, IMN1, IAN2, IMN2, CHARGE, NUMPOT
       IF(CHARGE.NE.0) THEN
           READ(5,*) hCHARGE1,hCHARGE2
@@ -6130,7 +6134,7 @@ c** For special case of A and c states of Li2, add BOB centrifugal term
      3r[bohr]^1.68 *exp{0.78*rhoAB*r[bohr]}')
   626 FORMAT(/' Potential is Generalized HFD-',a3,'  with   radial power
      1   gamma=',F9.6/ '   De=',f10.4,'[cm-1]   Re=',f9.6,'[Ang.],   wit
-     2h  exponential-term factors:'
+     2h  exponential-term factors:',
      3 5x,'beta1=',f11.8,'   beta=',f11.8,'   and A(pre-exp)=',1PD16.9)
   628 FORMAT(/' Generalized Tang-Tonnies Potential function with exponen
      1t function'/' - {{',SP,F15.11,'*r',F15.11,'*r^2',F15.11,'/r',
@@ -6303,7 +6307,7 @@ c** End of  CmEFF= Cm + CmADJ  setup for non-AF case ===================
   710 Format("  'Quadratic correction' for   C",I2,'(MLR)   yields',
      1  6x,'C',I2,'{adj}=',1PD15.8)
   712 Format("  'Quadratic correction' for   C",I1,'(MLR)    yields',
-     1  7x,'C'I1,'{adj}=',1PD15.8)
+     1  7x,'C',I1,'{adj}=',1PD15.8)
   714 Format("  'Quadratic corrn' for  MLR(m_1=3)  introduces    C",
      1    I1,'(',A4,',adj)=',1PD15.8)
   716 Format("  'Quadratic correction' for  C",I1,'(Sigma)  yields   C',
