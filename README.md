@@ -585,7 +585,7 @@ Propagation inside the bisection loop calls `Integrator.propagate()` at each gri
 
 ## Build & Tests
 
-**Build system**: IntelliJ IDEA only (`Schodinger1D.iml` at workspace root). No Maven or Gradle. No external dependencies — pure Java standard library.
+**Build system**: IntelliJ IDEA only (`Schodinger1D.iml` at workspace root). No Maven or Gradle. No external dependencies — pure Java standard library. Maven/Gradle are intentionally omitted: this codebase is a prototype designed to be ported to Fortran 2003+, so it deliberately avoids Java-specific idioms and external dependencies to keep the algorithms as language-agnostic as possible.
 
 **Unit tests** — `java/test/schrodinger/`:
 - `FractionalGridCacheTest`, `QuantumLevelTest`
