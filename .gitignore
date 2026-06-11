@@ -15,6 +15,7 @@ java/bin/
 java/build.xml
 java/nbproject/
 *.jfr
-a.exe
+*.exe
+*.obj
 fort.7
 fort.9

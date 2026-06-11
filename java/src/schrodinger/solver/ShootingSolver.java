@@ -548,7 +548,7 @@ public class ShootingSolver {
     }
 
     /**
-     * Finds all bound levels for v = 0..vMax and J = 0..jMax.
+     * Finds all bound levels for v = 0...vMax and J = 0...jMax.
      *
      * For J = 0 each state is solved normally. For J >= 1 a first-order perturbative
      * correction based on the converged (v, J-1) wavefunction provides an energy guess,

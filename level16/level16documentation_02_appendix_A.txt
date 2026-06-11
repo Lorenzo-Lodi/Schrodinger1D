@@ -30,9 +30,6 @@ ENDIFENDDO
 IF(NVARB.GT.0) THEN
 IF((IPOTL.EQ.4).AND.(APSE.GT.0)) THEN
 DO i= 1, NVARB
-
-Appendix A: Structure of the Input File Data
-2
 #14a
 READ(5,*) XPARM(I), PARM(I)
 ENDDO

@@ -78,6 +78,8 @@ c%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       integer,dimension(8) :: time_and_date_values_start
       integer,dimension(8) :: time_and_date_values_end
       double precision :: elapsed_sec, t1, t2
+      integer(8) :: time1, time2, count_rate
+      double precision :: elapsed_sec2
       DATA MEL/5.4857990945d-4/
 c** Default (Q-branch) defining J-increments for matrix element calcn.
       DATA J2DL,J2DU,J2DD/0,0,1/
@@ -110,6 +112,8 @@ c  levels of the other (for NUMPOT.GE.2).
 c----------------------------------------------------------------------
       call cpu_time(start_time)
       call date_and_time(VALUES=time_and_date_values_start)
+      call system_clock(count_rate=count_rate)      ! ticks per second
+      call system_clock(count=time1)                ! start
 
     2 READ(5,*,END=999) IAN1, IMN1, IAN2, IMN2, CHARGE, NUMPOT
       IF(CHARGE.NE.0) THEN
@@ -410,7 +414,7 @@ c  coordinate or radial function defined by parameters IRFN & DREF.
 c* For   LXPCT > 0  write all these results to channel-6;  otherwise
 c                  supress most such printing to channel-6.
 c* For  |LXPCT| = 2  write eigenvalues and expectation values in 
-c          	        compact form on channel-7.
+c                   compact form on channel-7.
 c* For  |LXPCT| > 2  calculate matrix elements coupling each level 
 c  to all (up to NVIBMX) preceeding levels of the same potential (for 
 c  NUMPOT.le.1), or to NLEV2 (see below) vib. levels of potential-2
@@ -578,7 +582,7 @@ c** First ... for matrix elements of an operator consisting of a power
 c    series in  R  premultiplying the radial derivative of the wavefx.
           IF(IRFN.EQ.-4) WRITE(6,650) MORDR
           IF(MORDR.GT.0) THEN
-c** If  RFN(R)  is the distance itself ...	
+c** If  RFN(R)  is the distance itself ...  
               IF(IRFN.EQ.0) WRITE(6,614)
               IF((IRFN.EQ.0).OR.(IRFN.EQ.-2).OR.(IRFN.EQ.-3)) DREF=0.D0
               IF((IRFN.EQ.-2).OR.(IRFN.EQ.-3)) THEN
@@ -1136,10 +1140,12 @@ c  any) energies of missing levels
       GO TO 2
   999 CONTINUE    
       call cpu_time(end_time)
-      write(6,*) 'Elapsed CPU time        = ', end_time-start_time,
-     &   ' seconds'
       call date_and_time(values=time_and_date_values_end)
-      write(6,*) time_and_date_values_end-time_and_date_values_start
+      call system_clock(count=time2)                   ! end
+      
+      write(6,'(A, F14.6, A)') 'Elapsed CPU time        = ', 
+     1   end_time-start_time, ' seconds'
+
 
       t1 = time_and_date_values_start(5)*3600.d0
       t1 = t1 + time_and_date_values_start(6)*60.d0
@@ -1153,7 +1159,14 @@ c  any) energies of missing levels
 
       elapsed_sec = t2 - t1
 
-      write(6,*) 'Elapsed wall clock time = ', elapsed_sec, ' seconds'
+      write(6,'(A, F14.6, A)') 'Elapsed wall clock time = ', 
+     1 elapsed_sec, ' seconds (date_and_time)'
+      elapsed_sec2 = real(time2 - time1, kind=8) / 
+     1   real(count_rate, kind=8)
+      
+      write(6,'(A, F14.6, A)') 'Elapsed wall clock time = ', 
+     1 elapsed_sec, ' seconds (system_clock)'
+      
       STOP
 c-------------------------------------------------------------------
   601 FORMAT(1x,79('=')////)
@@ -1168,7 +1181,7 @@ c-------------------------------------------------------------------
   605 FORMAT(/A78/40('=='):/' Generate   ZMU=',F15.11,'(u)',
      1  '   &   BZ=',1PD16.9,'((1/cm-1)(1/Ang**2))'/
      2  10x,'from atomic masses:',0Pf16.11,'  & ',F16.11,'(u)')
- 6055 FORMAT(' E(v=',i3,', J=',i3,')=',G12.6,'  Bv=',F11.7,
+ 6055 FORMAT(' E(v=',i3,', J=',i3,')=',G13.6,'  Bv=',F11.7,
      1  '  -Dv=',1PD12.4,'   Hv=',D12.4/8x,'   Lv=',D12.4,
      2  '   Mv=',D12.4,'   Nv=',D12.4,'   Ov=',D12.4)
   606 FORMAT(' E(v=',i3,', J=',i3,')=',f10.3,'   Bv=',F11.7,
@@ -1257,7 +1270,7 @@ c-------------------------------------------------------------------
      1alue  at  RMIN')
   688 FORMAT(' Potential-',i1,' uses symmetric-well inner boundary condi
      1tion  of zero slope at RMIN')
-  703 FORMAT(1X,I4,I5,F13.4,G13.5)
+  703 FORMAT(1X,I4,I5,F15.6,G13.5)
   723 FORMAT(/A78/1x,'Output values of:  v, J, E & (Level Width)')
   724 FORMAT(//A78//'   v   J    E(v,J)     Width       <KE>',
      1  6x,'<M(r)>  &  <XI**k>  for k=1 to',i3/2x,38('=='))

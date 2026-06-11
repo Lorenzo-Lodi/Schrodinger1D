@@ -1678,3 +1678,6 @@ Morse D=50000, req=2.0bohr, xe=0.0026, m=100amu
 
 
 
+ Elapsed CPU time        =   0.390625000      seconds
+           0           0           0           0           0           0           1        -605
+ Elapsed wall clock time =   0.39499999999998181       seconds
