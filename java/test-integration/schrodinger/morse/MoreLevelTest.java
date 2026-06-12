@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static schrodinger.PhysicalConstants.*;
 import static schrodinger.Utils.stepMsg;
 
@@ -47,8 +48,8 @@ public class MoreLevelTest {
                 line = line.replace("  ", " ");
                 line = line.replace("  ", " ");
                 String[] parts = line.split(" ");
-                String key = parts[1] + "_" + parts[3];
-                refEnergies.put(key, Double.parseDouble(parts[1]));
+                String key = parts[1] + "_" + parts[2];
+                refEnergies.put(key, Double.parseDouble(parts[3]));
             }
         } catch (IOException e) {
             throw new UncheckedIOException("Test input file not found: " + inputFile, e);
@@ -98,21 +99,29 @@ public class MoreLevelTest {
 //            System.out.printf("Maximum step size for ALL states to dissociation = %20.8f \n", system.maxStepSizeAllowedRegion / nOffsets);
         ShootingSolver finder = new ShootingSolver(system, integrator);
 
-        int vMax = 0;
-        int Jmax = 50;
+        double threshInverseCm = toHartree(1e-6);
+        int nLevelsWithLargeDiff = 0;
+        int grandTotalOfScans = 0;
+        int vMax = 100;
+        int Jmax = 0;
         List<List<QuantumLevel>> levels = finder.findEigenvaluesForJ(vMax, Jmax);
         for (int jrot = 0; jrot < levels.size(); jrot++) {
             List<QuantumLevel> levelsPerJ = levels.get(jrot);
             for (int v = 0; v < levelsPerJ.size(); v++) {
                 QuantumLevel ek = levelsPerJ.get(v);
-                double exact = 0.;
+                String key = jrot + "_" + v;
+                double exact = toHartree(refEnergies.get(key));
                 double innerInversionPoint = rmin - Math.log(1. + Math.sqrt(exact / De)) / a;
                 double outerInversionPoint = rmin - Math.log(1. - Math.sqrt(exact / De)) / a;
                 double span = outerInversionPoint - innerInversionPoint;
                 int nEffPoints = (int) (span / step);
                 double diff = exact - ek.energy;
+                if (Math.abs(diff) > threshInverseCm) {
+                    nLevelsWithLargeDiff++;
+                }
                 double maxStep = ek.maximumStepSize() * nOffsets;
                 totalScans += ek.countTotalScans();
+                grandTotalOfScans += ek.countTotalScans();
                 String msg = stepMsg(step / maxStep);
                 System.out.printf("%15s %5d %5d %5d %18.8f %18.8f %18.8f %18.10f %15.6f %15.6f %15.6f %10d %18.8f %15.3f %2s %6d\n", className, v, jrot, nOfPoints, step, toInverseCm(exact),
                         toInverseCm(ek.energy), toInverseCm(diff), innerInversionPoint, outerInversionPoint, span, nEffPoints, maxStep, step / maxStep, msg, ek.countTotalScans());
@@ -129,9 +138,16 @@ public class MoreLevelTest {
 //            );
             long elapsedNanos = System.nanoTime() - t0;
             double elapsedSeconds = elapsedNanos * 1e-9;
-            System.out.printf("%15s wall-time seconds = %25.6f ; Cache hit rate = %7.3f %%; Total scans = %12d \n", className, elapsedSeconds,
-                    hitRate, totalScans);
+//            System.out.printf("%15s wall-time seconds = %25.6f ; Cache hit rate = %7.3f %%; Total scans = %12d \n", className, elapsedSeconds,
+//                    hitRate, totalScans);
+            assertEquals(100., hitRate);
         }
+
+        System.out.println("Grand total of scans: " + grandTotalOfScans);
+
+        assertEquals(0, nLevelsWithLargeDiff);
+
+
     }
 
 }
