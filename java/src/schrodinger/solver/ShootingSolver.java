@@ -23,7 +23,7 @@ public class ShootingSolver {
     private final Integrator integrator;
     private final SchrodingerSystem system;
     private final Integrator integratorBest = IntegratorFactory.getBestOneStepIntegrator();
-    private RefinementStrategy strategy;
+    private RefinementStrategy strategy = RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL;
     public EigenvalueBounds bounds;
 
     public ShootingSolver(SchrodingerSystem system, Integrator integrator) {
@@ -32,22 +32,21 @@ public class ShootingSolver {
         this.system.initializeCache(integrator.getFractionalOffsets());
     }
 
-    public List<QuantumLevel> findEigenvaluesUpTo(int maximumQuantumNumber, RefinementStrategy refinementStrategy) {
+    public List<QuantumLevel> findEigenvaluesUpTo(int maximumQuantumNumber) {
         List<QuantumLevel> quantumLevels = new ArrayList<>();
         bounds = new EigenvalueBounds(maximumQuantumNumber);
 
         for (int v = 0; v <= maximumQuantumNumber; v++) {
-            QuantumLevel level = findEigenvalue(v, refinementStrategy);
+            QuantumLevel level = findEigenvalue(v);
             quantumLevels.add(level);
         }
 
         return quantumLevels;
     }
 
-    public QuantumLevel findEigenvalue(int nOfDesiredNodes, RefinementStrategy refinementStrategy) {
+    public QuantumLevel findEigenvalue(int nOfDesiredNodes) {
         OutputManager.write("************************************************************************************");
-        OutputManager.write(String.format("Finding eigenvalue with %d nodes, strategy %s", nOfDesiredNodes, refinementStrategy.toString()));
-        this.strategy = refinementStrategy;
+        OutputManager.write(String.format("Finding eigenvalue with %d nodes, strategy %s", nOfDesiredNodes, this.strategy.toString()));
         QuantumLevel level = this.findInitialEnergyBracket(nOfDesiredNodes, Double.NaN, 0.0);
         return performRefinement(level, nOfDesiredNodes);
     }
@@ -79,10 +78,6 @@ public class ShootingSolver {
         return level;
     }
 
-    public QuantumLevel findEigenvalue(int nOfDesiredNodes) {
-        return findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL);
-    }
-
     /**
      * Locates the energy interval [lowerBound, upperBound] containing the
      * state with 'nOfDesiredNodes' nodes.
@@ -90,11 +85,11 @@ public class ShootingSolver {
     private QuantumLevel findInitialEnergyBracket(int nOfDesiredNodes, double energyGuess, double bracketHalfWidth) {
         OutputManager.writeBlankLine();
         OutputManager.write(String.format("Trying to find initial energy bracketing for state with n = %d", nOfDesiredNodes));
-        
+
         if (bounds == null) {
             bounds = new EigenvalueBounds(nOfDesiredNodes + 10);
         }
-        
+
         QuantumLevel level = new QuantumLevel(system);
 
         if (integrator.needsPotentialCapping()) {
@@ -131,12 +126,12 @@ public class ShootingSolver {
                     level.nodesUpper = nodesUpper;
                     level.energy = energyGuess;
                     level.verifyStepSize();
-                    
+
                     QuantumLevel.ConvergenceInfo info = new QuantumLevel.ConvergenceInfo();
                     info.convergengeStage = "Initial energy bracketing (PT guess)";
                     info.iterations = attempt;
                     level.convergenceInfo.add(info);
-                    
+
                     return level;
                 }
 
@@ -207,7 +202,7 @@ public class ShootingSolver {
 
     private void findEigenvalueByBisection(QuantumLevel level, int nOfDesiredNodes) {
         refineByBisection(level, nOfDesiredNodes, TARGET_ABSOLUTE_ERROR, 0);
-        
+
         // Ensure the continuous wavefunction is generated exactly for the final (midpoint) energy.
         // It is already continuous (no jumps) because countNodes uses a single forward sweep with extrapolation.
         countNodes(level);
@@ -549,13 +544,13 @@ public class ShootingSolver {
 
     /**
      * Finds all bound levels for v = 0...vMax and J = 0...jMax.
-     *
+     * <p>
      * For J = 0 each state is solved normally. For J >= 1 a first-order perturbative
      * correction based on the converged (v, J-1) wavefunction provides an energy guess,
      * replacing the expensive initial-bracket scan with a narrow validated bracket.
-     *
+     * <p>
      * The perturbative energy step from J-1 to J is:
-     *   \u0394E = 2J \u00b7 B_{v,J-1}   where B_{v,J-1} = \u27e81/r\u00b2\u27e9_{v,J-1} / (2m)
+     * \u0394E = 2J \u00b7 B_{v,J-1}   where B_{v,J-1} = \u27e81/r\u00b2\u27e9_{v,J-1} / (2m)
      * and the initial bracket is [guess \u00b1 \u0394E/3], doubled up to 10 times if invalid.
      *
      * @return results.get(v).get(J)  for v in [0, vMax], J in [0, jMax]
@@ -604,6 +599,14 @@ public class ShootingSolver {
         system.setJ(0);
         system.initializeCache(integrator.getFractionalOffsets());
         return result;
+    }
+
+    public RefinementStrategy getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(RefinementStrategy strategy) {
+        this.strategy = strategy;
     }
 
     private String fmtEnergy(double energy) {

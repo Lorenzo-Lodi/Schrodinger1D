@@ -62,7 +62,8 @@ public class LennardJonesMain {
             Grid grid = GridFactory.generateUniformGrid(xmin, xmax, nOfPoints);
             SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
             ShootingSolver finder = new ShootingSolver(system, integrator);
-            QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, strategy);
+            finder.setStrategy(strategy);
+            QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
             double errorAbs = (refEnergies.get(nOfDesiredNodes) - toInverseCm(ek.energy));
             System.out.printf("%20.4f %20.4f %25.8f\n", xmax, ptDensity, errorAbs);
         }

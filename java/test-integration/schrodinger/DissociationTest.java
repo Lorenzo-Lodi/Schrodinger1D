@@ -43,8 +43,9 @@ public class DissociationTest {
 
         SchrodingerSystem system = new SchrodingerSystem(potential, mass, grid);
         ShootingSolver finder = new ShootingSolver(system, integrator);
+        finder.setStrategy(RefinementStrategy.BISECTION_ONLY);
         for (int nOfDesiredNodes = 0; nOfDesiredNodes <= 0; nOfDesiredNodes++) {
-            QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, RefinementStrategy.BISECTION_ONLY);
+            QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
 
             System.out.printf("Eigenvalue: %6d %25.14f (%25.14f)\n", nOfDesiredNodes, toInverseCm(ek.energy), (toInverseCm(ek.energy) - wellDepthInverseCm));
 

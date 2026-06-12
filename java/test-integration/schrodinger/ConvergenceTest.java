@@ -42,7 +42,8 @@ public class ConvergenceTest {
 
             List<Double> energies = new ArrayList<>();
             for (ShootingSolver s : solvers) {
-                double energy = s.findEigenvalue(nOfDesidedNodes, RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL).energy;
+                s.setStrategy(RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL);
+                double energy = s.findEigenvalue(nOfDesidedNodes).energy;
                 energies.add(energy);
             }
 

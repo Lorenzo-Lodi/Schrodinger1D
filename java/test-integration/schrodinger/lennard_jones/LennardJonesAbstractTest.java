@@ -139,7 +139,8 @@ public abstract class LennardJonesAbstractTest {
                     refEnergy = 0.;
                 }
 
-                QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes, this.strategy);
+                finder.setStrategy(strategy);
+                QuantumLevel ek = finder.findEigenvalue(nOfDesiredNodes);
                 double errorAbs = (refEnergy - toInverseCm(ek.energy));
                 double errorRel = errorAbs / refEnergy;
 
