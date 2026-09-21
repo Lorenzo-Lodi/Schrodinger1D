@@ -102,8 +102,8 @@ public class MoreLevelTest {
         double threshInverseCm = toHartree(1e-6);
         int nLevelsWithLargeDiff = 0;
         int grandTotalOfScans = 0;
-        int vMax = 100;
-        int Jmax = 0;
+        int vMax = 0;
+        int Jmax = 50;
         List<List<QuantumLevel>> levels = finder.findEigenvaluesForJ(vMax, Jmax);
         for (int jrot = 0; jrot < levels.size(); jrot++) {
             List<QuantumLevel> levelsPerJ = levels.get(jrot);

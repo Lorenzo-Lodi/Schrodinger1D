@@ -54,7 +54,6 @@ public class ShootingSolver {
     public QuantumLevel findEigenvalue(int nOfDesiredNodes, double energyGuess, double bracketHalfWidth) {
         OutputManager.write("************************************************************************************");
         OutputManager.write(String.format("Finding eigenvalue with %d nodes from guess %25.14f", nOfDesiredNodes, energyGuess));
-        this.strategy = RefinementStrategy.BISECTION_THEN_BIDIRECTIONAL;
         QuantumLevel level = this.findInitialEnergyBracket(nOfDesiredNodes, energyGuess, bracketHalfWidth);
         return performRefinement(level, nOfDesiredNodes);
     }
@@ -571,6 +570,23 @@ public class ShootingSolver {
             jLevels.add(level0);
 
             for (int J = 1; J <= jMax; J++) {
+
+                Double guess2 = null;
+                //WIP
+                switch (J) {
+                    case 1:
+                        break; // No estimate
+                    case 2:
+                    case 3:
+                        guess2 = jLevels.get(0).energy + 3.0 * (jLevels.get(J - 1).energy - jLevels.get(J - 2).energy);
+                        break;
+                    default:
+                        guess2 = 4.0 * jLevels.get(J - 1).energy - 6.0 * jLevels.get(J - 2).energy + 4.0 * jLevels.get(J - 3).energy
+                                - jLevels.get(J - 4).energy;
+                        break;
+                }
+
+
                 QuantumLevel prevLevel = jLevels.get(J - 1);
 
                 // B_{v,J-1} = <1/r^2>_{v,J-1} / (2m)
@@ -584,8 +600,9 @@ public class ShootingSolver {
                 double halfWidth = deltaE / 3.0;
 
                 OutputManager.write(String.format(
-                        "v=%d, J=%d: PT guess = %25.14f, deltaE = %25.14f, bracket half-width = %25.14f",
-                        v, J, guess, deltaE, halfWidth));
+                        "v=%d, J=%d: PT guess = %25.14f cm-1, deltaE = %25.14f cm-1, bracket half-width = %25.14f cm-1",
+                        v, J, toInverseCm(guess), toInverseCm(deltaE), toInverseCm(halfWidth)));
+                OutputManager.write(String.format("Second guess       = %25.14f", guess2 != null ? toInverseCm(guess2) : 0.0));
 
                 system.setJ(J);
                 system.initializeCache(integrator.getFractionalOffsets());
